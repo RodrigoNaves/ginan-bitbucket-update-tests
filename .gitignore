@@ -3,6 +3,18 @@
 # Learn more about .gitignore:
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
+# GNSS solutions
+*.sp3
+*.clk
+*.snx
+
+# GNSS data
+*.[cr]nx
+
+# ignore cmake build
+src/build/
+bin/
+
 # Node artifact files
 node_modules/
 dist/
@@ -47,4 +59,4 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
-
+*.png
