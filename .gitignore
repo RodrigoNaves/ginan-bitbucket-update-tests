@@ -25,7 +25,17 @@ docs/manual/*.pdf
 docs/manual/*.idx
 docs/manual/*.lof
 docs/manual/*.gz
-
+docs/manual/*.acn
+docs/manual/*.acr
+docs/manual/*.alg
+docs/manual/*.bcf
+docs/manual/*.glg
+docs/manual/*.glo
+docs/manual/*.gls
+docs/manual/*.glsdefs
+docs/manual/*.ist
+docs/manual/*.run.xml
+docs/manual/*.toc
 # Node artifact files
 node_modules/
 dist/

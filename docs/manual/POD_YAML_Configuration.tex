@@ -1,8 +1,8 @@
 \chapter{POD YAML Configuration}
 \label{ch:pod_yaml_configuration}
-\section{Procesing mode:}
+\section{pod\_options:}
 %
-In this section only one of the following options listed below can be set to true, the remainder must be set to false.\\
+These options will control how the pod will process the input files, with four different options available. Only one of the options listed below can be set to true, the remainder must be set to false.\\
 \begin{table}[h!]
 \begin{tabular}{|p{2.5cm}|p{2.5cm}|p{5cm}|}
 	\hline
@@ -10,16 +10,33 @@ In this section only one of the following options listed below can be set to tru
     \hline
     %\multicolumn{3}{|p{13cm}|}{In this section only one of the following options listed below can be set to true, the remainder must be set to false.}\\
     %\hline
-	fit & true or false & \\
-	predict & true or false & \\
-	eqm\_int & true or false & \\
-	ic\_int & true or false & initial condition integration \\
+	pod\_mode\_fit & true or false & Orbit Determination (pseudo-observations; orbit fitting \ ) \\
+	pod\_mode\_predict & true or false & Orbit Determination and Prediction \\
+	pod\_mode\_eqm\_int & true or false & Orbit Integration (Equation of Motion only) \\
+	pod\_mode\_ic\_int & true or false & Orbit Integration and Partials (Equation of Motion and Variational Equations) initial condition integration \\
 	\hline
 \end{tabular}
 \caption{caption for this table}
 \label{table:label_name}
 \end{table}
 %
+\begin{lstlisting}[language=xml]
+pod_options:
+# Example YAML showing different processing options
+#--------------------------------------------------
+pod_mode_fit:     true   
+pod_mode_predict: false  
+pod_mode_eqm_int: false  
+pod_mode_ic_int:  false  
+\end{lstlisting}
+%
+\begin{enumerate}
+	\item \emph{pod\_mode\_fit} - this is used to fit an existing sp3 file (this is sometimes referred to as pseudo observations) with the parameters that are set later on. See pod example 1
+	\item \emph{pod\_mode\_predict} - determine an orbit from observations and then predict the orbits path
+	\item \emph{pod\_mode\_eqm\_int} - determine the equations of motion only
+	\item \emph{pod\_mode\_ic\_int} -set up the initial conditions
+\end{enumerate}
+
 \section{Time scale}
 %
 \begin{table}[h!]

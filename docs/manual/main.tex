@@ -1,10 +1,21 @@
 % This is a modified version of the tufte-latex book example in which the title page and the contents page resemble Tufte's VDQI book, using Kevin Godby's code from this thread at https://groups.google.com/forum/#!topic/tufte-latex/ujdzrktC1BQ.
-\documentclass[]{tufte-book}
+\documentclass[nohyper,nobib]{tufte-book}
 \usepackage{nameref}
-% \hypersetup{colorlinks}% uncomment this line if you prefer colored hyperlinks (e.g., for onscreen viewing)
+%\hypersetup{colorlinks}% uncomment this line if you prefer colored hyperlinks (e.g., for onscreen viewing)
 
 % \usepackage{hyphenat}
 \usepackage{url}
+\usepackage[backend=biber, natbib=true, style=numeric]{biblatex}
+
+% see https://www.overleaf.com/learn/latex/Glossaries
+% make glossaries must be written before the first glossary entry
+\usepackage[utf8]{inputenc}
+\usepackage[acronym, toc]{glossaries}
+
+\loadglsentries{glossary.tex}
+\makeglossaries
+
+\usepackage{listings}
 %\usepackage[backend=biber, natbib=true, style=numeric]{biblatex}
 %\addbibresource{sample-handout.bib}
 \usepackage{xargs}
@@ -25,7 +36,6 @@ Tao Li,
 Ronald Maj,
 Bogdan Matviichuk,
 Simon McClusky,
-Chris Morgan,
 Michael Moore,
 Thomas Papanikolaou,
 Tzupang Tseng
@@ -35,8 +45,8 @@ Tzupang Tseng
 %%
 % If they're installed, use Bergamo and Chantilly from www.fontsite.com.
 % They're clones of Bembo and Gill Sans, respectively.
-%\IfFileExists{bergamo.sty}{\usepackage[osf]{bergamo}}{}% Bembo
-%\IfFileExists{chantill.sty}{\usepackage{chantill}}{}% Gill Sans
+\IfFileExists{bergamo.sty}{\usepackage[osf]{bergamo}}{}% Bembo
+\IfFileExists{chantill.sty}{\usepackage{chantill}}{}% Gill Sans
 
 %\usepackage{microtype}
 
@@ -78,19 +88,19 @@ Tzupang Tseng
 \usepackage{xspace}
 
 \usepackage{amsmath}
-\usepackage{hyperref}
+\usepackage[colorlinks]{hyperref}
 %%
 % Some shortcuts for Tufte's book titles.  The lowercase commands will
 % produce the initials of the book title in italics.  The all-caps commands
 % will print out the full title of the book in italics.
-\newcommand{\vdqi}{\textit{VDQI}\xspace}
-\newcommand{\ei}{\textit{EI}\xspace}
-\newcommand{\ve}{\textit{VE}\xspace}
-\newcommand{\be}{\textit{BE}\xspace}
-\newcommand{\VDQI}{\textit{The Visual Display of Quantitative Information}\xspace}
-\newcommand{\EI}{\textit{Envisioning Information}\xspace}
-\newcommand{\VE}{\textit{Visual Explanations}\xspace}
-\newcommand{\BE}{\textit{Beautiful Evidence}\xspace}
+%\newcommand{\vdqi}{\textit{VDQI}\xspace}
+%\newcommand{\ei}{\textit{EI}\xspace}
+%\newcommand{\ve}{\textit{VE}\xspace}
+%\newcommand{\be}{\textit{BE}\xspace}
+%\newcommand{\VDQI}{\textit{The Visual Display of Quantitative Information}\xspace}
+%\newcommand{\EI}{\textit{Envisioning Information}\xspace}
+%\newcommand{\VE}{\textit{Visual Explanations}\xspace}
+%\newcommand{\BE}{\textit{Beautiful Evidence}\xspace}
 
 \newcommand{\TL}{Tufte-\LaTeX\xspace}
 
@@ -135,18 +145,18 @@ Tzupang Tseng
 \newcommand{\tXeLaTeX}{\XeLaTeX\index{XeLaTeX@\protect\XeLaTeX}}
 % \index{\texttt{\textbackslash xyz}@\hangleft{\texttt{\textbackslash}}\texttt{xyz}}
 \newcommand{\tuftebs}{\symbol{'134}}% a backslash in tt type in OT1/T1
-%\newcommand{\doccmdnoindex}[2][]{\texttt{\tuftebs#2}}% command name -- adds backslash automatically (and doesn't add cmd to the index)
-%\newcommand{\doccmddef}[2][]{%
-  %\hlred{\texttt{\tuftebs#2}}\label{cmd:#2}%
-  %\ifthenelse{\isempty{#1}}%
-   % {% add the command to the index
-    %  \index{#2 command@\protect\hangleft{\texttt{\tuftebs}}\texttt{#2}}% command name
-    %}%
-    %{% add the command and package to the index
-     % \index{#2 command@\protect\hangleft{\texttt{\tuftebs}}\texttt{#2} (\texttt{#1} package)}% command name
-     % \index{#1 package@\texttt{#1} package}\index{packages!#1@\texttt{#1}}% package name
-    %}%
-%}% command name -- adds backslash automatically
+\newcommand{\doccmdnoindex}[2][]{\texttt{\tuftebs#2}}% command name -- adds backslash automatically (and doesn't add cmd to the index)
+\newcommand{\doccmddef}[2][]{%
+  \hlred{\texttt{\tuftebs#2}}\label{cmd:#2}%
+  \ifthenelse{\isempty{#1}}%
+    {% add the command to the index
+      \index{#2 command@\protect\hangleft{\texttt{\tuftebs}}\texttt{#2}}% command name
+    }%
+    {% add the command and package to the index
+      \index{#2 command@\protect\hangleft{\texttt{\tuftebs}}\texttt{#2} (\texttt{#1} package)}% command name
+      \index{#1 package@\texttt{#1} package}\index{packages!#1@\texttt{#1}}% package name
+    }%
+}% command name -- adds backslash automatically
 \newcommand{\doccmd}[2][]{%
   \texttt{\tuftebs#2}%
   \ifthenelse{\isempty{#1}}%
@@ -245,12 +255,13 @@ under the License.\index{license}
 \par\textit{First printing, \monthyear}
 \end{fullwidth}
 % r.5 contents
-%\tableofcontents
+\tableofcontents
 %
 \include{welcome}
 \newthought{This manual} is divided into three major sections: the preliminary matter which gives a quick overview on how to install and use the software with examples. 
 The next part contains the background theory on the models that have been implemented into Ginarn. 
 The back matter contains information about configuration files, and file formats used by the software.
+This manual is far from complete, and we will be adding to it as we continue our development work on Ginarn. Our intention is to provide examples on how to use the tool kit , and then to provide the background theory as we can.
 %
 \listoffigures
 %
@@ -258,7 +269,7 @@ The back matter contains information about configuration files, and file formats
 %
 % r.9 introduction
 \cleardoublepage
-\part{Overview}
+%\part{Overview}
 %
 \include{introduction}
 %
@@ -267,9 +278,9 @@ The back matter contains information about configuration files, and file formats
 %\include{implementation overview of software}
 % block diagram from aaron
 %
-\include{pea_examples}
-\include{Processing_in_User_mode}
-\include{Processing_in_Network_mode}
+%\include{pea_examples}
+%\include{Processing_in_User_mode}
+%\include{Processing_in_Network_mode}
 %
 \include{pod_examples}
 %
@@ -283,33 +294,45 @@ The back matter contains information about configuration files, and file formats
 %
 %\include{kalman_filter}
 %
-\include{orbit_modelling}
+%\include{orbit_modelling}
 %\include{ionosphere}
 %\include{ambiguity_resolution}
 %
 %
 %\include{styleguide}
 %%
-% The back matter contains appendices, bibliographies, indices, glossaries, etc.
-%\backmatter
+
 %\part{Using the software}
 %\include{Processing_in_User_mode}
 %\include{Processing_in_Network_mode}
 %\include{Using_the_POD_module}
 %
-\part{Using the Source Code}
+%\part is not working?
+%\chapter{Using the Source Code}
 \include{coding_standards}
 %\include{repositories}
 %\include{Overview_of_the_PEA}
 %\include{Overview_of_the_POD}
+\include{conventions}
 %
-\part{YAML Configuration File Reference}
+%\clearpage
+Some random reference \gls{ambguity}.
+Some random reference \gls{wavelength}.
+Some random reference \gls{gps}.
+%\printglossary[title=Terms Used, toctitle=List of Terms]
+%\printglossary[type=\acronymtype]
+% The back matter contains appendices, bibliographies, indices, glossaries, etc.
+\backmatter
+\printglossaries
+%\printglossaries[type=\acronymtype]
+%\printglossaries%[type=\acronymtype]
+%\printglossaries
+%
+%\part{YAML Configuration File Reference}
 %
 %\include{Examples in Detail}
-%\include{PEA_YAML_Configuration}
+\include{PEA_YAML_Configuration}
 \include{POD_YAML_Configuration}
-%\include{styleguide}
 % \bibliography{sample-handout}
-% \bibliographystyle{plainnat}
-%\printindex
+\printindex
 \end{document}

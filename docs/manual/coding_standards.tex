@@ -13,10 +13,7 @@ Overall we are aiming for
 \end{itemize}
 
 \subsection{Bad}
-\begin{verbatim}
-
-```cpp
-
+\begin{lstlisting}[language=c++]
     //check first letter of satellite type against stomething
 
     if (obs.Sat.id().c_str()[0]) == 'G') 
@@ -27,14 +24,12 @@ Overall we are aiming for
         doSomething();
     else if (obs.Sat.id().c_str()[0]) == 'I')
         doSomething();
-```
-\end{verbatim}
+        
+\end{lstlisting}
 
 \subsection{Good}
 
-\begin{verbatim}
-```cpp
-
+\begin{lstlisting}[language=c++]
     char& sysChar = obs.Sat.id().c_str()[0];
 
     switch (sysChar)
@@ -44,8 +39,7 @@ Overall we are aiming for
         case 'E':   doSomething();   break;
         case 'I':   doSomething();   break;
     }
-```
-\end{verbatim}
+\end{lstlisting}
 
 
 \section{Spacing, Indentation, and layout}
@@ -60,47 +54,37 @@ Overall we are aiming for
 
 \subsection{Bad}
 
-\begin{verbatim}
-```cpp
-
+\begin{lstlisting}[language=c++]
     trySetFromYaml(mongo_metadata,output_files,{"mongo_metadata" });
     trySetFromYaml(mongo_output_measurements,output_files,{"mongo_output_measurements" });
     trySetFromYaml(mongo_states,output_files,{"mongo_states" });
-```
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Good}
-\begin{verbatim}
-```cpp
-
+\begin{lstlisting}[language=c++]
     trySetFromYaml(mongo_metadata,             output_files, {"mongo_metadata"              });
     trySetFromYaml(mongo_output_measurements,  output_files, {"mongo_output_measurements"	});
     trySetFromYaml(mongo_states,               output_files, {"mongo_states"		        });
-```
-\end{verbatim}
+\end{lstlisting}
 
 \section{Statements}
 
 * One statement per line  - \*unless you have a very good reason
 
 \subsection{Bad}
-/begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     z[k]=ROUND(zb[k]); y=zb[k]-z[k]; step[k]=SGN(y);
-```
-/end{verbatim}
+\end{lstlisting}
 
 \subsection{Good}
 
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     z[k]    = ROUND(zb[k]);
     y       = zb[k]-z[k]; 
     step[k] = SGN(y);
-```
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Example of a good reason:}
 
@@ -108,8 +92,7 @@ Overall we are aiming for
 
 \subsection{Normal}
 
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     switch (sysChar)
     {
@@ -127,26 +110,22 @@ Overall we are aiming for
             *tsys = TSYS_GAL; 
             break;
     //...continues
-```
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Ok}
 
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     if      (sys == SYS_GLO)    fact = EFACT_GLO;
 	else if (sys == SYS_CMP)    fact = EFACT_CMP;
 	else if (sys == SYS_GAL)    fact = EFACT_GAL;
 	else if (sys == SYS_SBS)    fact = EFACT_SBS;
 	else                        fact = EFACT_GPS;
-```
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Ok}	
 
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     switch (sysChar)
     {
@@ -157,21 +136,18 @@ Overall we are aiming for
         case 'S':   *sys = E_Sys::SBS;      *tsys = TSYS_GPS;    break;
         case 'J':   *sys = E_Sys::QZS;      *tsys = TSYS_QZS;    break;
     //...continues
-```
-\end{verbatim}
+\end{lstlisting}
 
 \section{Braces}
 
 New line for braces.
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     if (pass)
     {
         doSomething();
     }
-```
-\end{verbatim}
+\end{lstlisting}
 
 \section{Comments}
 
@@ -186,8 +162,7 @@ New line for braces.
 %\item  Put `\&\&` and `||` at the beginning of lines when using multiple conditionals.
 %\item  Always use curly braces when using multiple conditionals.
 %\end{itemize}
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     if  ( ( testA     > 10)
         &&( testB   == false
@@ -195,34 +170,29 @@ New line for braces.
     {
         //do something
     }
-```
-\end{verbatim}
+\end{lstlisting}
 
 * Use variables to name return values rather than using functions directly
 
 \subsection{Bad}
 
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     if (doSomeParsing(someObject))
     {
         //code contingent on parsing success? failure?
     }
-```
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Good}
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     bool fail = doSomeParsing(someObject);
     if (fail)
     {
         //This code is clearly a response to a failure
     }
-```
-\end{verbatim}
+\end{lstlisting}
 
 \section{Variable declaration}
 
@@ -233,8 +203,7 @@ New line for braces.
 \item Always initialise variables at declaration.
 \end{itemize}
 
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     int  type  = 0;
     bool found = false;         //these have to be declared early so they can be used after the for loop
@@ -254,8 +223,7 @@ New line for braces.
     {
         //...
     }    
-```
-\end{verbatim}
+\end{lstlisting}
 
 \section{Function parameters}
 
@@ -265,8 +233,7 @@ New line for braces.
 \item Prefer references rather than pointers unless unavoidable.
 \end{itemize}
 
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     void function(
             bool        runTests,           ///< Run unit test while processing
@@ -275,8 +242,7 @@ New line for braces.
     {
     	//...
     }
-```
-\end{verbatim}
+\end{lstlisting}
 
 \section{Naming and Structure}
 %\begin{itemize}
@@ -287,8 +253,7 @@ New line for braces.
 %\item Be sure to provide default values for member variables.
 %\item Use heirarchical objects where applicable.
 %\end{itemize}
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     struct SubStruct
     {
@@ -317,15 +282,13 @@ New line for braces.
     {
         //..
     }
-```
-\end{verbatim}
+\end{lstlisting}
 \section{Testing}
 \begin{itemize}
 	\item Use TestStack objects at top of each function that requires automatic unit testing.
 	\item Use TestStack objects with descriptive strings in loops that wrap functions that require automatic unit testing.
 \end{itemize}
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     void function()
     {
@@ -340,16 +303,14 @@ New line for braces.
             //...
         }
     }
-```
-\end{verbatim}
+\end{lstlisting}
 \section{Documentation}
 \begin{itemize}
 \item Use doxygen style documentation for function and struct headers and parameters
 \item `/**`  for headers.
 \item `///<` for parameters
 \end{itemize}
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     /** Struct to demonstrate documentation.
     * The first line automatically gets parsed as a brief description, but more detailed descriptions are possible too.
@@ -368,8 +329,7 @@ New line for braces.
     {
     	//...
     }
-```
-\end{verbatim}
+\end{lstlisting}
 
 \section{STL Templates}
 \begin{itemize}
@@ -378,9 +338,7 @@ New line for braces.
 \end{itemize}
 
 \subsection{Bad}
-\begin{verbatim}
-
-```cpp
+\begin{lstlisting}[language=c++]
 
     double double_arr[10] = {};
 
@@ -390,11 +348,9 @@ New line for braces.
     {
 
     }
-```
-\end{verbatim}
+\end{lstlisting}
 %
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     map<string, double> doubleMap;
 
@@ -407,11 +363,9 @@ New line for braces.
     		//..
     	}
     }
-```
-\end{verbatim}
+\end{lstlisting}
 \subsection{Good - Iterating Maps}
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     map<string, double> offsetMap;
 
@@ -424,11 +378,9 @@ New line for braces.
         
         }
     }
-```
-\end{verbatim}
+\end{lstlisting}
 \subsection{ Good - Iterating Lists}
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     list<Obs> obsList;
 
@@ -438,14 +390,12 @@ New line for braces.
     {
         doSomethingWithObs(obs);
     }
-```
-\end{verbatim}
+\end{lstlisting}
 
 \section{Special Case - Deleting from maps/lists}
 
 Use iterators when you need to delete from STL containers:
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
 
     for (auto it = someMap.begin(); it != someMap.end();  )
     {
@@ -460,13 +410,11 @@ Use iterators when you need to delete from STL containers:
 	    	++it;
     	}
     }
-```
-\end{verbatim}
+\end{lstlisting}
 \section{Namespaces}
 
 Commonly used std containers may be included with `using`
-\begin{verbatim}
-```cpp
+\begin{lstlisting}[language=c++]
     #include <string>
     #include <map>
     #include <list>
@@ -476,5 +424,4 @@ Commonly used std containers may be included with `using`
     using std::map;
     using std::list
     using std::unordered_map;
-```
-\end{verbatim}
+\end{lstlisting}
