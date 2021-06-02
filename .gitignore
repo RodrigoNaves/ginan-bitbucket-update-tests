@@ -16,6 +16,16 @@ src/build/
 bin/
 lib/
 
+# ignore latex artifacts
+docs/manual/*.log
+docs/manual/*.aux
+docs/manual/*.out
+docs/manual/*.lot
+docs/manual/*.pdf
+docs/manual/*.idx
+docs/manual/*.lof
+docs/manual/*.gz
+
 # Node artifact files
 node_modules/
 dist/
