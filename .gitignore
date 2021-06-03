@@ -36,6 +36,11 @@ docs/manual/*.glsdefs
 docs/manual/*.ist
 docs/manual/*.run.xml
 docs/manual/*.toc
+docs/manual/main.ilg
+docs/manual/main.ind
+docs/manual/main.lol
+
+*.swp
 # Node artifact files
 node_modules/
 dist/

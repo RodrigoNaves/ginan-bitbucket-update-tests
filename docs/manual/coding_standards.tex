@@ -13,7 +13,7 @@ Overall we are aiming for
 \end{itemize}
 
 \subsection{Bad}
-\begin{lstlisting}[language=c++]
+\begin{lstlisting}[language=C++]
     //check first letter of satellite type against stomething
 
     if (obs.Sat.id().c_str()[0]) == 'G') 
@@ -73,14 +73,12 @@ Overall we are aiming for
 
 \subsection{Bad}
 \begin{lstlisting}[language=c++]
-
     z[k]=ROUND(zb[k]); y=zb[k]-z[k]; step[k]=SGN(y);
 \end{lstlisting}
 
 \subsection{Good}
 
 \begin{lstlisting}[language=c++]
-
     z[k]    = ROUND(zb[k]);
     y       = zb[k]-z[k]; 
     step[k] = SGN(y);
@@ -93,7 +91,6 @@ Overall we are aiming for
 \subsection{Normal}
 
 \begin{lstlisting}[language=c++]
-
     switch (sysChar)
     {
         case ' ':
@@ -109,13 +106,13 @@ Overall we are aiming for
             *sys = E_Sys::GAL;  
             *tsys = TSYS_GAL; 
             break;
-    //...continues
+        //...continues
+    }
 \end{lstlisting}
 
 \subsection{Ok}
 
 \begin{lstlisting}[language=c++]
-
     if      (sys == SYS_GLO)    fact = EFACT_GLO;
 	else if (sys == SYS_CMP)    fact = EFACT_CMP;
 	else if (sys == SYS_GAL)    fact = EFACT_GAL;
@@ -126,7 +123,6 @@ Overall we are aiming for
 \subsection{Ok}	
 
 \begin{lstlisting}[language=c++]
-
     switch (sysChar)
     {
         case ' ':
@@ -136,13 +132,13 @@ Overall we are aiming for
         case 'S':   *sys = E_Sys::SBS;      *tsys = TSYS_GPS;    break;
         case 'J':   *sys = E_Sys::QZS;      *tsys = TSYS_QZS;    break;
     //...continues
+    }
 \end{lstlisting}
 
 \section{Braces}
 
 New line for braces.
 \begin{lstlisting}[language=c++]
-
     if (pass)
     {
         doSomething();
@@ -151,19 +147,20 @@ New line for braces.
 
 \section{Comments}
 
-%\begin{itemize}
-%\item Prefer `//` for comments within functions
-%\item Use `/* */` only for temporary removal of blocks of code.
-%\item Use `/** */` and `///<` for automatic documentation
-%\end{itemize}
+\begin{itemize}
+\item Prefer `//` for comments within functions
+\item Use `/* */` only for temporary removal of blocks of code.
+\item Use `/** */` and `///<` for automatic documentation
+\end{itemize}
 
 \section{Conditional checks}
-%\begin{itemize}
-%\item  Put `\&\&` and `||` at the beginning of lines when using multiple conditionals.
-%\item  Always use curly braces when using multiple conditionals.
-%\end{itemize}
+%
+\begin{itemize}
+\item  Put `\&\&` and `||` at the beginning of lines when using multiple conditionals.
+\item  Always use curly braces when using multiple conditionals.
+\end{itemize}
+%
 \begin{lstlisting}[language=c++]
-
     if  ( ( testA     > 10)
         &&( testB   == false
           ||testC   == false))
@@ -177,7 +174,6 @@ New line for braces.
 \subsection{Bad}
 
 \begin{lstlisting}[language=c++]
-
     if (doSomeParsing(someObject))
     {
         //code contingent on parsing success? failure?
@@ -186,7 +182,6 @@ New line for braces.
 
 \subsection{Good}
 \begin{lstlisting}[language=c++]
-
     bool fail = doSomeParsing(someObject);
     if (fail)
     {
@@ -204,7 +199,6 @@ New line for braces.
 \end{itemize}
 
 \begin{lstlisting}[language=c++]
-
     int  type  = 0;
     bool found = false;         //these have to be declared early so they can be used after the for loop
 
@@ -234,7 +228,6 @@ New line for braces.
 \end{itemize}
 
 \begin{lstlisting}[language=c++]
-
     void function(
             bool        runTests,           ///< Run unit test while processing
             MyStruct&   myStruct,           ///< Structure to modify
@@ -245,16 +238,17 @@ New line for braces.
 \end{lstlisting}
 
 \section{Naming and Structure}
-%\begin{itemize}
-%\item For structs/classes, use `CamelCase` with capital start
-%\item For member variables, use `camelCase` with lowercase start
-%\item For config parameters, use `lowercase_with_underscores`
-%\item Use suffixes (`_ptr`, `_arr`, `Map`, `List` etc.) to describe the type of container for complex types
-%\item Be sure to provide default values for member variables.
-%\item Use heirarchical objects where applicable.
-%\end{itemize}
+%
+\begin{itemize}
+\item For structs/classes, use `CamelCase` with capital start
+\item For member variables, use `camelCase` with lowercase start
+\item For config parameters, use `lowercase\_with\_underscores`
+\item Use suffixes (`\_ptr`, `\_arr`, `Map`, `List` etc.) to describe the type of container for complex types
+\item Be sure to provide default values for member variables.
+\item Use heirarchical objects where applicable.
+\end{itemize}
+%
 \begin{lstlisting}[language=c++]
-
     struct SubStruct
     {
         int    type = 0;
@@ -289,7 +283,6 @@ New line for braces.
 	\item Use TestStack objects with descriptive strings in loops that wrap functions that require automatic unit testing.
 \end{itemize}
 \begin{lstlisting}[language=c++]
-
     void function()
     {
         TestStack ts(__FUNCTION__);
@@ -311,7 +304,6 @@ New line for braces.
 \item `///<` for parameters
 \end{itemize}
 \begin{lstlisting}[language=c++]
-
     /** Struct to demonstrate documentation.
     * The first line automatically gets parsed as a brief description, but more detailed descriptions are possible too.
     */
@@ -339,7 +331,6 @@ New line for braces.
 
 \subsection{Bad}
 \begin{lstlisting}[language=c++]
-
     double double_arr[10] = {};
 
     //..(Populate array)
@@ -351,7 +342,6 @@ New line for braces.
 \end{lstlisting}
 %
 \begin{lstlisting}[language=c++]
-
     map<string, double> doubleMap;
 
     //..(Populate Map)
@@ -366,7 +356,6 @@ New line for braces.
 \end{lstlisting}
 \subsection{Good - Iterating Maps}
 \begin{lstlisting}[language=c++]
-
     map<string, double> offsetMap;
 
     //..(Populate Map)
@@ -381,7 +370,6 @@ New line for braces.
 \end{lstlisting}
 \subsection{ Good - Iterating Lists}
 \begin{lstlisting}[language=c++]
-
     list<Obs> obsList;
 
     //..(Populate list)

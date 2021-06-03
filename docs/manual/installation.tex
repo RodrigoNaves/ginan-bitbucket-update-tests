@@ -19,7 +19,7 @@ Eigen3
 Build
 To build the PEA Precise Estimation Algorithm...
 
-We suggest using the following directory structure when installing the ACS toolkit. It will be created by following this guide.
+We suggest using the following directory structure when installing the Ginarn toolkit. It will be created by following this guide.
 
 %/data/
 %└── acs/
@@ -29,22 +29,23 @@ We suggest using the following directory structure when installing the ACS toolk
 The following is an example procedure to install the dependencies necessary to run the pea on a base ubuntu linux distribution
 
 Update the base operating system:
-\begin{verbatim}
+%\begin{verbatim}
+\begin{lstlisting}[language=bash]
 $ sudo apt update
 $ sudo apt upgrade
-\end{verbatim}
+\end{lstlisting}
 Install base utilities gcc, gfortran, git, openssl, blas, lapack, etc
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 $ sudo apt install -y git gobjc gobjc++ gfortran libopenblas-dev openssl curl net-tools openssh-server cmake make \
 liblapack-dev gzip vim libssl1.0-dev python3-cartopy python3-scipy python3-matplotlib python3-mpltoolkits.basemap
 Create a temporary directory structure to make the dependencies in:
 $ sudo mkdir -p /data/tmp
 $ cd /data/tmp
-\end{verbatim}
+\end{lstlisting}
 
 \newthought{YAML}
 We are using the YAML library to parse the configuration files used to run many of the programs found in this library (https://github.com/jbeder/yaml-cpp). Here is an example of how we have installed the yaml library from source:
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 $ cd /data/tmp
 $ sudo git clone https://github.com/jbeder/yaml-cpp.git
 $ cd yaml-cpp
@@ -54,12 +55,11 @@ $ sudo cmake .. -DCMAKE\_INSTALL\_PREFIX=/usr/local/ -DYAML\_CPP\_BUILD\_TESTS=O
 $ sudo make install yaml-cpp
 $ cd ../..
 $ sudo rm -fr yaml-cpp
-\end{verbatim}
+\end{lstlisting}
 
 \newthought{Boost}
 We rely on a number of the utilities provided by boost (https://www.boost.org/), such as their time and logging libraries.
-\begin{verbatim}
-
+\begin{lstlisting}[language=bash]
 $ cd /data/tmp/
 $ sudo wget -c https://dl.bintray.com/boostorg/release/1.73.0/source/boost_1_73_0.tar.gz
 $ sudo gunzip boost_1_73_0.tar.gz
@@ -70,10 +70,10 @@ $ sudo ./b2 install
 $ cd ..
 $ sudo rm -fr boost_1_73_0/ boost_1_73_0.tar
 
-\end{verbatim}
+\end{lstlisting}
 
 \newthought{Eigen3} is used for performing matrix calculations, and has a very nice API.
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 $ cd /data/tmp/
 $ sudo git clone https://gitlab.com/libeigen/eigen.git
 $ cd eigen
@@ -86,12 +86,12 @@ $ sudo rm -rf eigen
 Installing PEA
 PEA Executable
 $ cd /data/acs/
-\end{verbatim}
+\end{lstlisting}
 Clone the repository via https:
 
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 $ git clone https://bitbucket.org/geoscienceaustralia/pea.git
-\end{verbatim}
+\end{lstlisting}
 You should now have...
 
 %pea
@@ -126,45 +126,45 @@ You should now have...
 %        ├── install_examples.py
 %        └── other helper programs
 Prepare a directory to build in, its better practise to keep this separated from the source code.
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 $ cd pea/cpp
 $ mkdir -p build
 $ cd build
-\end{verbatim}
+\end{lstlisting}
 
 Run cmake to find the build dependencies and create the makefile. You have the choice of adding in a couple of compile options. 
 Using the flag -DENABLE\_MONGODB=TRUE will set up the mongodb utilities, adding the flag -DENABLE\_OPTIMISATION=TRUE will set up the compiler to run optimisation O3. 
 Enabling the optimisation flag will speed up the processing by a factor of 3, however this can lead to compile errors depending on the system you are compiling on, if this happens remove this option.
 
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 $ cmake ..
 or to enable MONGODB utilities
 $ cmake -DENABLE_MONGODB=TRUE ..
 and to enable Optimisation
 $ cmake -DENABLE_MONGODB=TRUE -DENABLE_OPTIMISATION=TRUE ..
-\end{verbatim} 
+\end{lstlisting} 
 Now build the pea
 
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 $ cmake --build $PWD --target pea
-\end{verbatim}
+\end{lstlisting}
 
 To change to build location substitute your preferred destination for \$PWD , e.g /usr/local/bin
 
 Alternatively to the command above you can make the code in parallel using:
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 $ make -j 5 all
-\end{verbatim}
+\end{lstlisting}
 
 where the -j flag controls how many jobs can be run at the same time.
 
 Check to see if you can execute the pea:
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 $ ./pea    
-\end{verbatim}
+\end{lstlisting}
 
 and you should see something similar to:
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 PEA starting...
 Options:
   --help                      Help
@@ -192,15 +192,15 @@ Options:
   --end_epoch arg             Stop date/time
   --dump-config-only          Dump the configuration and exit
 PEA finished
-\end{verbatim}
+\end{lstlisting}
 
 \newthought{The documentation} for the pea can be generated similarly using doxygen if it is installed.
 
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 $ sudo apt-get install doxygen
 $ cd pea/cpp/build
 $ make doc_doxygen
-\end{verbatim}
+\end{lstlisting}
 The docs can then be found at doc\_doxygen/html/index.html
 
 \subsection{POD from source}
@@ -229,29 +229,28 @@ If the flags set in CMakeLists.txt do not work with your compiler please remove/
 
 Build
 To build the POD ...
-\begin{verbatim}
-
+\begin{lstlisting}[language=bash]
 $ cd pod
 $ mkdir build
 $ cd build
 $ cmake3 .. 
 $ make >make.out 2>make.err
 $ less make.err (to verify everything was built correctly)
-    
-\end{verbatim}
+\end{lstlisting}
 You should now have the executables in the bin directory: pod crs2trs brdc2ecef
 
 Test
 To test your build of the POD ... - You may not need the ulimit command but we found it necessary
 
-\begin{verbatim}
-
+\begin{lstlisting}[language=bash]
 $ cd ../pod/test
 $ ulimit -s unlimited
 $ ./sh_test_pod
-At the completion of the test run, the sh_test_pod script will return any differences to the standard test resuts
+\end{lstlisting}
+
+At the completion of the test run, the sh\_test\_pod script will return any differences to the standard test resuts
     
-\end{verbatim}
+
 
 Configuration File
 The POD Precise Orbit Determination (./bin/pod) uses the configuration file: 

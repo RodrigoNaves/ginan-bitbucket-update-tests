@@ -16,6 +16,33 @@
 \makeglossaries
 
 \usepackage{listings}
+%New colors defined below
+\usepackage{xcolor}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+\lstset{style=mystyle}
+
+%
 %\usepackage[backend=biber, natbib=true, style=numeric]{biblatex}
 %\addbibresource{sample-handout.bib}
 \usepackage{xargs}
@@ -267,6 +294,7 @@ This manual is far from complete, and we will be adding to it as we continue our
 %
 \listoftables
 %
+\lstlistoflistings
 % r.9 introduction
 \cleardoublepage
 %\part{Overview}
@@ -316,17 +344,12 @@ This manual is far from complete, and we will be adding to it as we continue our
 \include{conventions}
 %
 %\clearpage
-Some random reference \gls{ambguity}.
-Some random reference \gls{wavelength}.
-Some random reference \gls{gps}.
 %\printglossary[title=Terms Used, toctitle=List of Terms]
 %\printglossary[type=\acronymtype]
 % The back matter contains appendices, bibliographies, indices, glossaries, etc.
 \backmatter
 \printglossaries
-%\printglossaries[type=\acronymtype]
-%\printglossaries%[type=\acronymtype]
-%\printglossaries
+\printglossaries[type=\acronymtype]
 %
 %\part{YAML Configuration File Reference}
 %
