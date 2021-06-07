@@ -1,0 +1,56 @@
+\chapter{Docker}
+\label{ch:docker}
+\newthought{Docker is} 'an open platform for developingm shipping and running applications'. It is a convenient way for us to provide all of the dependencies and the latest release source code so that you can use the ginarn tool kit straight out of the box.
+%
+In order for this to work, you will first need to install the docker engine onto your local machine. If you are running a different operating system instructions on how to install docker can be found at \href{https://docs.docker.com/get-docker/}{docker desktop downlod link}, these also include alternative methods of installing on ubuntu and has links to recommended best practices.
+%
+To find more information on docker have a look at the \href{https://docs.docker.com/get-started/}{getting started guide} procided by docker.
+%
+\section{Ubuntu Docker dependency installation guide}
+If you are running ubuntu, you can install a docker engine. A summary of the commands to download and install docker involve setting up the ubuntu repository system to link with the docker repsotory are given below.
+
+\begin{lstlisting}[language=bash]
+$ sudo apt -y update
+$ sudo apt -y install \
+apt-transport-https \
+ca-certificates \
+curl \
+gnupg \
+lsb-release
+\end{lstlisting}
+
+Add the dockers official GPG key:
+\begin{lstlisting}[language=bash]
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+$ echo \
+"deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+\end{lstlisting}
+%
+Then update the repository management system and install the packages.
+%
+\begin{lstlisting}[language=bash]
+$ sudo apt-get update
+$ sudo apt-get install docker-ce docker-ce-cli containerd.io
+\end{lstlisting}
+
+Verify that the Docker engine is installed correctly by running the \emph{hello-world} image.
+
+Then you will need to change the ownership:
+\begin{lstlisting}[language=bash]
+$ sudo usermod -aG docker root
+\end{lstlisting}
+
+\section{Using Docker}
+
+Once you have docker installed on your local machine you will need to download our image for ginarn:
+\begin{lstlisting}[language=bash]
+$ docker pull gamichaelmoore/ginarn-base-ubuntu-20.04
+\end{lstlisting}
+
+
+
+
+
+
+
+

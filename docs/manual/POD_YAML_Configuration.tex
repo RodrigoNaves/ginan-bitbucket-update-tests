@@ -1,5 +1,12 @@
 \chapter{POD YAML Configuration}
 \label{ch:pod_yaml_configuration}
+The YAML configuration file for the POD allows you to specify how the and what data the POD will process and what results and statistics to report at the end.
+In order to use the yaml configuration file you will need to specify this at the command line, with the \emph{-y <yaml\_filename>} otherwise it will default to the traditional \emph{POD.in, EQM.in and VEQ.in} option files.
+
+\begin{lstlisting}[language=bash,caption=calling the yaml configuration file]
+$ pod -y example_configuration.yaml
+\end{lstlisting}
+
 \section{POD processing options (pod\_options)}
 %
 
@@ -17,8 +24,8 @@ These options will control how the pod will process the input files, with four d
 	\textbf{pod\_mode\_ic\_int} & true or false & Orbit Integration and Partials (Equation of Motion and Variational Equations) initial condition integration \\
 	\hline
 \end{tabular}
-\caption{caption for this table}
-\label{table:label_name}
+\caption{POD YAML: processing options}
+\label{table:pod_yaml_processing_options}
 \end{table}
 %
 \begin{lstlisting}[language=xml,caption=pod\_options yaml configuration example]
@@ -51,8 +58,8 @@ Option & Values & Comments \\
 \textbf{TAI\_time} & true or false & Atomic (TAI)\\
 \hline
 \end{tabular}
-\caption{caption for this table}
-\label{table:label_name}
+\caption{POD YAML: Time scale options}
+\label{table:pod_yaml_time_scale_options}
 \end{table}
 %
 \begin{lstlisting}[language=xml,caption=time\_scale yaml configuration example]
@@ -82,8 +89,8 @@ Option & Values & Comments \\
    icf & true or false & initial conditions file\\
    \hline
 \end{tabular}
-\caption{Initial Conditions input format options}
-\label{table:yaml}
+\caption{POD YAML: Initial Conditions input format options}
+\label{table:pod_yaml_ic_format}
 \end{table}
 %
 \begin{lstlisting}[language=xml,caption=ic\_input\_format yaml configuration example]
@@ -105,18 +112,16 @@ reference system for the initial conditions one is true, the other is false.
 		\textbf{kepler} & true or false & polar form of celestial\\
 		\hline
 	\end{tabular}
-	\caption{Initial Conditions reference system}
-	\label{table:yaml}
+	\caption{POD YAML: Initial Conditions reference system}
+	\label{table:pod_yaml_ic_ref_system}
 \end{table}
 %
-{\small
 \begin{lstlisting}[language=xml,caption=ic\_input\_refsys yaml configuration example]
    ic_input_refsys:
 		itrf: true   # Initial Conditions Reference Frame: ITRF, ICRF
 		icrf: false  # Initial Conditions Reference Frame: ITRF, ICRF
 		kepler: false
 \end{lstlisting}
-}
 %
 \section{Using Pseudo observartions}
 These options are used to control how pseudo observations are used by the POD.
@@ -131,17 +136,15 @@ These options are used to control how pseudo observations are used by the POD.
 		\textbf{pseudobs\_interp\_points} & int & Number of data points used in Lagrange interpolation (at least 2)\\
 		\hline
 	\end{tabular}
-	\caption{Initial Conditions reference system}
-	\label{table:yaml}
+	\caption{POD YAML: Using pseudo observations}
+	\label{table:pod_yaml_pseudo_obs}
 \end{table}
 %
-{\small
 \begin{lstlisting}[language=xml,caption=pseudo observation model yaml configuration example]
 	pseudobs_orbit_filename: igs19424.sp3 # Pseudo observations orbit filename
 	pseudobs_interp_step:    900          # Interval (sec) of the interpolated orbit
 	pseudobs_interp_points:  12           # Number of data points used in Lagrange interpolation
 \end{lstlisting}
-}
 %
 \section{Orbit arc length}
 \begin{table}[h!]
@@ -154,18 +157,16 @@ These options are used to control how pseudo observations are used by the POD.
 		\textbf{orbit\_arc\_backwards} & int & \emph{number of hours to check before start of orbit arc}\\
 		\hline
 	\end{tabular}
-	\caption{Orbit arc options}
-	\label{table:yaml}
+	\caption{POD YAML: Orbit arc options}
+	\label{table:pod_yaml_orbit_arc}
 \end{table}
 %
-{\small
 \begin{lstlisting}[language=xml,caption=orbit arc length yaml configuration example]
 # Orbit arc length (in hours)
 	orbit_arc_determination: 24  # Orbit Estimation arc
 	orbit_arc_prediction:    12  # Orbit Prediction arc
 	orbit_arc_backwards:     2   # Orbit Propagation backwards arc
 \end{lstlisting}
-}
 %
 \section{External Orbit Comparison}
 In this section only one of the following options listed below can be set to true, the remainder must be set to false.\\
@@ -185,11 +186,11 @@ In this section only one of the following options listed below can be set to tru
 	\textbf{ext\_orbit\_interp\_points} & int & Number of data points used in Lagrange interpolation (at least 2)\\
     \hline
 \end{tabular}
-	\caption{External orbit options}
+	\caption{POD YAML: External orbit options}
+	\label{table:pod_yaml_external_orbit}
 \label{table:yaml}
 \end{table}
 %
-{\small
 \begin{lstlisting}[language=xml,caption=orbit arc length yaml configuration example]
 
 # External Orbit Comparison
@@ -206,7 +207,6 @@ In this section only one of the following options listed below can be set to tru
 	ext_orbit_interp_points:  12           # Number of data points used 
 	                                       # in Lagrange interpolation
 \end{lstlisting}
-}
 %
 \subsection{External orbit reference frame (ext\_orbit\_frame)}
 \begin{table}[h!]
@@ -219,18 +219,16 @@ In this section only one of the following options listed below can be set to tru
 		\textbf{kepler} & true or false & kepler orbital elements\\
         \hline
 	\end{tabular}
-	\caption{External orbit options}
-	\label{table:yaml}
+	\caption{POD YAML: External orbit reference system}
+	\label{table:pod_yaml_ext_orbit_ref_system}
 \end{table}
 %
-{\small
 \begin{lstlisting}[language=xml,caption=external orbit reference frame yaml configuration example]
    ext_orbit_frame:
 		itrf: true            # External orbit reference frame - ITRF
 		icrf: false           # External orbit reference frame - ICRF
 		kepler: false	
 \end{lstlisting}
-}
 %        
 \section{Earth Orientation Parameters}
 In this section only one of the following options listed below can be set to true, the remainder must be set to false.\\
@@ -249,11 +247,10 @@ In this section only one of the following options listed below can be set to tru
 		\textbf{EOP\_soln\_interp\_points} & int & \\
 		\hline
 	\end{tabular}
-	\caption{Earth Orientation Parameter solution options}
-	\label{table:yaml_eop_sol}
+	\caption{POD YAML: Earth Orientation Parameter solution options}
+	\label{table:pod_yaml_eop_sol}
 \end{table}
 %
-{\small
 \begin{lstlisting}[language=xml,caption=eop estimation options]
    	EOP_soln_c04:   true         # IERS C04 solution : EOP_sol = 1
 	EOP_soln_rapid: false        # IERS rapid service/prediction center (RS/PC) Daily : EOP_sol = 2
@@ -263,7 +260,6 @@ In this section only one of the following options listed below can be set to tru
 	ERP_soln_igs_file: igu18543_12.erp
 	EOP_soln_interp_points: 4    # EOP solution interpolation points
 \end{lstlisting}
-}
 %
 \subsection{IAU Precession-Nutation model}
 \begin{table}[h!]
@@ -276,17 +272,15 @@ In this section only one of the following options listed below can be set to tru
         \textbf{iau\_model\_2006} & true or false & \\
 		\hline
 	\end{tabular}
-	\caption{EOP model options}
-	\label{table:yaml}
+	\caption{POD YAML: EOP model options}
+	\label{table:pod_yaml_eop_model}
 \end{table}
 %
-{\small
 	\begin{lstlisting}[language=xml,caption=eop model]
 	# IAU Precession-Nutation model:
 	iau_model_2000: true         # IAU2000A: iau_pn_model = 2000
 	iau_model_2006: false        # IAU2006/2000A: iau_pn_model = 2006
 	\end{lstlisting}
-}
 %
 \section{Input files}
 \begin{table}[h!]
@@ -302,31 +296,29 @@ In this section only one of the following options listed below can be set to tru
         \textbf{satsinex\_filename} & filename & sinex file with satellite meta-data\\       
 		\hline
 	\end{tabular}
-	\caption{Input files}
-	\label{table:label_name}
+	\caption{POD YAML: Input files}
+	\label{table:pod_yaml_input_files}
 \end{table}
 %
-{\small
-	\begin{lstlisting}[language=xml,caption=yaml example for general input files]
-	# Gravity model file
-	gravity_model_file: goco05s.gfc  
-	# goco05s.gfc, eigen-6s2.gfc, ITSG-Grace2014k.gfc
-	
-	# Planetary/Lunar ephemeris - JPL DE Ephemeris
-	DE_fname_header: header.430_229
-	DE_fname_data:   ascp1950.430
-	
-	# Ocean tide model file
-	ocean_tides_model_file: fes2004_Cnm-Snm.dat 
-	# FES2004 ocean tide model
-	
-	# Leap second filename
-	leapsec_filename: leap.second
-	
-	# Satellite metadata SINEX
-	satsinex_filename: igs_metadata_2063.snx	
-	\end{lstlisting}
-}
+\begin{lstlisting}[language=xml,caption=yaml example for general input files]
+# Gravity model file
+gravity_model_file: goco05s.gfc  
+# goco05s.gfc, eigen-6s2.gfc, ITSG-Grace2014k.gfc
+
+# Planetary/Lunar ephemeris - JPL DE Ephemeris
+DE_fname_header: header.430_229
+DE_fname_data:   ascp1950.430
+
+# Ocean tide model file
+ocean_tides_model_file: fes2004_Cnm-Snm.dat 
+# FES2004 ocean tide model
+
+# Leap second filename
+leapsec_filename: leap.second
+
+# Satellite metadata SINEX
+satsinex_filename: igs_metadata_2063.snx	
+\end{lstlisting}
 %
 
 \section{Output options}
@@ -339,20 +331,19 @@ In this section only one of the following options listed below can be set to tru
         \textbf{partials\_velocity}: true or false & if you wish to write velocity vector partials to the output file\\
 		\hline
 	\end{tabular}
-	\caption{Input files}
-	\label{table:label_name}
+	\caption{POD YAML: Output options}
+	\label{table:pod_yaml_output_options}
 \end{table}
+%
+\begin{lstlisting}[language=xml,caption=yaml example for output file optionss]
+# Write to sp3 orbit format: Option for write Satellite Velocity vector
+sp3_velocity: false        #  Write Velocity vector to sp3 orbit
 
-{\small
-	\begin{lstlisting}[language=xml,caption=yaml example for output file optionss]
-	# Write to sp3 orbit format: Option for write Satellite Velocity vector
-	sp3_velocity: false        #  Write Velocity vector to sp3 orbit
-	
-	#----------------------------------------------------------------------
-	# Write partials of the velocity vector w.r.t. parameters into the orbits_partials output file:
-	partials_velocity: false   # Write out velocity vector partials wrt orbital state vector elements
-	\end{lstlisting}
-}
+#----------------------------------------------------------------------
+# Write partials of the velocity vector w.r.t. parameters into the orbits_partials output file:
+partials_velocity: false   # Write out velocity vector partials wrt orbital state vector elements
+\end{lstlisting}
+%
 \section{Variational Equation Options}
 \begin{table}[h!]
 	\begin{tabular}{|p{4.5cm}|p{2cm}|p{3.5cm}|}
@@ -366,12 +357,12 @@ In this section only one of the following options listed below can be set to tru
 		\textbf{kepler} & true or false & \\    
 		\hline
 	\end{tabular}
-	\caption{general options}
-	\label{table:label_name}
+	\caption{POD YAML: VEQ ref system}
+	\label{table:pod_yaml_veq_ref_sys}
 \end{table}
 %
-{\small
-	\begin{lstlisting}[language=xml,caption=yaml example for variational equation options]
+
+\begin{lstlisting}[language=xml,caption=yaml example for variational equation options]
 # Variational Equations
 veq_integration: false
 
@@ -381,8 +372,7 @@ veq_refsys:
 itrs: true      # ITRS: Terrestrial Reference System
 icrs: false     # ICRS: Celestial Reference System
 kepler: false
-	\end{lstlisting}
-}
+\end{lstlisting}
 
 \section{General Options}
 \begin{table}[h!]
@@ -393,17 +383,14 @@ kepler: false
         \textbf{estimator\_iterations} & int & integrate this number of times, using the generated initial conditions from the previous run as a start point\\   
         \hline
 	\end{tabular}
-	\caption{general options}
-	\label{table:label_name}
+	\caption{POD YAML: general options}
+	\label{table:pod_yaml_general_options}
 \end{table}
 %
-{\small
 \begin{lstlisting}[language=xml,caption=yaml example for output file options]
 	# Parameter Estimation
 	estimator_iterations: 2
 \end{lstlisting}
-}
-%
 %
 \section{Apriori solar radiation models}   
 %
@@ -418,11 +405,10 @@ kepler: false
 		\textbf{full\_boxwing\_model} & true or false & \\
 		\hline
 	\end{tabular}
-	\caption{srp\_apriori\_model; Exactly one option must be true}
-	\label{table:label_name}
+	\caption{POD YAML: Apriori SRP model}
+	\label{table:pod_yaml_apriori_srp}
 \end{table}
 %
-{\small
 \begin{lstlisting}[language=xml,caption=yaml example for apriori srp model options]
 srp_apriori_model:
 	no_model:   false
@@ -430,7 +416,6 @@ srp_apriori_model:
 	simple_boxwing_model:   false
 	full_boxwing_model:     false
 \end{lstlisting}
-}
 %
 \subsection{Estimated Solar radiation models}
 \begin{table}[h!]
@@ -445,12 +430,11 @@ srp_apriori_model:
 		\textbf{EMPirical models} & true or false & Empirical is independent of the other four\\
 		\hline
 	\end{tabular}
-	\caption{srp\_modes}
-	\label{table:label_name}
+	\caption{POD YAML: Estimated SRP models}
+	\label{table:pod_yaml_est_srp_model}
 \end{table}
 %
 %
-{\small
 \begin{lstlisting}[language=xml,caption=yaml example for apriori srp model options]
 srp_apriori_model:
 	no_model:               false
@@ -458,38 +442,36 @@ srp_apriori_model:
 	simple_boxwing_model:   false
 	full_boxwing_model:     false
 \end{lstlisting}
-}
 %
-\subsection{gravity\_model }
+\subsection{gravity\_model}
 Type of gravity model to apply, only one option can be true.
 \begin{table}[h!]
 	\begin{tabular}{|p{4.5cm}|p{2cm}|p{3.5cm}|}
 		\hline
 		Option & Values & Comments \\
 		\hline
-		central\_force            & true or false &  \\ 
-		static\_gravity\_model    & true or false &  \\
-		time\_variable\_model     & true or false &  \\
-		iers\_geopotential\_model & true or false &  \\
+		\textbf{central\_force}            & true or false &  \\ 
+		\textbf{static\_gravity\_model}    & true or false &  \\
+		\textbf{time\_variable\_model}     & true or false &  \\
+		\textbf{iers\_geopotential\_model} & true or false &  \\
 		\hline
 	\end{tabular}
-	\caption{caption for this table}
-	\label{table:label_name}
+	\caption{POD YAML: Gravity Models}
+	\label{table:pod_yaml_gravity_models}
 \end{table}
-{\small
-	\begin{lstlisting}[language=xml,caption=yaml example for gravitational force model options]
+%
+\begin{lstlisting}[language=xml,caption=yaml example for gravitational force model options]
 gravity_model:
 	central_force:           false   # Central force gravity field              : gravity_model = 0
 	static_gravity_model:    false   # Static global gravity field model        : gravity_model = 1
 	time_variable_model:     true    # Time-variable global gravity field model : gravity_model = 2
 	iers_geopotential_model: false   # IERS conventional geopotential model     : gravity_model = 3
-    \end{lstlisting}
-}
+\end{lstlisting}
+%
 \subsection{stochastic pulse (pulse)}
-
+%
 Do not mix pulses in R/T/N (terrestrial) with pulses in (X/X/Z)
-
-
+%
 \begin{table}[h!]
 	\begin{tabular}{|p{4.5cm}|p{2cm}|p{3.5cm}|}
 		\hline
@@ -510,29 +492,27 @@ Do not mix pulses in R/T/N (terrestrial) with pulses in (X/X/Z)
 		\textbf{n\_direction} &  true or false &  \\
 \hline
 	\end{tabular}
-	\caption{caption for this table}
-	\label{table:label_name}
+	\caption{POD YAML:stochastic pulse options}
+	\label{table:pod_yaml_stochastic_pulse}
 \end{table}
 %
-{\small
-	\begin{lstlisting}[language=xml,caption=yaml example for gravitational force model options]
-   pulse:
-	enabled:      false
-	epoch_number:     1    # number of epochs to apply pulses
-	offset:       43200    # since the start of day
-	interval:     43200    # repeat every N seconds
-	directions:
-		x_direction:   true
-		y_direction:   true
-		z_direction:   true
-		r_direction:   false
-		t_direction:   false
-		n_direction:   false
-	reference_frame:
-		icrf:          true
-		orbital:       false
-	\end{lstlisting}
-}
+\begin{lstlisting}[language=xml,caption=yaml example for gravitational force model options]
+pulse:
+enabled:      false
+epoch_number:     1    # number of epochs to apply pulses
+offset:       43200    # since the start of day
+interval:     43200    # repeat every N seconds
+directions:
+	x_direction:   true
+	y_direction:   true
+	z_direction:   true
+	r_direction:   false
+	t_direction:   false
+	n_direction:   false
+reference_frame:
+	icrf:          true
+	orbital:       false
+\end{lstlisting}
 %
 \section{EQM options}
 %
@@ -542,19 +522,19 @@ Do not mix pulses in R/T/N (terrestrial) with pulses in (X/X/Z)
 		\hline
 		Option & Values & Comments \\
 		\hline
-		RK4\_integrator\_method & true or false &  Do not use RK4 for veq as it is not implemented\\ 
-		RKN7\_integrator\_method & true or false & only one can be true\\ 
-		RK8\_integrator\_method  & true or false & \\
+		\textbf{RK4\_integrator\_method} & true or false &  Do not use RK4 for veq as it is not implemented\\ 
+		\textbf{RKN7\_integrator\_method} & true or false & only one can be true\\ 
+		\textbf{RK8\_integrator\_method}  & true or false & \\
 		\hline
 		\textbf{integrator\_step} & int & step size in seconds \\
 		\hline
 	\end{tabular}
-	\caption{caption for this table}
-	\label{table:label_name}
+	\caption{POD YAML: Integration Step models}
+	\label{table:pod_yaml_integration_step}
 \end{table}
 %
-{\small
-	\begin{lstlisting}[language=xml,caption=yaml example for gravitational force model options]
+
+\begin{lstlisting}[language=xml,caption=yaml example for gravitational force model options]
 # Numerical integration method
 # Runge-Kutta-Nystrom 7th order RKN7(6): RKN7, Runge-Kutta 4th order: RK4, Runge-Kutta 8th order RK8(7)13: RK8
 integration_options:
@@ -562,8 +542,7 @@ integration_options:
 	RKN7_integrator_method: true
 	RK8_integrator_method: false
 	integrator_step: 900         # Integrator stepsize in seconds	
-	\end{lstlisting}
-	}
+\end{lstlisting}
 
 \subsection{Gravity Field}
 \begin{table}[h!]
@@ -576,19 +555,17 @@ integration_options:
 		\textbf{timevar\_degree\_max} &  & maximum time variable model terms in spherical harmonic expansion \\
 		\hline
 	\end{tabular}
-	\caption{caption for this table}
+	\caption{POD YAML: Gravity Models}
 	\label{table:label_name}
 \end{table}
 %
-{\small
-	\begin{lstlisting}[language=xml,caption=yaml example for gravitational force model options]
+\begin{lstlisting}[language=xml,caption=yaml example for gravitational force model options]
 # Gravitational Forces
 gravity_field:
 	enabled: true
 	gravity_degree_max:      15      # Gravity model maximum degree/order (d/o)
 	timevar_degree_max:      15      # Time-variable coefficients maximum d/o
-	\end{lstlisting}
-}
+\end{lstlisting}
 %
 \subsection{planetary\_perturbations:}
 \begin{table}[h!]
@@ -599,47 +576,45 @@ gravity_field:
 		\textbf{enabled} & true or false & Uses the emphemeris \\ %TODO specify the file
 		\hline
 	\end{tabular}
-	\caption{planetary\_perturbations}
-	\label{table:label_name}
+	\caption{POD YAML: planetary perturbations}
+	\label{table:pod_yaml_planet}
 \end{table}  
 %
-{\small
-	\begin{lstlisting}[language=xml,caption=yaml example for planetary pertubations]
+\begin{lstlisting}[language=xml,caption=yaml example for planetary pertubations]
 # Planetary Gravitational Forces
 	planetary_perturbations:
 		enabled: true	
-	\end{lstlisting}
-}	
+\end{lstlisting}
+%	
 \subsection{tidal\_effects:}
 \begin{table}[h!]
 	\begin{tabular}{|p{4.5cm}|p{2cm}|p{3.5cm}|}
 		\hline
 		Option & Values & Comments \\
 		\hline
-		solid\_tides\_nonfreq & True or False & frequency independent Solid Earth Tides \\
-		solid\_tides\_freq & True or False & frequency dependent Solid Earth Tides \\
-		ocean\_tides & True or False & uses the ocean tides file \\
-		solid\_earth\_pole\_tides & True or False & tide induced earth spin rotation not about the centre of the ellipsoid \\
-		ocean\_pole\_tide & True or False & ocean response to the above \\
-		ocean\_tides\_degree\_max & True or False & maximum model term in spherical harmonic expansion \\
+		\textbf{solid\_tides\_nonfreq} & True or False & frequency independent Solid Earth Tides \\
+		\textbf{solid\_tides\_freq} & True or False & frequency dependent Solid Earth Tides \\
+		\textbf{ocean\_tides} & True or False & uses the ocean tides file \\
+		\textbf{solid\_earth\_pole\_tides} & True or False & tide induced earth spin rotation not about the centre of the ellipsoid \\
+		\textbf{ocean\_pole\_tide} & True or False & ocean response to the above \\
+		\textbf{ocean\_tides\_degree\_max} & True or False & maximum model term in spherical harmonic expansion \\
 		\hline
 	\end{tabular}
-	\caption{caption for this table}
-	\label{table:label_name}
+	\caption{POD YAML: tidal effects}
+	\label{table:pod_yaml_tidal_effects}
 \end{table}
 %
-{\small
-	\begin{lstlisting}[language=xml,caption=yaml example for tidal effects]
-   	tidal_effects:
-		enabled: true
-		solid_tides_nonfreq:    true   # Solid Earth Tides frequency-independent terms
-		solid_tides_freq:       true   # Solid Earth Tides frequency-dependent terms
-		ocean_tides:            true   # Ocean Tides
-		solid_earth_pole_tides: true   # Solid Earth Pole Tide
-		ocean_pole_tide:        true   # Ocean Pole Tide
-		ocean_tides_degree_max: 15     # Ocean Tides model maximum degree/order	
-	\end{lstlisting}
-}	
+\begin{lstlisting}[language=xml,caption=yaml example for tidal effects]
+  	tidal_effects:
+	enabled: true
+	solid_tides_nonfreq:    true   # Solid Earth Tides frequency-independent terms
+	solid_tides_freq:       true   # Solid Earth Tides frequency-dependent terms
+	ocean_tides:            true   # Ocean Tides
+	solid_earth_pole_tides: true   # Solid Earth Pole Tide
+	ocean_pole_tide:        true   # Ocean Pole Tide
+	ocean_tides_degree_max: 15     # Ocean Tides model maximum degree/order	
+\end{lstlisting}	
+%
 \section{relativistic\_effects:}
 \begin{table}[h!]
 	\begin{tabular}{|p{4.5cm}|p{2cm}|p{3.5cm}|}
@@ -649,17 +624,10 @@ gravity_field:
 		\textbf{enabled} & true or false & Lens\_Thirring, SchwarzChild and deSitter effects, there are no means to separate these effects currently. The Lens Thirring effect is calculated but subsequently ignored in the POD.\\
 		\hline
 	\end{tabular}
-	\caption{relativistic\_effects}
-	\label{table:label_name}
+	\caption{POD YAML:relativistic\_effects}
+	\label{table:pod_yaml_relativistic_effects}
 \end{table}
 %
-{\small
-	\begin{lstlisting}[language=xml,caption=yaml example for relativistic effects]
-# Relativistic effects
-	relativistic_effects:
-		enabled: true
-	\end{lstlisting}
-}
 \section{non\_gravitational\_effects:}
 \subsection{Models to be applied:}
 \begin{table}[h!]
@@ -667,80 +635,80 @@ gravity_field:
 		\hline
 		Option & Values & Comments \\
 		\hline
-		solar\_radiation: & true or false & radiation push from the sun \\
-		earth\_radiation: & true or false & radiation push from the earth \\
-		antenna\_thrust:  & true or false & reverse thrust from antenna radiation \\
+		\textbf{solar\_radiation} & true or false & radiation push from the sun \\
+		\textbf{earth\_radiation} & true or false & radiation push from the earth \\
+		\textbf{antenna\_thrust}  & true or false & reverse thrust from antenna radiation \\
 		\hline
 	\end{tabular}
-	\caption{caption for this table}
-	\label{table:label_name}
+	\caption{POD YAML: non gravitational effects}
+	\label{table:pod_yaml_non_grav}
 \end{table}
 %
-{\small
-	\begin{lstlisting}[language=xml,caption=yaml example for non gravitational effects]
-	# Non-gravitational Effects
-	non_gravitational_effects:
-		enabled: true
-		solar_radiation: true
-		earth_radiation: true
-		antenna_thrust:  true
-	\end{lstlisting}
-}
+\begin{lstlisting}[language=xml,caption=yaml example for non gravitational effects]
+# Non-gravitational Effects
+non_gravitational_effects:
+	enabled: true
+	solar_radiation: true
+	earth_radiation: true
+	antenna_thrust:  true
+\end{lstlisting}
+
 \subsection{Empirical parameters}
 \begin{table}[h!]
 	\begin{tabular}{|p{4.5cm}|p{2cm}|p{3.5cm}|}
 		\hline
 		Option & Values & Comments \\
 		\hline
-		ecom\_d\_bias & true or false & \\ 
-		ecom\_y\_bias & true or false & \\ 
-		ecom\_b\_bias & true or false & \\ 
-		ecom\_d\_cpr & true or false & (only ECOM1\/hybrid)\\ 
-		ecom\_y\_cpr & true or false & (only ECOM1\/hybrid)\\ 
-		ecom\_b\_cpr & true or false & \\
-		ecom\_d\_2\_cpr & true or false &  (only ECOM2\/hybrid)\\ 
-		ecom\_d\_4\_cpr & true or false & (only ECOM2\/hybrid) \\
-		emp\_r\_bias & true or false & \\
-		emp\_t\_bias & true or false & \\ 
-		emp\_n\_bias  & true or false & \\
-		emp\_r\_cpr  & true or false & \\
-		emp\_t\_cpr  & true or false & \\
-		emp\_n\_cpr & true or false & \\
-		cpr\_count  & int & empirical cpr count \\
+		\textbf{ecom\_d\_bias} & true or false & \\ 
+		\textbf{ecom\_y\_bias} & true or false & \\ 
+		\textbf{ecom\_b\_bias} & true or false & \\ 
+		\textbf{ecom\_d\_cpr} & true or false & (only ECOM1\/hybrid)\\ 
+		\textbf{ecom\_y\_cpr} & true or false & (only ECOM1\/hybrid)\\ 
+		\textbf{ecom\_b\_cpr} & true or false & \\
+		\textbf{ecom\_d\_2\_cpr} & true or false &  (only ECOM2\/hybrid)\\ 
+		\textbf{ecom\_d\_4\_cpr} & true or false & (only ECOM2\/hybrid) \\
+		\textbf{emp\_r\_bias} & true or false & \\
+		\textbf{emp\_t\_bias} & true or false & \\ 
+		\textbf{emp\_n\_bias}  & true or false & \\
+		\textbf{emp\_r\_cpr}  & true or false & \\
+		\textbf{emp\_t\_cpr}  & true or false & \\
+		\textbf{emp\_n\_cpr} & true or false & \\
+		\textbf{cpr\_count}  & int & empirical cpr count \\
 		\hline
 	\end{tabular}
-	\caption{Configuration options for solar radiation pressure models}
-	\label{table:label_name}
+	\caption{POD YAML: Configuration options for solar radiation pressure models}
+	\label{table:pod_yaml_srp_options}
 \end{table}
 %
-{\small
-	\begin{lstlisting}[language=xml,caption=yaml example for srp parameters]
-	# Non-gravitational Effects
-   srp_parameters:
-		ECOM_D_bias:  true
-		ECOM_Y_bias:  true
-		ECOM_B_bias:  true
-		EMP_R_bias:   true
-		EMP_T_bias:   true
-		EMP_N_bias:   true
-		ECOM_D_cpr:   true
-		ECOM_Y_cpr:   true
-		ECOM_B_cpr:   true
-		ECOM_D_2_cpr: false
-		ECOM_D_4_cpr: false
-		EMP_R_cpr:    true
-		EMP_T_cpr:    true
-		EMP_N_cpr:    true
-		cpr_count:    1
-	\end{lstlisting}
-}
+\begin{lstlisting}[language=xml,caption=yaml example for srp parameters]
+# Non-gravitational Effects
+srp_parameters:
+	ECOM_D_bias:  true
+	ECOM_Y_bias:  true
+	ECOM_B_bias:  true
+	EMP_R_bias:   true
+	EMP_T_bias:   true
+	EMP_N_bias:   true
+	ECOM_D_cpr:   true
+	ECOM_Y_cpr:   true
+	ECOM_B_cpr:   true
+	ECOM_D_2_cpr: false
+	ECOM_D_4_cpr: false
+	EMP_R_cpr:    true
+	EMP_T_cpr:    true
+	EMP_N_cpr:    true
+	cpr_count:    1
+\end{lstlisting}
+
 
 
 NB EQM and VEQ srp parameters MUST be identical. May move into pod\_options in future.
 overrides are not implemented yet. Ignore for now. We imagine overrides at the system, block (sat type) and individual satellite level
 
 
-\section{overides}
+\section{overides*}
+\textbf{*This section has not yet been implemented in the POD, and is a placehodler for future versions.}
+
 In this section put any system, block or PRN overrides that are different to the ones chosen before
 {\small
 	\begin{lstlisting}[language=xml,caption=yaml example for override]

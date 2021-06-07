@@ -4,7 +4,7 @@
 
 \section{To Install} 
 
-In this section we will describe how to install the PEA and POD from source.
+In this section we will describe how to install the PEA and POD from source. An alternative option to installing all of the dependencies and the source code would be to use one of our docker images available from Docker Hub. Instructions on how to do this are in (see Docker).
 
 \subsection{PEA}
 
@@ -29,11 +29,12 @@ We suggest using the following directory structure when installing the Ginarn to
 The following is an example procedure to install the dependencies necessary to run the pea on a base ubuntu linux distribution
 
 Update the base operating system:
-%\begin{verbatim}
+
 \begin{lstlisting}[language=bash]
 $ sudo apt update
 $ sudo apt upgrade
 \end{lstlisting}
+
 Install base utilities gcc, gfortran, git, openssl, blas, lapack, etc
 \begin{lstlisting}[language=bash]
 $ sudo apt install -y git gobjc gobjc++ gfortran libopenblas-dev openssl curl net-tools openssh-server cmake make \
