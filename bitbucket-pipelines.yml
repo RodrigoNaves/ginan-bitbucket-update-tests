@@ -13,9 +13,10 @@ pipelines:
   branches:
       docker*:
           -step:
+              trigger: manual
               name: Update docker image
               options:
                   docker: true
-              scripts:
+              script:
                   - cd aws/docker/
                   - ./bitbucket-pipelines.sh 
