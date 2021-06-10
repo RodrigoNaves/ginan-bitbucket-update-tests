@@ -15,8 +15,13 @@ pipelines:
           - step:
               # trigger: manual
               name: Update docker image
-              options:
-                  docker: true
+              services:
+                  - docker
+              size: 2x
               script:
                   - cd aws/docker/
-                  - ./bitbucket-pipelines.sh 
+                  - ./bitbucket-pipelines.sh
+definitions:
+  services:
+    docker:
+      memory: 6000
