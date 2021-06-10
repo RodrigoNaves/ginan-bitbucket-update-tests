@@ -180,6 +180,7 @@ def add_all_angs(
     nad=True,
     el=True,
     az=True,
+    dist=True,
     return_lists=False):
     '''
     Add new columns to dataframe (nad_ang, el_ang and/or az_ang) after 
@@ -193,12 +194,13 @@ def add_all_angs(
     nad_angs = []
     el_angs = []
     az_angs = []
+    distances = []
     
-    if nad:
-        a = np.linalg.norm(sat_pos_arr,axis=1)
-        b = np.linalg.norm(disp_vec_arr,axis=1)
+    sat_rec_dist = np.linalg.norm(disp_vec_arr,axis=1)
+    sat_norm = np.linalg.norm(sat_pos_arr,axis=1)
 
-        df_sats_pos['nad_ang'] = np.arccos(inner1d(sat_pos_arr, disp_vec_arr)/(a*b))*(180/np.pi)    
+    if nad:
+        df_sats_pos['nad_ang'] = np.arccos(inner1d(sat_pos_arr, disp_vec_arr)/(sat_norm*sat_rec_dist))*(180/np.pi)    
     
     if el or az:
         station_llh = xyz2llh_heik(station_pos.T)[0]
@@ -211,6 +213,9 @@ def add_all_angs(
             df_sats_pos['el_ang'] = np.arcsin(enu_bar[:,2])*(180/np.pi)
         if az:
             df_sats_pos['az_ang'] = np.arctan2(enu_bar[:,0],enu_bar[:,1])
-        
-        if return_lists:
-            return nad_angs, el_angs, az_angs
+    
+    if dist:
+        df_sats_pos['dist'] = sat_rec_dist
+
+    if return_lists:
+        return nad_angs, el_angs, az_angs, distances
