@@ -12,8 +12,8 @@ pipelines:
   default:
   branches:
       docker*:
-          -step:
-              trigger: manual
+          - step:
+              # trigger: manual
               name: Update docker image
               options:
                   docker: true
