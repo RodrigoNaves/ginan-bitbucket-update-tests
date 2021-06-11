@@ -232,34 +232,3 @@ def svn_prn_dates(svn, dt_st, dt_end):
     mask = (df_svn['Valid_From'] <= dt_st) & (df_svn['Valid_To'] >= dt_end)
 
     return df_svn[mask]
-    
-    '''
-    I have left this for now, but I will need to take care of the case where
-    multi-day time periods are needed. In this case, multiple 
-    
-    if len(df_svn) == 1:
-        # If the df_svn variable has only one record, just make sure it falls in the range given
-        
-
-        return 
-    
-    else:
-        # Filter based on the dates of interest (between start and end)
-        mask1 = (df_svn['Valid_To'] > dt_end)
-
-        mask1 = (df_svn['Valid_To'] > dt_st) & (df_svn['Valid_To'] <= dt_end)
-        mask2 = (df_svn['Valid_From'] >= dt_st) & (df_svn['Valid_From'] <= dt_end)
-        
-        return df_svn[mask1 | mask2]
-    '''
-
-
-
-
-
-
-
-
-    
-
-
