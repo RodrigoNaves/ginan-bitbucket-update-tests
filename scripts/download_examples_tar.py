@@ -22,7 +22,7 @@ def untar(file):
         print('Extracting {} to {}'.format(file,destpath))
         tar.extractall(path=destpath)
         
-def download_examples_tar(url,relpath = '../../'):
+def download_examples_tar(url,relpath = '../'):
     '''relpath configures output path relative to the sctipt location'''
     destfile = os.path.basename(url) #proc.tar.gz
     script_path = os.path.dirname(os.path.realpath(__file__))
