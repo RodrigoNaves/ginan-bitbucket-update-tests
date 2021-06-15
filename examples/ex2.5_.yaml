@@ -37,7 +37,7 @@ pod_options:
    ic_input_format:
       sp3:  true  # Input a-priori orbit in sp3 format
       icf:  false   # Input a-priori orbit in POD Initial Conditions File (ICF) format
-      ic_filename: gag20624_orbits_partials.out.ecom2_pea
+      ic_filename: products/orb_partials/gag20624_orbits_partials.out.ecom2_pea
 
 #----------------------------------------------------------------------
 # Orbit arc length (in hours) 
@@ -50,9 +50,9 @@ pod_options:
    EOP_soln_c04:   true         # IERS C04 solution : EOP_sol = 1
    EOP_soln_rapid: false        # IERS rapid service/prediction center (RS/PC) Daily : EOP_sol = 2
    EOP_soln_igs:   false        # IGS ultra-rapid ERP + IERS RS/PC Daily (dX,dY) : EOP_sol = 3. Need both rapid_file AND igs_file
-   EOP_soln_c04_file: eopc04_14_IAU2000.62-now 		
-   EOP_soln_rapid_file: finals2000A.daily 		
-   ERP_soln_igs_file: igu18543_12.erp	
+   EOP_soln_c04_file: products/tables/EOP_14_C04_IAU2000A_one_file_1962-now.txt
+   EOP_soln_rapid_file: finals2000A.daily
+   ERP_soln_igs_file: igu18543_12.erp
    EOP_soln_interp_points: 4    # EOP solution interpolation points 	
  
 # ---------------------------------------------------------------------------
@@ -67,7 +67,7 @@ pod_options:
 
 #---------------------------------------------------------------------------
 # Observation Model                                                                                            
-   pseudobs_orbit_filename: igs19424.sp3 # Pseudo observations orbit filename       
+   pseudobs_orbit_filename: products/igs19424.sp3 # Pseudo observations orbit filename       
    pseudobs_interp_step:    900          # Interval (sec) of the interpolated orbit
    pseudobs_interp_points:  12           # Number of data points used in Lagrange interpolation
 
@@ -79,7 +79,7 @@ pod_options:
    ext_orbit_type_kepler:    false        # Keplerian orbit
    ext_orbit_type_lagrange:  false        # 3-day Lagrange interpolation
    ext_orbit_type_position_sp3:    false        # Position and SP3 file
-   ext_orbit_filename:       igs19424.sp3 # External (comparison)  orbit filename					
+   ext_orbit_filename:       products/igs19424.sp3 # External (comparison)  orbit filename					
    ext_orbit_interp_step:    900          # Interval (sec) of the interpolated/Kepler orbit
    ext_orbit_interp_points:  12           # Number of data points used in Lagrange interpolation
 
@@ -107,11 +107,11 @@ pod_options:
 
 #----------------------------------------------------------------------
 # Leap second filename
-   leapsec_filename: leap.second
+   leapsec_filename: products/tables/leap.second
 
 #----------------------------------------------------------------------
 # Satellite metadata SINEX
-   satsinex_filename: igs_metadata_2063.snx
+   satsinex_filename: products/tables/igs_metadata_2063.snx
 
 #----------------------------------------------------------------------
 # SRP A priori model 
@@ -140,16 +140,16 @@ pod_options:
 
 #---------------------------------------------------------------------------
 # Gravity model file
-   gravity_model_file: goco05s.gfc  # goco05s.gfc, eigen-6s2.gfc, ITSG-Grace2014k.gfc	
+   gravity_model_file: products/tables/goco05s.gfc  # goco05s.gfc, eigen-6s2.gfc, ITSG-Grace2014k.gfc	
 
 #---------------------------------------------------------------------------
 # Planetary/Lunar ephemeris - JPL DE Ephemeris
-   DE_fname_header: header.430_229
-   DE_fname_data:   ascp1950.430
+   DE_fname_header: products/tables/header.430_229
+   DE_fname_data:   products/tables/ascp1950.430
 
 #---------------------------------------------------------------------------
 # Ocean tide model file
-   ocean_tides_model_file: fes2004_Cnm-Snm.dat # FES2004 ocean tide model
+   ocean_tides_model_file: products/tables/fes2004_Cnm-Snm.dat # FES2004 ocean tide model
 
    gravity_model:
       central_force:           false   # Central force gravity field              : gravity_model = 0
@@ -296,10 +296,7 @@ veq_options:
       EMP_R_cpr:    true
       EMP_T_cpr:    true
       EMP_N_cpr:    true
-      cpr_count:    1
-
-# put any system, block or PRN overrides here
-overrides:
+      cpr_count:    1eopc04_14_IAU2000.62-now
    system:
       GPS:
          srp_apriori_model: 

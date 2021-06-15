@@ -41,7 +41,7 @@ pod_options:
 
 #---------------------------------------------------------------------------
 # Observation Model                                                                                            
-   pseudobs_orbit_filename: COD0MGXFIN_20191990000_01D_05M_ORB.SP3 # Pseudo observations orbit filename       
+   pseudobs_orbit_filename: products/COD0MGXFIN_20191990000_01D_05M_ORB.SP3 # Pseudo observations orbit filename       
    pseudobs_interp_step:    900          # Interval (sec) of the interpolated orbit
    pseudobs_interp_points:  12           # Number of data points used in Lagrange interpolation
 
@@ -59,7 +59,7 @@ pod_options:
    ext_orbit_type_kepler:    false        # Keplerian orbit
    ext_orbit_type_lagrange:  false        # 3-day Lagrange interpolation
    ext_orbit_type_position_sp3:    false        # Position and SP3 file
-   ext_orbit_filename:       COD0MGXFIN_20191990000_01D_05M_ORB.SP3 # External (comparison)  orbit filename					
+   ext_orbit_filename:       products/COD0MGXFIN_20191990000_01D_05M_ORB.SP3 # External (comparison)  orbit filename					
    ext_orbit_interp_step:    900          # Interval (sec) of the interpolated/Kepler orbit
    ext_orbit_interp_points:  12           # Number of data points used in Lagrange interpolation
 
@@ -75,9 +75,9 @@ pod_options:
    EOP_soln_c04:   true         # IERS C04 solution : EOP_sol = 1
    EOP_soln_rapid: false        # IERS rapid service/prediction center (RS/PC) Daily : EOP_sol = 2
    EOP_soln_igs:   false        # IGS ultra-rapid ERP + IERS RS/PC Daily (dX,dY) : EOP_sol = 3. Need both rapid_file AND igs_file
-   EOP_soln_c04_file: eop_c04_14_iau2000a_19
-   EOP_soln_rapid_file: finals2000A.daily 		
-   ERP_soln_igs_file: igu18543_12.erp	
+   EOP_soln_c04_file: products/tables/EOP_14_C04_IAU2000A_one_file_1962-now.txt
+   EOP_soln_rapid_file: finals2000A.daily
+   ERP_soln_igs_file: igu18543_12.erp
    EOP_soln_interp_points: 6    # EOP solution interpolation points 	
  
 # ---------------------------------------------------------------------------
@@ -87,24 +87,24 @@ pod_options:
 
 #---------------------------------------------------------------------------
 # Gravity model file
-   gravity_model_file: goco05s.gfc  # goco05s.gfc, eigen-6s2.gfc, ITSG-Grace2014k.gfc	
+   gravity_model_file: products/tables/goco05s.gfc  # goco05s.gfc, eigen-6s2.gfc, ITSG-Grace2014k.gfc	
 
 #---------------------------------------------------------------------------
 # Planetary/Lunar ephemeris - JPL DE Ephemeris
-   DE_fname_header: header.430_229
-   DE_fname_data:   ascp1950.430
+   DE_fname_header: products/tables/header.430_229
+   DE_fname_data:   products/tables/ascp1950.430
 
 #---------------------------------------------------------------------------
 # Ocean tide model file
-   ocean_tides_model_file: fes2004_Cnm-Snm.dat # FES2004 ocean tide model
+   ocean_tides_model_file: products/tables/fes2004_Cnm-Snm.dat # FES2004 ocean tide model
 
 #----------------------------------------------------------------------
 # Leap second filename
-   leapsec_filename: leap.second
+   leapsec_filename: products/tables/leap.second
 
 #----------------------------------------------------------------------
 # Satellite metadata SINEX
-   satsinex_filename: igs_metadata_2063.snx
+   satsinex_filename: products/tables/igs_metadata_2063.snx
 
 #---------------------------------------------------------------------------
 # Parameter Estimation
