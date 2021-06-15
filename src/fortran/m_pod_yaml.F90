@@ -97,9 +97,9 @@ module pod_yaml
    real*8        yml_Zo(6), yml_pulse_offset, yml_pulse_interval
    character(512) yml_pod_data_state_vector
 
-   character(128) yml_orbit_filename, yml_ext_orbit_filename, yml_satsinex_filename, yml_leapsecond_filename, yml_eop_filename
-   character(128) yml_gravity_filename, yml_ephemeris_header, yml_ephemeris_data_file, yml_ocean_tides_file, yml_erp_filename
-   character(128) yml_ic_filename
+   character(512) yml_orbit_filename, yml_ext_orbit_filename, yml_satsinex_filename, yml_leapsecond_filename, yml_eop_filename
+   character(512) yml_gravity_filename, yml_ephemeris_header, yml_ephemeris_data_file, yml_ocean_tides_file, yml_erp_filename
+   character(512) yml_ic_filename
 
    integer*4 yml_orbit_steps, yml_orbit_points, yml_orbit_arc_determination, yml_orbit_arc_prediction, yml_orbit_arc_backwards
    integer*4 yml_ext_orbit_steps, yml_ext_orbit_points, yml_eop_option, yml_eop_int_points, yml_estimator_iterations
@@ -419,6 +419,7 @@ subroutine get_yaml(yaml_filepath)
       yml_eqm_gravity_time_max_degree = gravity_dict%get_integer("timevar_degree_max", -1, my_error_p)
       yml_eqm_planetary_perturbations_enabled = planets_dict%get_logical("enabled", .false., my_error_p)
       yml_eqm_tidal_effects_enabled = tides_dict%get_logical("enabled", .false., my_error_p)
+
       yml_eqm_tidal_effects = get_tidal_effects(tides_dict, my_error)
       yml_eqm_tides_max_degree = tides_dict%get_integer("ocean_tides_degree_max", -1, my_error_p)
       yml_eqm_rel_effects_enabled = rel_dict%get_logical("enabled", .false., my_error_p)
@@ -539,9 +540,15 @@ subroutine get_yaml(yaml_filepath)
    end if
 
    if (yml_veq_srp_parameters /= yml_eqm_srp_parameters) then
-         write (*,*) "srp parameters in eqm and veq sections must be identical"
-         STOP
+       write (*,*) "srp parameters in eqm and veq sections must be identical"
+       STOP
    end if
+
+   if ((yml_eqm_tidal_effects_enabled .or. yml_veq_tidal_effects_enabled) .and. yml_ocean_tides_file == "") then
+       write (*,*) "tidal effects enabled and no tidal effects file specified"
+       STOP
+   end if
+
 end subroutine get_yaml
 
 function get_yaml_pulses(dict, error, yml_pulses, yml_pulse_ref_frame,& 
