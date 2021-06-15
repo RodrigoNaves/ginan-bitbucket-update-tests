@@ -93,7 +93,8 @@ SUBROUTINE writeorbit_multi (orbitsmatrix_crf,orbitsmatrix_trf,orbits_ics_icrf,P
       CHARACTER (LEN=100) :: param_id				
       CHARACTER (LEN=500) :: param_value				
       CHARACTER (LEN=100) :: gravity_model_filename, iau_pn_model, DE_fname_data, ocean_tides_model_file
-      CHARACTER (LEN=100) :: orbit_num_integrator, EOP_sol, EOP_data, SE_Tides, Pole_Tide 
+      CHARACTER (LEN=100) :: orbit_num_integrator, EOP_sol, SE_Tides, Pole_Tide 
+      CHARACTER (LEN=512) :: EOP_data
       CHARACTER (LEN=5) :: EPH_name
       INTEGER (KIND = prec_int4) :: ln
       INTEGER (KIND = prec_int2) :: Ftides

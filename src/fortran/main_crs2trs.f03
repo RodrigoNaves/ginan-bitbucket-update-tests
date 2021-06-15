@@ -37,8 +37,8 @@
       INTEGER IY, IM, ID, J_flag
       DOUBLE PRECISION DJM0, sec, FD
       REAL (KIND = prec_d) :: mjd , mjd_TT, mjd_GPS, mjd_TAI, mjd_UTC, mjd_UT1, mjd_0
-      CHARACTER (LEN=50) :: EOP_fname
-      CHARACTER (LEN=50) :: ERP_fname
+      CHARACTER (LEN=512) :: EOP_fname
+      CHARACTER (LEN=512) :: ERP_fname
       REAL (KIND = prec_d) :: mjd_igu
       INTEGER (KIND = prec_int4) :: n_interp
       INTEGER (KIND = prec_int8) :: mjd_UTC_day

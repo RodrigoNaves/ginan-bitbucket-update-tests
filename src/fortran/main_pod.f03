@@ -153,6 +153,8 @@ PODfname = 'POD.in'
 ! Read command line to see if non default master configuration file given
 CALL read_cmdline
 
+!only check for default config file if yaml not specified on command line
+if (trim(yaml_config) .eq. '') then
 ! Check if non-default config file given on the command line
 If ( trim(POD_fname_cfg) .ne. 'DEFAULT' ) then
 	PODfname = trim(POD_fname_cfg)
@@ -169,6 +171,7 @@ If ( .not. pod_config_exists) then
     write(*,'(3a)') 'If using a non-default config.filename - Type: ',trim(pgm_name),' -c config.filename'
 	STOP
 End If
+end if
 
 !call get_command_argument(yaml_config)
 if (trim(yaml_config) .ne. "") then
