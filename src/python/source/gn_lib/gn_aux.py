@@ -1,4 +1,5 @@
 '''Auxiliary functions'''
+import numpy as _np
 import pandas as _pd
 
 def update_mindex(dataframe, lvl_name,loc=0,axis=1):
@@ -33,3 +34,8 @@ def sync_pt_vec(vec1,vec2):
     cindex1 = code_pt_comboindex(vec1)
     cindex2 = code_pt_comboindex(vec2)
     return vec1[cindex1.isin(cindex2)],vec2[cindex2.isin(cindex1)]
+
+def unique_cols(df:_pd.DataFrame)->_np.ndarray:
+    '''returns True for a df row with all duplicates'''
+    a = df.to_numpy() # df.values (pandas<0.24)
+    return (a[:,0][:,None] == a).all(1)

@@ -5,11 +5,13 @@ from io import BytesIO as _BytesIO
 import numpy as _np
 import pandas as _pd
 
+from ..gn_aux import unique_cols as _unique_cols
 from ..gn_datetime import datetime2gpsweeksec as _datetime2gpsweeksec
 from ..gn_datetime import datetime2j2000 as _datetime2j2000
 from ..gn_datetime import datetime2mjd as _datetime2mjd
 from ..gn_datetime import j20002rnxdt as _j20002rnxdt
 from .common import path2bytes
+from .clk import read_clk as _read_clk
 
 _RE_SP3 = _re.compile(rb'^\*(.+)\n((?:[^\*]+)+)',_re.MULTILINE)
 
@@ -279,3 +281,30 @@ def write_sp3(sp3_df,path):
     content = gen_sp3_header(sp3_df) + gen_sp3_content(sp3_df) + 'EOF'
     with open(path,'w') as file:
         file.write(content)
+
+def merge_attrs(df_list):
+
+    df = _pd.concat(list(map(lambda obj: obj.attrs['HEADER'], df_list)),axis=1)
+
+    mask_mixed = ~_unique_cols(df.loc['HEAD'])
+    values_if_mixed = _np.asarray(['MIX','MIX','MIX',None,'M',None,'MIX','P','MIX','d'])
+    
+    head = df[0].loc['HEAD'].values
+    head[mask_mixed] = values_if_mixed[mask_mixed]
+    
+    sv_info = df.loc['SV_INFO'].max(axis=1).values.astype(int)
+
+    return _pd.Series(_np.concatenate([head,sv_info]),index=df.index)
+
+def merge_sp3(sp3_paths,clk_paths=None):
+    '''reads in a list of sp3 files and optianl list of clk files
+    and merges them into a single sp3 file'''
+    sp3_dfs = [read_sp3(sp3_file) for sp3_file in sp3_paths]
+    merged_sp3 = _pd.concat(sp3_dfs)
+    merged_sp3.attrs['HEADER'] = merge_attrs(sp3_dfs)
+    
+    if clk_paths is not None:
+        clk_dfs = [_read_clk(clk_file) for clk_file in clk_paths]
+        merged_sp3.EST.CLK = _pd.concat(clk_dfs).EST.AS * 1000000
+        
+    return merged_sp3

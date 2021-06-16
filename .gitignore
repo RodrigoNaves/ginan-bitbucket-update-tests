@@ -86,3 +86,6 @@ Thumbs.db
 *.mov
 *.wmv
 *.png
+
+# vscode settings
+.vscode/
