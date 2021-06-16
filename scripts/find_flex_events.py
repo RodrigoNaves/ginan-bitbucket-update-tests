@@ -5,18 +5,12 @@ Given a station and time range, find flex events.
 
 With flex events it is important to remember only GPS Block IIR-M and onwards have this capability
 Therefore, we need to choose GPS satellites that can actually have flex power events
-
-Author: Ronald Maj 
-2020-10-22 21:43
 '''
-
-import subprocess
+import sys
 import argparse
-import georinex as gr
 
 import numpy as np
 import pandas as pd
-import xarray as xr
 
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -29,7 +23,7 @@ import geo_funcs as gf
 from read_metadata import df_sat_info, svn_prn_dates
 
 
-def get_load_rinex(station, year, doy, codes):
+def get_load_rinex(station, year, doy, codes, dwndir):
     '''
     Get and/or load the Rinex3 file for a given day
 
@@ -39,7 +33,7 @@ def get_load_rinex(station, year, doy, codes):
     doy - doy of year - str
     codes - the observation codes of interest - comma separated str
     '''
-    #subprocess.run(["python3", "get_rinex3.py", station, year, doy])
+
     rnx_filepath = Path(f"/home/ron-maj/pea/proc/data/{station}_R_{year}{doy}0000_01D_30S_MO.crx")
     if not rnx_filepath.is_file():
         get_rinex(year,doy,station,'/home/ron-maj/pea/proc/data')

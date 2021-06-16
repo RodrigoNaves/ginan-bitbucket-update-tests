@@ -10,6 +10,7 @@ from pathlib import Path as _Path
 import requests as _rqs
 import subprocess as _sp
 import numpy as _np
+import sys as _sys
 
 
 
@@ -39,8 +40,9 @@ def check_file_present(comp_filename, dwndir):
     return present
 
 
+
 def check_n_download(comp_filename, dwndir, ftps, uncomp=True, remove_comp=False):
-    ''' Download compressed file to dwndir if not already present and uncompress'''
+    '''Download compressed file to dwndir if not already present and uncompress'''
     
     comp_file = _Path(dwndir+comp_filename)
 
@@ -48,19 +50,32 @@ def check_n_download(comp_filename, dwndir, ftps, uncomp=True, remove_comp=False
         dwndir += '/'
 
     if not check_file_present(comp_filename, dwndir):
-        print(f'Downloading {comp_filename} from CDDIS')
+        
+        print(f'Downloading {comp_filename}')
         
         with open(comp_file, 'wb') as local_f:
             ftps.retrbinary(f'RETR {comp_filename}', local_f.write)
         
         if uncomp:
             _sp.run(['uncompress',f'{comp_file}'])
+
+            if comp_filename.endswith('.crx.gz'):
+                crx_file = _Path(dwndir+comp_filename[:-3])
+                _sp.run(['crx2rnx',f'{str(crx_file)}'])
+
             print(f'Downloaded and uncompressed {comp_filename}')
+        
         else:
             print(f'Downloaded {comp_filename}')
         
         if remove_comp:
-            comp_file.unlink()
+            
+            if comp_filename.endswith('.crx.gz'):
+                comp_file.unlink()
+                crx_file.unlink()
+            else:
+                comp_file.unlink()
+
 
 
 def gpsweekD(yr, doy, wkday_suff=False):
@@ -106,10 +121,10 @@ def gpsweekD(yr, doy, wkday_suff=False):
 def get_install_crx2rnx(override=False):
     '''
     Check for presence of crx2rnx in /bin.
-    If not present, download and extract to /bin.
+    If not present, download and extract to python environment /bin.
     If override = True, will download if present or not
     '''
-    if (not _Path('/home/ubuntu/bin/crx2rnx').is_file()) or (override):
+    if (not _Path(f'{_sys.path[0]}/crx2rnx').is_file()) or (override):
 
         tmp_dir = _Path('tmp')
         if not tmp_dir.is_dir():
@@ -124,10 +139,12 @@ def get_install_crx2rnx(override=False):
         cp = ['gcc','-ansi','-O2','-static','tmp/RNXCMP_4.0.8_src/source/crx2rnx.c','-o','crx2rnx']
         _sp.run(cp)
         _sp.run(['rm','-r','tmp'])
-        _sp.run(['mv','crx2rnx','/bin'])
+        _sp.run(['mv','crx2rnx',_sys.path[0]])
 
     else:
-        print('crx2rnx present in /bin')
+        print(f'crx2rnx already present in {_sys.path[0]}')
+
+
 
 
 
@@ -180,3 +197,5 @@ def get_sp3(yr, doy, dest, ac='igs'):
             print(f"{sp3_files}/{filename[:-2]}")
         else:
             print('->->-sp3 file missing - did not download or extract correctly---')
+
+
