@@ -52,7 +52,7 @@ SUBROUTINE writearray (wrtArray, filename)
 ! ----------------------------------------------------------------------
 ! IN
       REAL (KIND = prec_q), INTENT(IN), DIMENSION(:,:), ALLOCATABLE :: wrtArray 
-      CHARACTER (LEN=100), INTENT(IN) :: filename
+      CHARACTER (*), INTENT(IN) :: filename
 ! OUT
 ! ----------------------------------------------------------------------
 

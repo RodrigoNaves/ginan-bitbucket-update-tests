@@ -67,7 +67,7 @@ SUBROUTINE writeorbit_multi (orbitsmatrix_crf,orbitsmatrix_trf,orbits_ics_icrf,P
       REAL (KIND = prec_q), INTENT(IN), DIMENSION(:,:), ALLOCATABLE :: orbits_ics_icrf
       REAL (KIND = prec_d), INTENT(IN), DIMENSION(:,:), ALLOCATABLE :: orbpara_sigma
       CHARACTER (LEN=3), ALLOCATABLE :: PRN_array(:)
-      CHARACTER (LEN=100), INTENT(IN) :: filename
+      CHARACTER (*), INTENT(IN) :: filename
       CHARACTER (LEN=100), INTENT(IN) :: EQMfname, VEQfname
       CHARACTER (len=9), INTENT(IN) :: POD_version	  
 ! OUT
