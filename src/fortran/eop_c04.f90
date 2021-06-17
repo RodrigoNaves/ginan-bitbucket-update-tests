@@ -34,7 +34,7 @@ SUBROUTINE eop_c04 (filename,mjd , eop)
 ! ----------------------------------------------------------------------
 ! IN
       INTEGER (KIND = prec_int8), INTENT(IN) :: mjd
-      CHARACTER (LEN=50), INTENT(IN) :: filename
+      CHARACTER (LEN=512), INTENT(IN) :: filename
 ! OUT
       REAL (KIND = prec_d), INTENT(OUT) :: eop(7)
 ! ----------------------------------------------------------------------
