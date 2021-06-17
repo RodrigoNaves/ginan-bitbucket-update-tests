@@ -837,8 +837,7 @@ CALL write_orb2sp3 (orbits_partials_itrf, PRNmatrix, ORB2sp3_fname, yml_write_sp
 ! ----------------------------------------------------------------------
 str = trim(adjustl(yml_orbit_filename))
 i = index(str, '.sp3')
-k = index(str, '/', .true.)
-if (k .eq. 0) k = 1
+k = index(str, '/', .true.) + 1
 j = len(str(k:i-1))
 
 if (yml_ext_orbit_opt > TYPE_NONE) then
