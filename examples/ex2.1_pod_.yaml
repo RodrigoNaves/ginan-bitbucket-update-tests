@@ -59,7 +59,7 @@ pod_options:
    ext_orbit_type_kepler:    false        # Keplerian orbit
    ext_orbit_type_lagrange:  false        # 3-day Lagrange interpolation
    ext_orbit_type_position_sp3:    false        # Position and SP3 file
-   ext_orbit_filename:       products/igs19424.sp3 # External (comparison)  orbit filename					
+   ext_orbit_filename:       products/igs19424.sp3 # External (comparison)  orbit filename
    ext_orbit_interp_step:    900          # Interval (sec) of the interpolated/Kepler orbit
    ext_orbit_interp_points:  12           # Number of data points used in Lagrange interpolation
 
@@ -87,7 +87,7 @@ pod_options:
 
 #---------------------------------------------------------------------------
 # Gravity model file
-   gravity_model_file: products/tables/goco05s.gfc  # goco05s.gfc, eigen-6s2.gfc, ITSG-Grace2014k.gfc	
+   gravity_model_file: products/tables/goco05s.gfc  # goco05s.gfc, eigen-6s2.gfc, ITSG-Grace2014k.gfc
 
 #---------------------------------------------------------------------------
 # Planetary/Lunar ephemeris - JPL DE Ephemeris
@@ -137,8 +137,8 @@ pod_options:
 # full_boxwing   : use full box-wing model from repro3 routines - mode 3
 # none           : no a priori SRP model - mode 0
    srp_apriori_model: 
-      no_model:   false
-      cannon_ball_model:   true
+      no_model:               false
+      cannon_ball_model:      true
       simple_boxwing_model:   false
       full_boxwing_model:     false
       #
