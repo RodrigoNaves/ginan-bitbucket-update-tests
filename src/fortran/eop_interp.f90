@@ -33,7 +33,7 @@ SUBROUTINE eop_interp (n_interp, filename, EOP_sol, mjd , x_int,y_int,ut1_int)
 ! IN
       INTEGER (KIND = prec_int4), INTENT(IN) :: n_interp
       INTEGER (KIND = prec_int1), INTENT(IN) :: EOP_sol
-      CHARACTER (LEN=50), INTENT(IN) :: filename
+      CHARACTER (LEN=512), INTENT(IN) :: filename
       REAL (KIND = prec_d), INTENT(IN) :: mjd
 ! OUT
       DOUBLE PRECISION x_int, y_int, ut1_int

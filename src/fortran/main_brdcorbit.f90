@@ -86,7 +86,7 @@ PROGRAM  main_brdcorbit
       REAL (KIND = prec_q) :: d_CRS2TRS(3,3), d_TRS2CRS(3,3)
       REAL (KIND = prec_d) :: EOP_cr(7)
       REAL (KIND = prec_q) :: r_TRS(3), r_CRS(3)
-      CHARACTER (LEN=50)   :: EOP_fname
+      CHARACTER (LEN=512)   :: EOP_fname
       INTEGER (KIND = prec_int4) :: EOP_Nint 
       INTEGER (KIND = prec_int1) :: EOP_sol
       REAL (KIND = prec_d) :: eop(7)

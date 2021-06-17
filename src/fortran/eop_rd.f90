@@ -45,7 +45,7 @@ SUBROUTINE eop_rd (EOP_fname, EOP_sol, mjd , eop)
 ! IN
       INTEGER (KIND = prec_int8), INTENT(IN) :: mjd
       INTEGER (KIND = prec_int1), INTENT(IN) :: EOP_sol
-      CHARACTER (LEN=50), INTENT(IN) :: EOP_fname
+      CHARACTER (LEN=512), INTENT(IN) :: EOP_fname
 ! OUT
       REAL (KIND = prec_d), INTENT(OUT) :: eop(7)
 ! ----------------------------------------------------------------------

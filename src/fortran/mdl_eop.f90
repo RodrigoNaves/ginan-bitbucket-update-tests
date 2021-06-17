@@ -38,8 +38,8 @@ MODULE mdl_eop
 
 ! ---------------------------------------------------------------------------
 ! Global variables
-      CHARACTER (LEN=50) :: EOP_fname
-      CHARACTER (LEN=50) :: ERP_fname
+      CHARACTER (LEN=512) :: EOP_fname
+      CHARACTER (LEN=512) :: ERP_fname
       INTEGER (KIND = prec_int4) :: EOP_Nint
       INTEGER (KIND = prec_int1) :: EOP_sol
       INTEGER (KIND = prec_int2) :: iau_model

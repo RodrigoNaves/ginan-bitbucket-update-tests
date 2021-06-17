@@ -61,7 +61,7 @@ SUBROUTINE eop_igu (mjd, ERP_fname, EOP_days, EOP_int)
 ! ----------------------------------------------------------------------
 ! IN
       REAL (KIND = prec_d), INTENT(IN) :: mjd
-      CHARACTER (LEN=50), INTENT(IN) :: ERP_fname
+      CHARACTER (LEN=512), INTENT(IN) :: ERP_fname
       REAL (KIND = prec_d), INTENT(IN), DIMENSION(:,:), ALLOCATABLE :: EOP_days
 ! OUT
       REAL (KIND = prec_d), INTENT(OUT) :: EOP_int(7)
