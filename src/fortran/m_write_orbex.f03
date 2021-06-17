@@ -49,7 +49,7 @@ SUBROUTINE write_orbex (ATT_matrix, PRNmatrix, ORBEX_fname)
 ! ----------------------------------------------------------------------
 ! IN
 	  CHARACTER (LEN=3), ALLOCATABLE, INTENT(IN) :: PRNmatrix(:)
-      CHARACTER (LEN=100), INTENT(IN) :: ORBEX_fname
+      CHARACTER (*), INTENT(IN) :: ORBEX_fname
       REAL (KIND = prec_q), INTENT(IN), DIMENSION(:,:,:), ALLOCATABLE :: ATT_matrix
 ! OUT
 

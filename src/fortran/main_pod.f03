@@ -72,11 +72,11 @@
       INTEGER (KIND = prec_int2) :: sp3_velocity_cfg, partials_velocity_cfg
 	  CHARACTER (LEN=3) :: PRN_isat
 	  INTEGER :: ios
-      CHARACTER (LEN=100) :: orbits_fname, orbits_partials_fname				
+      CHARACTER (LEN=512) :: orbits_fname, orbits_partials_fname				
       CHARACTER (LEN=100) :: fname_write				
-      CHARACTER (LEN=100) :: filename				
+      CHARACTER (LEN=512) :: filename				
 ! ----------------------------------------------------------------------
-      CHARACTER (LEN=300) :: fname_sp3, ORBpseudobs_fname, ORBEXT_fname				
+      CHARACTER (LEN=512) :: fname_sp3, ORBpseudobs_fname, ORBEXT_fname				
 	  INTEGER :: year, month, day
 	  INTEGER :: Iyear, Imonth, Iday
       REAL (KIND = prec_d) :: Sec_00 	    
@@ -86,7 +86,7 @@
       CHARACTER (LEN=500) :: param_value				
       REAL (KIND = prec_d) :: Zo(6) 
 ! ----------------------------------------------------------------------
-      CHARACTER (LEN=100) :: ORB2sp3_fname				
+      CHARACTER (LEN=512) :: ORB2sp3_fname				
 ! ----------------------------------------------------------------------
       REAL (KIND = prec_d), DIMENSION(:,:), ALLOCATABLE :: orbit_resR  
       REAL (KIND = prec_d), DIMENSION(:,:), ALLOCATABLE :: orbit_resT  
@@ -812,7 +812,8 @@ GPS_day = ( GPS_wsec/86400.0D0 )
 ! Write satellite orbits and partial derivatives to one .orb output file (internal format)
 ! ----------------------------------------------------------------------
 !orbits_partials_fname = 'orbits_partials_icrf.orb'
-write (orbits_partials_fname, FMT='(A3,I4,I1,A20)') 'gag', (GPS_week), INT(GPS_day) ,'_orbits_partials.out'
+write (orbits_partials_fname, FMT='(A,A,A3,I4,I1,A20)') trim(yml_output_dir), "/", 'gag', (GPS_week), &
+        INT(GPS_day) ,'_orbits_partials.out'
 !CALL writeorbit_multi (orbits_partials_icrf, PRNmatrix, orbits_partials_fname)
 CALL writeorbit_multi (orbits_partials_icrf, orbits_partials_itrf, orbits_ics_icrf, PRNmatrix, orbpara_sigma, & 
                        orbits_partials_fname, EQMfname, VEQfname, POD_version)
@@ -822,7 +823,8 @@ CALL writeorbit_multi (orbits_partials_icrf, orbits_partials_itrf, orbits_ics_ic
 ! Write satellite orbits to sp3 format
 ! ----------------------------------------------------------------------
 ! Orbit sp3 filename
-write (ORB2sp3_fname, FMT='(A3,I4,I1,A4)') 'gag', (GPS_week), INT(GPS_day) ,'.sp3'
+write (ORB2sp3_fname, FMT='(A,A,A3,I4,I1,A4)') trim(yml_output_dir), "/", 'gag', (GPS_week), &
+        INT(GPS_day) ,'.sp3'
 ! ICRF
 !CALL write_orb2sp3 (orbits_partials_icrf, PRNmatrix, ORB2sp3_fname, sat_vel, CLKmatrix)
 ! ITRF
@@ -842,17 +844,21 @@ if (yml_ext_orbit_opt > TYPE_NONE) then
 ! Write Orbit residuals
 ! ----------------------------------------------------------------------
 ! Radial
-write (filename, FMT='(A3,I4,I1,a1,a,A16)') 'gag', (GPS_week), INT(GPS_day), '_', str(1:j), '_orbitstat_R.out'
+write (filename, FMT='(A,A,A3,I4,I1,a1,a,A16)') trim(yml_output_dir), "/", 'gag', (GPS_week), INT(GPS_day), '_', &
+        str(1:j), '_orbitstat_R.out'
 Call writearray (orbit_resR, filename)
 ! Transverse
-write (filename, FMT='(A3,I4,I1,a1,a,A16)') 'gag', (GPS_week), INT(GPS_day), '_', str(1:j) ,'_orbitstat_T.out'
+write (filename, FMT='(A,A,A3,I4,I1,a1,a,A16)') trim(yml_output_dir), "/", 'gag', (GPS_week), INT(GPS_day), '_', &
+        str(1:j) ,'_orbitstat_T.out'
 Call writearray (orbit_resT, filename)
 ! Normal
-write (filename, FMT='(A3,I4,I1,a1,a,A16)') 'gag', (GPS_week), INT(GPS_day), '_', str(1:j) ,'_orbitstat_N.out'
+write (filename, FMT='(A,A,A3,I4,I1,a1,a,A16)') trim(yml_output_dir), "/", 'gag', (GPS_week), INT(GPS_day), '_', &
+        str(1:j) ,'_orbitstat_N.out'
 Call writearray (orbit_resN, filename)
 ! ----------------------------------------------------------------------
 ! Write combined orbit residuals file (RTN)
-write (filename, FMT='(A3,I4,I1,a1,a,A16)') 'gag', (GPS_week), INT(GPS_day), '_', str(1:j) ,'_orbdiff_rtn.out'
+write (filename, FMT='(A,A,A3,I4,I1,a1,a,A16)') trim(yml_output_dir), "/", 'gag', (GPS_week), INT(GPS_day), '_', &
+        str(1:j) ,'_orbdiff_rtn.out'
 Call write_orbres (orbdiff2, filename)
 ! ----------------------------------------------------------------------
 end if
@@ -870,12 +876,12 @@ CALL attitude_orb (orbits_partials_itrf, orbits_partials_icrf, PRNmatrix, BLOCK_
 
 ! Write satellite attitude to orbex format
 ! Orbex filename
-write (ORBEX_fname, FMT='(A3,I4,I1,A4)') 'gag', (GPS_week), INT(GPS_day) ,'.obx'
+write (ORBEX_fname, FMT='(A,A,A3,I4,I1,A4)') trim(yml_output_dir), "/", 'gag', (GPS_week), INT(GPS_day) ,'.obx'
 ! Write attitude matrix to orbex format
 CALL write_orbex (attitude_array, PRNmatrix, ORBEX_fname)
 
 ! Write satellite attitude per epoch to out ascii file 
-write (filename, FMT='(A3,I4,I1,A13)') 'gag', (GPS_week), INT(GPS_day), '_attitude.out'
+write (filename, FMT='(A,A,A3,I4,I1,A13)') trim(yml_output_dir), "/", 'gag', (GPS_week), INT(GPS_day), '_attitude.out'
 Call writearray2 (attitude_array, filename)
 ! ----------------------------------------------------------------------
 

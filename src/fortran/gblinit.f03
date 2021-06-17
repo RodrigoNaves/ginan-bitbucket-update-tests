@@ -22,6 +22,7 @@ use pod_yaml
         moption_on_command_line = .false.
         noption_on_command_line = .false.
         toption_on_command_line = .false.
+        yml_output_dir = "."
 
         ! from module config
         gbl_debug = 0
