@@ -816,30 +816,13 @@ option(BUILD_DOC "Build documentation" ON)
 
 # check if Doxygen is installed
 find_package(Doxygen)
-if (DOXYGEN_FOUND)
-
-    # set input and output files
-    set(DOXYGEN_IN      ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in)
-    set(DOXYGEN_OUT     ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
-    set(DOXYGEN_LAYIN   ${CMAKE_CURRENT_SOURCE_DIR}/docs/DoxygenLayout.xml.in)
-    set(DOXYGEN_LAYOUT  ${CMAKE_CURRENT_BINARY_DIR}/DoxygenLayout.xml)
-
-    # request to configure the file
-    configure_file(${DOXYGEN_IN}		${DOXYGEN_OUT}		@ONLY)
-    configure_file(${DOXYGEN_LAYIN}		${DOXYGEN_LAYOUT}	@ONLY)
-
-    # note the option ALL which allows to build the docs together with the application
-    add_custom_target( doc_doxygen
-        COMMAND				${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-        WORKING_DIRECTORY	${CMAKE_CURRENT_SOURCE_DIR}/docs/PeaDocs
-        COMMENT				"Generating API documentation with Doxygen"
-        VERBATIM )
-
-else (DOXYGEN_FOUND)
-
-  message("Doxygen need to be installed to generate the doxygen documentation")
-
-endif (DOXYGEN_FOUND)
+# request to configure the file
+if (EXISTS "${DOXYGEN_IN}")
+        configure_file(${DOXYGEN_IN}        ${DOXYGEN_OUT}        @ONLY)
+endif()
+if (EXISTS "${DOXYGEN_LAYIN}")
+        configure_file(${DOXYGEN_LAYIN}        ${DOXYGEN_LAYOUT}    @ONLY)
+endif()
 
 list(APPEND CTEST_CUSTOM_WARNING_EXCEPTION
   ".*warning: ignoring loop annotation.*"

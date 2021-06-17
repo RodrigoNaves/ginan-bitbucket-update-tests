@@ -14,7 +14,7 @@ docker build -t pod:0.1 .
 
 ```
 cd ..
-docker build -t pod:0.1 -f docker/dockerfile-fullbuild .
+docker build -t pod:0.1 -f docker/Dockerfile-fullbuild .
 ```
 
 
