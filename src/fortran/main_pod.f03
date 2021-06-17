@@ -112,7 +112,7 @@
 	  CHARACTER (LEN=100) :: pgm_name
 ! ----------------------------------------------------------------------
       CHARACTER (len=300) :: str
-      INTEGER (KIND = prec_int2) :: j
+      INTEGER (KIND = prec_int2) :: j, k
       CHARACTER (len=9) :: POD_version
       REAL (KIND = prec_q), DIMENSION(:,:,:), ALLOCATABLE :: CLKmatrix, CLKmatrix_initial 
       CHARACTER (LEN=300) :: CLKfname
@@ -837,7 +837,9 @@ CALL write_orb2sp3 (orbits_partials_itrf, PRNmatrix, ORB2sp3_fname, yml_write_sp
 ! ----------------------------------------------------------------------
 str = trim(adjustl(yml_orbit_filename))
 i = index(str, '.sp3')
-j = len(str(1:i-1))
+k = index(str, '/', .true.)
+if (k .eq. 0) k = 1
+j = len(str(k:i-1))
 
 if (yml_ext_orbit_opt > TYPE_NONE) then
 ! ----------------------------------------------------------------------
@@ -845,20 +847,20 @@ if (yml_ext_orbit_opt > TYPE_NONE) then
 ! ----------------------------------------------------------------------
 ! Radial
 write (filename, FMT='(A,A,A3,I4,I1,a1,a,A16)') trim(yml_output_dir), "/", 'gag', (GPS_week), INT(GPS_day), '_', &
-        str(1:j), '_orbitstat_R.out'
+        str(k:k+j-1), '_orbitstat_R.out'
 Call writearray (orbit_resR, filename)
 ! Transverse
 write (filename, FMT='(A,A,A3,I4,I1,a1,a,A16)') trim(yml_output_dir), "/", 'gag', (GPS_week), INT(GPS_day), '_', &
-        str(1:j) ,'_orbitstat_T.out'
+        str(k:k+j-1) ,'_orbitstat_T.out'
 Call writearray (orbit_resT, filename)
 ! Normal
 write (filename, FMT='(A,A,A3,I4,I1,a1,a,A16)') trim(yml_output_dir), "/", 'gag', (GPS_week), INT(GPS_day), '_', &
-        str(1:j) ,'_orbitstat_N.out'
+        str(k:k+j-1) ,'_orbitstat_N.out'
 Call writearray (orbit_resN, filename)
 ! ----------------------------------------------------------------------
 ! Write combined orbit residuals file (RTN)
 write (filename, FMT='(A,A,A3,I4,I1,a1,a,A16)') trim(yml_output_dir), "/", 'gag', (GPS_week), INT(GPS_day), '_', &
-        str(1:j) ,'_orbdiff_rtn.out'
+        str(k:k+j-1) ,'_orbdiff_rtn.out'
 Call write_orbres (orbdiff2, filename)
 ! ----------------------------------------------------------------------
 end if
