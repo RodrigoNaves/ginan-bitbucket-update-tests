@@ -100,7 +100,7 @@ module pod_yaml
    character(512) yml_orbit_filename, yml_ext_orbit_filename, yml_satsinex_filename, yml_leapsecond_filename, yml_eop_filename
    character(512) yml_gravity_filename, yml_ephemeris_header, yml_ephemeris_data_file, yml_ocean_tides_file, yml_erp_filename
    character(512) yml_ic_filename, yml_output_dir, cmd
-   logical        dir_exists
+   integer        dir_status
 
    integer*4 yml_orbit_steps, yml_orbit_points, yml_orbit_arc_determination, yml_orbit_arc_prediction, yml_orbit_arc_backwards
    integer*4 yml_ext_orbit_steps, yml_ext_orbit_points, yml_eop_option, yml_eop_int_points, yml_estimator_iterations
@@ -310,14 +310,12 @@ subroutine get_yaml(yaml_filepath)
    else
       ! if output directory not specified, default it to '.'
       yml_output_dir = pod_options_dict%get_string("output_directory", ".", my_error_p)
-      dir_exists = .true.
-      INQUIRE(file=yml_output_dir, exist=dir_exists)
-      if (.not. dir_exists) then
-          write(cmd, *) "mkdir -p ", yml_output_dir
-          call system(trim(cmd))
-          INQUIRE(file=yml_output_dir, exist=dir_exists)
-          if (.not. dir_exists) then
-              write (*,*) "could not create output directory ", yml_output_dir, ", reverting to '.'"
+      if (yml_output_dir .ne. '.') then
+          cmd = "mkdir -p " // trim(yml_output_dir)
+          call system(trim(cmd), dir_status)
+          if (dir_status .ne. 0) then
+              write (*,*) "could not create output directory ", yml_output_dir
+              STOP
           end if
       end if
       yml_pod_mode = get_pod_mode(pod_options_dict, my_error)
