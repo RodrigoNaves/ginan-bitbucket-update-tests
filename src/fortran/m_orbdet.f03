@@ -123,7 +123,7 @@ SUBROUTINE orbdet (EQMfname, VEQfname, orb_icrf_final, orb_itrf_final, veqSmatri
 ! Local variables declaration
 ! ----------------------------------------------------------------------  
       REAL (KIND = prec_d) :: CPU_t0, CPU_t1
-      CHARACTER (LEN=100) :: filename
+      CHARACTER (LEN=512) :: filename
       CHARACTER (LEN=10) :: DOYSTR
       INTEGER (KIND = prec_int2) :: VEQmode 
       INTEGER (KIND = prec_int2) :: ESTmode 
@@ -394,23 +394,23 @@ ELSE IF (yml_veq_refsys == ITRF) THEN
 END IF
 ! ----------------------------------------------------------------------
 IF (PRN == prn_out) THEN
-filename = "Xmatrix.out"
+filename = yml_output_dir // "/" // "Xmatrix.out"
 Call writearray (Xmatrix, filename)
-filename = "Amatrix.out"
+filename = yml_output_dir // "/" // "Amatrix.out"
 Call writearray (Amatrix, filename)
-filename = "Wmatrix.out"
+filename = yml_output_dir // "/" // "Wmatrix.out"
 Call writearray (Wmatrix, filename)
-filename = "veqSmatrix.out"
+filename = yml_output_dir // "/" // "veqSmatrix.out"
 Call writearray (veqSmatrix, filename)
-filename = "veqPmatrix.out"
+filename = yml_output_dir // "/" // "veqPmatrix.out"
 Call writearray (veqPmatrix, filename)
-filename = "pseudobs_ITRF.out"
+filename = yml_output_dir // "/" // "pseudobs_ITRF.out"
 Call writearray (pseudobs_ITRF, filename)
-filename = "pseudobs_ICRF.out"
+filename = yml_output_dir // "/" // "pseudobs_ICRF.out"
 Call writearray (pseudobs_ICRF, filename)
-filename = "orb_icrf.out"
+filename = yml_output_dir // "/" // "orb_icrf.out"
 Call writearray (orb_icrf, filename)
-filename = "dorb_icrf.out"
+filename = yml_output_dir // "/" // "dorb_icrf.out"
 Call writearray (dorb_icrf, filename)
 END IF
 ! ----------------------------------------------------------------------
