@@ -171,6 +171,8 @@ If ( .not. pod_config_exists) then
     write(*,'(3a)') 'If using a non-default config.filename - Type: ',trim(pgm_name),' -c config.filename'
 	STOP
 End If
+else
+pgm_name = 'pod'
 end if
 
 !call get_command_argument(yaml_config)
