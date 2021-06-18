@@ -395,22 +395,31 @@ END IF
 ! ----------------------------------------------------------------------
 IF (PRN == prn_out) THEN
 filename = yml_output_dir // "/" // "Xmatrix.out"
+print *, filename
 Call writearray (Xmatrix, filename)
 filename = yml_output_dir // "/" // "Amatrix.out"
+print *, filename
 Call writearray (Amatrix, filename)
 filename = yml_output_dir // "/" // "Wmatrix.out"
+print *, filename
 Call writearray (Wmatrix, filename)
 filename = yml_output_dir // "/" // "veqSmatrix.out"
+print *, filename
 Call writearray (veqSmatrix, filename)
 filename = yml_output_dir // "/" // "veqPmatrix.out"
+print *, filename
 Call writearray (veqPmatrix, filename)
 filename = yml_output_dir // "/" // "pseudobs_ITRF.out"
+print *, filename
 Call writearray (pseudobs_ITRF, filename)
 filename = yml_output_dir // "/" // "pseudobs_ICRF.out"
+print *, filename
 Call writearray (pseudobs_ICRF, filename)
 filename = yml_output_dir // "/" // "orb_icrf.out"
+print *, filename
 Call writearray (orb_icrf, filename)
 filename = yml_output_dir // "/" // "dorb_icrf.out"
+print *, filename
 Call writearray (dorb_icrf, filename)
 END IF
 ! ----------------------------------------------------------------------
