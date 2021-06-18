@@ -6,20 +6,23 @@ Given a station and time range, find flex events.
 With flex events it is important to remember only GPS Block IIR-M and onwards have this capability
 Therefore, we need to choose GPS satellites that can actually have flex power events
 '''
-import sys
+import sys as _sys
 import argparse
 
-import numpy as np
-import pandas as pd
+import numpy as _np
+import pandas as _pd
 
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as _plt
 import matplotlib.dates as mdates
-from datetime import timedelta
-from pathlib import Path
+from datetime import timedelta as _timedelta
+from pathlib import Path as _Path
+
+PYGINANPATH = str(_Path(__file__).absolute().parents[1]/'src'/'python')
+if PYGINANPATH not in _sys.path:
+    _sys.path.insert(0, PYGINANPATH)
 
 from get_sp3 import get_sp3, gpsweekD
 from get_rinex3 import get_rinex
-import geo_funcs as gf
 from read_metadata import df_sat_info, svn_prn_dates
 
 
@@ -34,7 +37,7 @@ def get_load_rinex(station, year, doy, codes, dwndir):
     codes - the observation codes of interest - comma separated str
     '''
 
-    rnx_filepath = Path(f"/home/ron-maj/pea/proc/data/{station}_R_{year}{doy}0000_01D_30S_MO.crx")
+    rnx_filepath = _Path(f"/home/ron-maj/pea/proc/data/{station}_R_{year}{doy}0000_01D_30S_MO.crx")
     if not rnx_filepath.is_file():
         get_rinex(year,doy,station,'/home/ron-maj/pea/proc/data')
     else:
@@ -63,11 +66,11 @@ def get_load_sp3(year, doy):
     # Filename we are looking for:
     gpswkD = gpsweekD(year,doy)
     filename = f'igs{gpswkD}.sp3'
-    sp3_filepath = Path(f"/home/ron-maj/pea/proc/products/{filename}")
+    sp3_filepath = _Path(f"/home/ron-maj/pea/proc/products/{filename}")
     
     if not sp3_filepath.is_file():
         get_sp3(int(year),int(doy))
-        Path(f'sp3_files/{filename}').replace(sp3_filepath)
+        _Path(f'sp3_files/{filename}').replace(sp3_filepath)
     
     else:
         print('\nsp3 file already exists')
@@ -140,7 +143,7 @@ def add_elevation_angles(orb, obs):
         for time_val in obs.sel(sv = gps).time.values:
             
             # Convert to pandas timestamp:
-            ts = pd.to_datetime(time_val)
+            ts = _pd.to_datetime(time_val)
 
             # Go through and create elevation angle list for each datapoint
             # Cover the edge case first
@@ -157,7 +160,7 @@ def add_elevation_angles(orb, obs):
                 
                 i0 = gf.el_ang(obs.position,
                             orb.sel(sv = gps).position.values[orb_count]*1000)
-                i0 = i0*(180/np.pi)
+                i0 = i0*(180/_np.pi)
                 
                 i1 = i0 + 30*diff
 
@@ -166,7 +169,7 @@ def add_elevation_angles(orb, obs):
                 elif i1 < -90:
                     i1 = -89
 
-                el_angles += list(np.linspace(i0,i1,30))
+                el_angles += list(_np.linspace(i0,i1,30))
             
             # In the general case, create a linear progression of elevation angles between
             # the 15 min time periods covered in the sp3 file each time one of the 
@@ -175,13 +178,13 @@ def add_elevation_angles(orb, obs):
                 
                 i0 = gf.el_ang(obs.position,
                             orb.sel(sv = gps).position.values[orb_count]*1000)
-                i0 = i0*(180/np.pi)
+                i0 = i0*(180/_np.pi)
 
                 i1 = gf.el_ang(obs.position,
                             orb.sel(sv = gps).position.values[orb_count+1]*1000)
-                i1 = i1*(180/np.pi)
+                i1 = i1*(180/_np.pi)
 
-                el_angles += list(np.linspace(i0,i1,31)[:-1])
+                el_angles += list(_np.linspace(i0,i1,31)[:-1])
                 orb_count += 1
 
             # If the time periods do not match up, continue on
@@ -189,7 +192,7 @@ def add_elevation_angles(orb, obs):
                 continue
         
         # Create dataframe of elevation angle data for given gps satellite
-        df = pd.DataFrame(
+        df = _pd.DataFrame(
             data = el_angles[:len(obs.time)],
             index = obs.sel(sv = gps).time.values,
             columns = [gps]
@@ -198,7 +201,7 @@ def add_elevation_angles(orb, obs):
         el_data.append(df)
     
     # Concat dataframes of each individual satellite to one master dataframe:
-    dat = pd.concat(el_data,1)
+    dat = _pd.concat(el_data,1)
     # Add master dataframe of elevation angles to the xr Dataset
     xDA = xr.DataArray(dat.values, dims = ['time','sv'], coords = {'time':dat.index,'sv':dat.columns})
     obs['el_ang'] = xDA
@@ -234,7 +237,7 @@ def find_flex_events(station, orb, obs, code, start_floor, end_floor, frac):
     
     # Set up the dataframe that will be exported:
     cols = ['Station','Time','Event Type','GPS Satellite']
-    df = pd.DataFrame(
+    df = _pd.DataFrame(
         columns = cols
     )            
     
@@ -284,7 +287,7 @@ def quick_plot(obs, code, station, st_idx, end_idx, title_add):
 
     gps_flex = get_flex_sats(obs)
 
-    df = pd.DataFrame(
+    df = _pd.DataFrame(
         data = obs[code].sel(sv = gps_flex).values[st_idx:end_idx],
         index = obs.time.values[st_idx:end_idx],
         columns = gps_flex
@@ -292,24 +295,24 @@ def quick_plot(obs, code, station, st_idx, end_idx, title_add):
 
     vis_gps_list = [sat for sat in gps_flex if not df[sat].isnull().all()]
 
-    fig1,ax1 = plt.subplots() 
+    fig1,ax1 = _plt.subplots() 
     df[vis_gps_list].plot(ax = ax1)
     ax1.legend(loc = 'upper left')
     ax1.set_ylabel('Signal strength for obs code: '+code+' (dB-Hz)')
-    dts = pd.to_datetime(obs.time.values[st_idx+30])
+    dts = _pd.to_datetime(obs.time.values[st_idx+30])
     
     
 
-    if not Path.exists(Path('flex_plots')):
-        Path.mkdir(Path('flex_plots')) 
+    if not _Path.exists(_Path('flex_plots')):
+        _Path.mkdir(_Path('flex_plots')) 
 
-    if not Path.exists(Path(f'flex_plots/{dts.strftime("%Y-%m-%d")}')):
-        Path.mkdir(Path(f'flex_plots/{dts.strftime("%Y-%m-%d")}'))
+    if not _Path.exists(_Path(f'flex_plots/{dts.strftime("%Y-%m-%d")}')):
+        _Path.mkdir(_Path(f'flex_plots/{dts.strftime("%Y-%m-%d")}'))
 
     fname = f'{station}_'+dts.strftime('%Y-%m-%d_%H%M_')+f'{title_add}_{code}'
     fig1.suptitle(fname)
     fig1.savefig(f'flex_plots/{dts.strftime("%Y-%m-%d")}/{fname}.png',format='png')
-    plt.close()
+    _plt.close()
     return #fig1.show()
 
 
@@ -412,6 +415,12 @@ if __name__ == "__main__":
         )
 
     parser.add_argument(
+        "dwn_dir",
+        help = 'The download directory for RINEX3 and sp3 files'
+        )
+
+
+    parser.add_argument(
         "-p",
         "--plot",
         help = 'Produce plots of Flex events',
@@ -423,15 +432,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
     # And start assigning to variables:
     station = args.station
-    st_date = pd.to_datetime(args.st_date)
-    en_date = pd.to_datetime(args.en_date)
+    st_date = _pd.to_datetime(args.st_date)
+    en_date = _pd.to_datetime(args.en_date)
     codes = args.obs_codes
     st_lvl = float(args.start_floor)
     en_lvl = float(args.end_floor)
     frac = float(args.frac)
     el_min = float(args.el_min)
+    dwn_dir = args.dwn_dir
 
-    date_range = [st_date + timedelta(days = x) for x in range((en_date - st_date).days + 1)]
+    date_range = [st_date + _timedelta(days = x) for x in range((en_date - st_date).days + 1)]
 
     for date in date_range:
         # Get (download) or just load the necessary rinex and sp3 files for given day
@@ -465,13 +475,13 @@ if __name__ == "__main__":
                 df.set_index('Time', inplace=True)
                 df.sort_index(inplace=True)
                 cl = sts + ens
-                dts = pd.to_datetime(obs.time.values[cl[0]])
+                dts = _pd.to_datetime(obs.time.values[cl[0]])
                 
                 # Check directories exist:
-                if not Path.exists(Path('flex_events')):
-                    Path.mkdir(Path('flex_events'))
-                if not Path.exists(Path(f'flex_events/{dts.strftime("%Y-%m-%d")}')):
-                    Path.mkdir(Path(f'flex_events/{dts.strftime("%Y-%m-%d")}'))
+                if not _Path.exists(_Path('flex_events')):
+                    _Path.mkdir(_Path('flex_events'))
+                if not _Path.exists(_Path(f'flex_events/{dts.strftime("%Y-%m-%d")}')):
+                    _Path.mkdir(_Path(f'flex_events/{dts.strftime("%Y-%m-%d")}'))
                 
                 # Save dataframe to csv
                 fname = f'{station}_'+dts.strftime('%Y-%m-%d_%H%M_')+f'_{code}'
