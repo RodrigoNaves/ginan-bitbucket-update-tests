@@ -394,32 +394,23 @@ ELSE IF (yml_veq_refsys == ITRF) THEN
 END IF
 ! ----------------------------------------------------------------------
 IF (PRN == prn_out) THEN
-filename = yml_output_dir // "/" // "Xmatrix.out"
-print *, filename
+write (filename, '(AAA)') trim(yml_output_dir), "/", "Xmatrix.out"
 Call writearray (Xmatrix, filename)
-filename = yml_output_dir // "/" // "Amatrix.out"
-print *, filename
+write (filename, '(AAA)') trim(yml_output_dir), "/", "Amatrix.out"
 Call writearray (Amatrix, filename)
-filename = yml_output_dir // "/" // "Wmatrix.out"
-print *, filename
+write (filename, '(AAA)') trim(yml_output_dir), "/", "Wmatrix.out"
 Call writearray (Wmatrix, filename)
-filename = yml_output_dir // "/" // "veqSmatrix.out"
-print *, filename
+write (filename, '(AAA)') trim(yml_output_dir), "/", "veqSmatrix.out"
 Call writearray (veqSmatrix, filename)
-filename = yml_output_dir // "/" // "veqPmatrix.out"
-print *, filename
+write (filename, '(AAA)') trim(yml_output_dir), "/", "veqPmatrix.out"
 Call writearray (veqPmatrix, filename)
-filename = yml_output_dir // "/" // "pseudobs_ITRF.out"
-print *, filename
+write (filename, '(AAA)') trim(yml_output_dir), "/", "pseudobs_ITRF.out"
 Call writearray (pseudobs_ITRF, filename)
-filename = yml_output_dir // "/" // "pseudobs_ICRF.out"
-print *, filename
+write (filename, '(AAA)') trim(yml_output_dir), "/", "pseudobs_ICRF.out"
 Call writearray (pseudobs_ICRF, filename)
-filename = yml_output_dir // "/" // "orb_icrf.out"
-print *, filename
+write (filename, '(AAA)') trim(yml_output_dir), "/", "orb_icrf.out"
 Call writearray (orb_icrf, filename)
-filename = yml_output_dir // "/" // "dorb_icrf.out"
-print *, filename
+write (filename, '(AAA)') trim(yml_output_dir), "/", "dorb_icrf.out"
 Call writearray (dorb_icrf, filename)
 END IF
 ! ----------------------------------------------------------------------
