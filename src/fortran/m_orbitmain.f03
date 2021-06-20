@@ -167,27 +167,27 @@ End If
 !PRINT *,"Write orbit matrices to output files"
 ! ----------------------------------------------------------------------
 ! Estimated Orbit or Predicted Orbit
-filename = yml_output_dir // "/" // "orb_icrf.out"
+write(filename, '(AAA)')  trim(yml_output_dir), "/" ,"orb_icrf.out"
 !Call writearray (orb_icrf, filename)
 !Call writeorbit (orb_icrf, filename)
-filename = yml_output_dir // "/" // "orb_itrf.out"
+write(filename, '(AAA)')  trim(yml_output_dir), "/" ,"orb_itrf.out"
 !Call writearray (orb_itrf, filename)
 !Call writeorbit (orb_itrf, filename)
 
 ! Variational Equations matrices
 If (yml_estimator_procedure > 0) then
-filename = yml_output_dir // "/" // "VEQ_Smatrix.out"
+write(filename, '(AAA)')  trim(yml_output_dir), "/" ,"VEQ_Smatrix.out"
 !Call writearray (veqSmatrix, filename)
-filename = yml_output_dir // "/" // "VEQ_Pmatrix.out"
+write(filename, '(AAA)')  trim(yml_output_dir), "/" ,"VEQ_Pmatrix.out"
 !Call writearray (veqPmatrix, filename)
 End IF
 
 !IF (PRN == 'G02') THEN
 !print *,"extorbcomp prn", PRN
-filename = yml_output_dir // "/" // "dorb_icrf_ext.out"
+write(filename, '(AAA)')  trim(yml_output_dir), "/" ,"dorb_icrf_ext.out"
 Call writearray (dorb_icrf, filename)
 
-filename = yml_output_dir // "/" // "dorb_rtn_ext.out"
+write(filename, '(AAA)')  trim(yml_output_dir), "/" ,"dorb_rtn_ext.out"
 !Call writearray (dorb_RTN, filename)
 !END IF
 ! ----------------------------------------------------------------------
