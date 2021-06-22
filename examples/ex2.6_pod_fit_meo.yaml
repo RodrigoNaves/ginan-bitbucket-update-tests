@@ -30,15 +30,15 @@ pod_options:
 #----------------------------------------------------------------------   
    ic_input_refsys:
       itrf: true   # Initial Conditions Reference Frame: ITRF, ICRF
-      icrf: false  # Initial Conditions Reference Frame: ITRF, ICRF
-      kepler: false
+      # icrf: false  # Initial Conditions Reference Frame: ITRF, ICRF
+      # kepler: false
 
 # can only choose one option here
 #----------------------------------------------------------------------
    ic_input_format:
       sp3:  true  # Input a-priori orbit in sp3 format
-      icf:  false   # Input a-priori orbit in POD Initial Conditions File (ICF) format
-      ic_filename: products/orb_partials/gag20624_orbits_partials.out.ecom2_pea
+      # icf:  false   # Input a-priori orbit in POD Initial Conditions File (ICF) format
+      # ic_filename: products/orb_partials/gag20624_orbits_partials.out.ecom2_pea
 
 #----------------------------------------------------------------------
 # Orbit arc length (in hours) 
@@ -54,7 +54,7 @@ pod_options:
    EOP_soln_c04_file: products/tables/EOP_14_C04_IAU2000A_one_file_1962-now.txt
    # EOP_soln_rapid_file: finals2000A.daily
    # ERP_soln_igs_file: igu18543_12.erp
-   EOP_soln_interp_points: 4    # EOP solution interpolation points 	
+   EOP_soln_interp_points: 4    # EOP solution interpolation points
  
 # ---------------------------------------------------------------------------
 # IAU Precession-Nutation model:
@@ -68,7 +68,7 @@ pod_options:
 
 #---------------------------------------------------------------------------
 # Observation Model                                                                                            
-   pseudobs_orbit_filename: products/igs19424.sp3 # Pseudo observations orbit filename       
+   pseudobs_orbit_filename: products/ilrsa.orb.lageos1.201128.v70.sp3 # Pseudo observations orbit filename       
    pseudobs_interp_step:    120          # Interval (sec) of the interpolated orbit
    pseudobs_interp_points:  12           # Number of data points used in Lagrange interpolation
 
@@ -80,7 +80,7 @@ pod_options:
    ext_orbit_type_kepler:    false        # Keplerian orbit
    ext_orbit_type_lagrange:  false        # 3-day Lagrange interpolation
    ext_orbit_type_position_sp3:    false        # Position and SP3 file
-   ext_orbit_filename:       products/igs19424.sp3 # External (comparison)  orbit filename					
+   ext_orbit_filename:       products/ilrsa.orb.lageos1.201128.v70.sp3 # External (comparison)  orbit filename
    ext_orbit_interp_step:    120          # Interval (sec) of the interpolated/Kepler orbit
    ext_orbit_interp_points:  12           # Number of data points used in Lagrange interpolation
 
@@ -88,15 +88,15 @@ pod_options:
 #----------------------------------------------------------------------   
    ext_orbit_frame:
       itrf: true            # External orbit reference frame - ITRF 
-      icrf: false           # External orbit reference frame - ICRF
-      kepler: false
+      # icrf: false           # External orbit reference frame - ICRF
+      # kepler: false
  
 #----------------------------------------------------------------------
 # Reference System for Variational Equations'  - Partials & Parameter Estimation 
    veq_refsys:
       itrs: true      # ITRS: Terrestrial Reference System
-      icrs: false     # ICRS: Celestial Reference System
-      kepler: false
+      # icrs: false     # ICRS: Celestial Reference System
+      # kepler: false
 
 #----------------------------------------------------------------------
 # Write to sp3 orbit format: Option for write Satellite Velocity vector 
@@ -299,52 +299,3 @@ veq_options:
       EMP_N_cpr:    true
       cpr_count:    0
 
-# put any system, block or PRN overrides here
-overrides:
-   system:
-      GPS:
-         srp_apriori_model: 
-            no_model:   false
-            cannon_ball_model:   true
-            simple_boxwing_model:   false
-            full_boxwing_model:     false
-      GAL:
-         srp_apriori_model: 
-            no_model:   false
-            cannon_ball_model:   false
-            simple_boxwing_model:   false
-            full_boxwing_model:     true
-      GLO:
-         srp_apriori_model: 
-            no_model:   false
-            cannon_ball_model:   false
-            simple_boxwing_model:   true
-            full_boxwing_model:     false
-      BDS:
-         srp_apriori_model: 
-            no_model:   false
-            cannon_ball_model:   false
-            simple_boxwing_model:   true
-            full_boxwing_model:     false
-   block:
-      GPS-IIF:
-         srp_apriori_model: 
-            no_model:   false
-            cannon_ball_model:   false
-            simple_boxwing_model:   true
-            full_boxwing_model:     false
-# GPS BLK IIF use ECOM2 parameters
-         srp_parameters:
-            ECOM_D_bias:   true
-            ECOM_Y_bias:   true 
-            ECOM_B_bias:   true 
-            ECOM_D_2_cpr: false 
-            ECOM_D_4_cpr: false
-            ECOM_B_cpr:   true
-   prn:
-      G01:
-         srp_apriori_model: 
-            no_model:   false
-            cannon_ball_model:   false
-            simple_boxwing_model:   false
-            full_boxwing_model:     true
