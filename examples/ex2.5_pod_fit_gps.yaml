@@ -10,7 +10,7 @@ pod_data:    # Use initial condition input data below
    state_vector:  6804571.8859999999,  -15232535.475000001,  -20431678.779000003, 1697.1661907155067,  2026.6151679363102,  -982.28787769004703 # X, Y, Z, VX, VY, VZ
  
 pod_options:
-   output_directory: out_ex2.5_pod_
+   output_directory: ex2.5_pod_fit_gps
 # can only choose one option here
 #----------------------------------------------------------------------
    pod_mode_fit:     true  # pod_mode = 1 Orbit Determination (pseudo-observations; orbit fitting)
