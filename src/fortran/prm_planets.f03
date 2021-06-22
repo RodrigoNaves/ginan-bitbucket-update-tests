@@ -64,6 +64,7 @@ SUBROUTINE prm_planets (PRMfname)
 ! ----------------------------------------------------------------------
 
 if (.not. yaml_found) then
+      saved = .false.
 ! ----------------------------------------------------------------------
 ! Open .in file
       OPEN (UNIT = UNIT_IN, FILE = TRIM (PRMfname), IOSTAT = ios)
