@@ -261,6 +261,7 @@ end if
 ! Configuration files of Orbit modelling (2 Basic initial files):
 ! ----------------------------------------------------------------------
 ! Equation of Motion
+if (.not. yaml_found) then
 param_id = 'EQM_fname_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) EQM_fname_cfg 
@@ -269,6 +270,7 @@ READ ( param_value, FMT = * , IOSTAT=ios_key ) EQM_fname_cfg
 param_id = 'VEQ_fname_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) VEQ_fname_cfg 
+end if
 ! ----------------------------------------------------------------------
 
 ! ----------------------------------------------------------------------
