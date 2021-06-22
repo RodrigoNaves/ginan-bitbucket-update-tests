@@ -220,6 +220,7 @@ module pod_yaml
 subroutine get_yaml(yaml_filepath)
 
    character (*) yaml_filepath
+   logical   show_mesg
 
    nullify(root_dict)
    nullify(pod_data_dict)
@@ -553,6 +554,61 @@ subroutine get_yaml(yaml_filepath)
    if (yml_veq_srp_parameters /= yml_eqm_srp_parameters) then
        write (*,*) "srp parameters in eqm and veq sections must be identical"
        STOP
+   end if
+
+   if (.not. yml_EMP_mode .and. yml_veq_empnum > 0) then
+       write (*,*) "Empirical model is off but you are asking for empirical parameters to be estimated." // &
+              " Turning them off"
+       yml_veq_empnum = 0
+       yml_eqm_empnum = 0
+       if (BTEST(yml_veq_srp_parameters, EMP_R_BIAS - one)) yml_veq_srp_parameters = yml_veq_srp_parameters - &
+              pow (2, EMP_R_BIAS - one)
+       if (BTEST(yml_veq_srp_parameters, EMP_T_BIAS - one)) yml_veq_srp_parameters = yml_veq_srp_parameters - &
+              pow (2, EMP_T_BIAS - one)
+       if (BTEST(yml_veq_srp_parameters, EMP_N_BIAS - one)) yml_veq_srp_parameters = yml_veq_srp_parameters - &
+              pow (2, EMP_N_BIAS - one)
+       if (BTEST(yml_veq_srp_parameters, EMP_R_CPR - one)) yml_veq_srp_parameters = yml_veq_srp_parameters - &
+              pow (2, EMP_R_CPR - one)
+       if (BTEST(yml_veq_srp_parameters, EMP_T_CPR - one)) yml_veq_srp_parameters = yml_veq_srp_parameters - &
+              pow (2, EMP_T_CPR - one)
+       if (BTEST(yml_veq_srp_parameters, EMP_N_CPR - one)) yml_veq_srp_parameters = yml_veq_srp_parameters - &
+              pow (2, EMP_N_CPR - one)
+
+      yml_eqm_srp_parameters = yml_veq_srp_parameters
+   end if
+
+   if (yml_ECOM_mode .eq. ECOM1) then
+       show_mesg = .false.
+       if (BTEST(yml_veq_srp_parameters, ECOM_D_2_CPR)) then
+               yml_veq_srp_parameters = yml_veq_srp_parameters - pow (2, ECOM_D_2_CPR - one)
+               show_mesg = .true.
+               yml_veq_ecomnum = yml_veq_ecomnum - 2
+       endif 
+       if (BTEST(yml_veq_srp_parameters, ECOM_D_4_CPR)) then
+               yml_veq_srp_parameters = yml_veq_srp_parameters - pow (2, ECOM_D_4_CPR - one)
+               yml_veq_ecomnum = yml_veq_ecomnum - 2
+               show_mesg = .true.
+       endif 
+       if (show_mesg) write(*,*) "ECOM1 model selected - turning off D2_CPR and D4_CPR parameters"
+       yml_eqm_srp_parameters = yml_veq_srp_parameters
+       yml_eqm_ecomnum = yml_veq_ecomnum
+   end if
+
+   if (yml_ECOM_mode .eq. ECOM2) then
+       show_mesg = .false.
+       if (BTEST(yml_veq_srp_parameters, ECOM_D_CPR)) then
+               yml_veq_srp_parameters = yml_veq_srp_parameters - pow (2, ECOM_D_CPR - one)
+               show_mesg = .true.
+               yml_veq_ecomnum = yml_veq_ecomnum - 2
+       endif 
+       if (BTEST(yml_veq_srp_parameters, ECOM_Y_CPR)) then
+               yml_veq_srp_parameters = yml_veq_srp_parameters - pow (2, ECOM_Y_CPR - one)
+               yml_veq_ecomnum = yml_veq_ecomnum - 2
+               show_mesg = .true.
+       endif 
+       if (show_mesg) write(*,*) "ECOM2 model selected - turning off D_CPR and Y_CPR parameters"
+       yml_eqm_srp_parameters = yml_veq_srp_parameters
+       yml_eqm_ecomnum = yml_veq_ecomnum
    end if
 
    if ((yml_eqm_tidal_effects_enabled .or. yml_veq_tidal_effects_enabled) .and. yml_ocean_tides_file == "") then
