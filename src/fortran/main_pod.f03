@@ -242,9 +242,11 @@ READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_ic_input_format
 end if
 
 ! Initial Conditions reference frame
+if (.not. yaml_found) then
 param_id = 'IC_refsys'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) IC_REF_cfg
+end if
 
 ! Initial Conditions file name
 if (.not. yaml_found) then
