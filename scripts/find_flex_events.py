@@ -17,13 +17,10 @@ import matplotlib.dates as mdates
 from datetime import timedelta as _timedelta
 from pathlib import Path as _Path
 
-PYGINANPATH = str(_Path(__file__).absolute().parents[1]/'src'/'python')
-if PYGINANPATH not in _sys.path:
-    _sys.path.insert(0, PYGINANPATH)
-
-from get_sp3 import get_sp3, gpsweekD
-from get_rinex3 import get_rinex
+from gn_lib.gn_download import get_sp3, gpsweekD, get_rinex3
 from read_metadata import df_sat_info, svn_prn_dates
+
+from gn_lib.gn_transform import xyz2llh_heik, llh2rot
 
 
 def get_load_rinex(station, year, doy, codes, dwndir):
@@ -39,7 +36,7 @@ def get_load_rinex(station, year, doy, codes, dwndir):
 
     rnx_filepath = _Path(f"/home/ron-maj/pea/proc/data/{station}_R_{year}{doy}0000_01D_30S_MO.crx")
     if not rnx_filepath.is_file():
-        get_rinex(year,doy,station,'/home/ron-maj/pea/proc/data')
+        get_rinex3(year,doy,station,'/home/ron-maj/pea/proc/data')
     else:
         print('\ncrx file already exists')
         print(rnx_filepath)
@@ -51,7 +48,7 @@ def get_load_rinex(station, year, doy, codes, dwndir):
         )
 
 
-def get_load_sp3(year, doy):
+def get_load_sp3(year, doy, dwndir):
     '''
     Get and/or load the sp3 file for a given day
 
@@ -126,102 +123,6 @@ def get_flex_sats(obs):
 
     # Intersection of visible GPS sats and Flex enabled GPS sats:
     return [x for x in gps_list if x in flex_prns]
-
-
-def add_elevation_angles(orb, obs):
-
-    # Run through all GPS satellites in the dataset and assign
-    # an elevation angle to each data point
-    el_data = []
-
-    for gps in obs.sv.values:
-
-        # Create a look up array of elevation angles
-        el_angles = []
-        orb_count = 0
-        
-        for time_val in obs.sel(sv = gps).time.values:
-            
-            # Convert to pandas timestamp:
-            ts = _pd.to_datetime(time_val)
-
-            # Go through and create elevation angle list for each datapoint
-            # Cover the edge case first
-            if (ts.hour == 23) & (ts.minute == 45) & (ts.second == 0):
-                try:
-                    diff = el_angles[-1] - el_angles[-2]
-                except IndexError:
-                    #print(el_angles)
-                    #print(time_val)
-                    #print(orb.time.values[orb_count])
-                    #print(obs.position)
-                    #print(orb.sel(sv = gps).position.values[orb_count]*1000)
-                    diff = 0.1
-                
-                i0 = gf.el_ang(obs.position,
-                            orb.sel(sv = gps).position.values[orb_count]*1000)
-                i0 = i0*(180/_np.pi)
-                
-                i1 = i0 + 30*diff
-
-                if i1 > 90:
-                    i1 = 89
-                elif i1 < -90:
-                    i1 = -89
-
-                el_angles += list(_np.linspace(i0,i1,30))
-            
-            # In the general case, create a linear progression of elevation angles between
-            # the 15 min time periods covered in the sp3 file each time one of the 
-            # increments match up with those in the obs data.
-            elif time_val == orb.time.values[orb_count]:
-                
-                i0 = gf.el_ang(obs.position,
-                            orb.sel(sv = gps).position.values[orb_count]*1000)
-                i0 = i0*(180/_np.pi)
-
-                i1 = gf.el_ang(obs.position,
-                            orb.sel(sv = gps).position.values[orb_count+1]*1000)
-                i1 = i1*(180/_np.pi)
-
-                el_angles += list(_np.linspace(i0,i1,31)[:-1])
-                orb_count += 1
-
-            # If the time periods do not match up, continue on
-            else:
-                continue
-        
-        # Create dataframe of elevation angle data for given gps satellite
-        df = _pd.DataFrame(
-            data = el_angles[:len(obs.time)],
-            index = obs.sel(sv = gps).time.values,
-            columns = [gps]
-            )
-        # Append this dataframe to the list of all elevation angle data from previous gps satellites
-        el_data.append(df)
-    
-    # Concat dataframes of each individual satellite to one master dataframe:
-    dat = _pd.concat(el_data,1)
-    # Add master dataframe of elevation angles to the xr Dataset
-    xDA = xr.DataArray(dat.values, dims = ['time','sv'], coords = {'time':dat.index,'sv':dat.columns})
-    obs['el_ang'] = xDA
-    '''
-    try:
-        el_DA = xr.DataArray(
-            dat,
-            dims = {'sv','time'},
-            coords = {'sv': obs.sv, 'time': obs.time}
-        )
-        obs['el_ang'] = el_DA
-    except ValueError:
-        el_DA1 = xr.DataArray(
-            dat,
-            dims = {'time','sv'},
-            coords = {'time': obs.time, 'sv': obs.sv}
-        )
-        obs['el_ang'] = el_DA1
-    '''    
-    return obs
 
 
 
@@ -530,3 +431,16 @@ if __name__ == "__main__":
                                 enpt,
                                 'end'
                             )
+
+
+
+
+'''
+For the new find_flex_events 
+- get sp3 and rinex 3 files
+- load using new read_sp3 and read_rnx functions
+- combine using code I've used in jupyter notebook
+- add all angles and distances
+- filter based on elevation
+- search for flex events 
+'''
