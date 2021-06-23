@@ -239,7 +239,6 @@ if (.not. yaml_found) then
 param_id = 'IC_input'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_ic_input_format
-end if
 
 ! Initial Conditions reference frame
 param_id = 'IC_refsys'
@@ -247,7 +246,6 @@ CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) IC_REF_cfg
 
 ! Initial Conditions file name
-if (.not. yaml_found) then
 param_id = 'IC_filename_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_ic_filename
