@@ -11,6 +11,7 @@ from .common import path2bytes
 
 _RE_RNX = _re.compile(rb'^\>(.+)\n((?:[^\>]+)+)',_re.MULTILINE)
 _RE_RNX_HEADER = _re.compile(rb'\n(\w)\s+(\d+)(.+)OBS\sTYPES((?:\W\s{6}.+|))')
+_RE_RNX_POSITION = _re.compile(rb'\n(.+)APPROX\sPOSITION\sXYZ')
 
 def _read_rnx(rnx_path):
     '''Read RINEX file into pandas DataFrame taking into account
@@ -71,3 +72,15 @@ def rnx_vals2df(m):
     t3[t3 == b'']= _np.NaN
     rnx_df = _pd.DataFrame(t3.astype(float,).reshape([m.shape[1], m.shape[0]*2]))
     return rnx_df
+
+def _rnx_pos(rnx_path):
+    '''Read RINEX file and output APPROX POSITION'''
+    rnx_content = path2bytes(str(rnx_path))
+    pos_line = _RE_RNX_POSITION.findall(string=rnx_content)
+    coords = []
+    for val in pos_line[0].decode("utf-8").split(' '):
+        try:
+            coords.append(float(val))
+        except ValueError:
+            continue
+    return _np.array(coords).reshape(3,1)

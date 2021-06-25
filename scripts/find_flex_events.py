@@ -8,72 +8,133 @@ Therefore, we need to choose GPS satellites that can actually have flex power ev
 '''
 import sys as _sys
 import argparse
+import pandas as _pd
 
 import numpy as _np
-import pandas as _pd
+from numpy.core.umath_tests import inner1d
 
 import matplotlib.pyplot as _plt
 import matplotlib.dates as mdates
 from datetime import timedelta as _timedelta
+
 from pathlib import Path as _Path
 
-from gn_lib.gn_download import get_sp3, gpsweekD, get_rinex3
 from read_metadata import df_sat_info, svn_prn_dates
 
+
+from gn_lib.gn_io.rinex import _read_rnx, _rnx_pos
+from gn_lib.gn_io.sp3 import read_sp3 as _read_sp3
+from gn_lib.gn_download import gpsweekD, download_rinex3, download_sp3
+from gn_lib.gn_datetime import j20002datetime
 from gn_lib.gn_transform import xyz2llh_heik, llh2rot
 
 
-def get_load_rinex(station, year, doy, codes, dwndir):
+def load_rnxs(rnxs):
     '''
-    Get and/or load the Rinex3 file for a given day
-
-    Input:
-    station - IGS station of interest - str
-    year - the year of interest - str
-    doy - doy of year - str
-    codes - the observation codes of interest - comma separated str
+    rnxs: List of paths to RINEX files to load
     '''
-
-    rnx_filepath = _Path(f"/home/ron-maj/pea/proc/data/{station}_R_{year}{doy}0000_01D_30S_MO.crx")
-    if not rnx_filepath.is_file():
-        get_rinex3(year,doy,station,'/home/ron-maj/pea/proc/data')
-    else:
-        print('\ncrx file already exists')
-        print(rnx_filepath)
-
-    return gr.load(
-        rnx_filepath,
-        meas = codes.split(','),
-        use = 'G'
-        )
+    obs = _read_rnx(rnxs[0])
+    if len(rnxs)>1:
+        for rnx in rnxs[1:]:
+            obs_add = _read_rnx(rnx)
+            obs = obs.combine_first(obs_add)
+    return obs
 
 
-def get_load_sp3(year, doy, dwndir):
+def load_sp3s(sp3s, rec_loc=None, add_nad=True, add_el=True, add_az=True, add_dist=True):
     '''
-    Get and/or load the sp3 file for a given day
+    sp3s: List of paths to SP3 files to load
+    rec_loc: The receiver location in XYZ coords
+    add_*: If rec_loc given, choose which options are added
+    '''
+    orb = _read_sp3(sp3s[0])
+    if len(sp3s)>1:
+        for sp3 in sp3s[1:]:
+            orb_add = _read_sp3(sp3)
+            orb = orb.combine_first(orb_add)
+    orb = orb.EST
 
-    Input:
-    year - the year of interest - str
-    doy - doy of year - str
+    if (type(rec_loc)==list) or (type(rec_loc)==_np.ndarray):
+        add_all_angs(
+            df=orb, 
+            station_pos=rec_loc,
+            nad=add_nad,
+            el=add_el,
+            az=add_az,
+            dist=add_dist)
+    return orb
 
-    Output
-    Xarray.Dataset
-    '''    
 
-    # Filename we are looking for:
-    gpswkD = gpsweekD(year,doy)
-    filename = f'igs{gpswkD}.sp3'
-    sp3_filepath = _Path(f"/home/ron-maj/pea/proc/products/{filename}")
+def get_load_rnxsp3(start_date, end_date, station, directory, sp3pref='igs'):
+    '''
+    Start date format: "YYYY-MM-DD" - str
+    End   date format: "YYYY-MM-DD" - str
+    Frequency  format: "xU"        - str
+    x -> number of units U
+    U -> unit of time, e.g. "S" (sec), "H" (hour), "D" (day), etc.
+    directory : path to download files to - str
+    '''
     
-    if not sp3_filepath.is_file():
-        get_sp3(int(year),int(doy))
-        _Path(f'sp3_files/{filename}').replace(sp3_filepath)
+    dt_list = _pd.date_range(
+        start = start_date,
+        end = end_date,
+        freq = '1D'
+    ).to_pydatetime()
     
-    else:
-        print('\nsp3 file already exists')
-        print(sp3_filepath)
+    download_rinex3(dates=dt_list, station=station, dest=directory, dwn_src='cddis')
+    download_sp3(dates=dt_list, dest=directory, pref=sp3pref, dwn_src='cddis')
     
-    return gr.load(sp3_filepath)
+    rnxs = list(_Path(directory).glob('*.rnx'))
+    print('Loading rnx files ...')
+    df_rnx = load_rnxs(rnxs)
+    df_rnx = df_rnx.swaplevel(axis=1).EST
+
+    sp3s = list(_Path(directory).glob('*.sp3'))
+    rec_pos = _rnx_pos(rnxs[0])
+    print('Loading sp3 files ...')
+    df_sp3 = load_sp3s(sp3s, rec_loc=rec_pos)
+    
+    # Create long index for sp3 data (initially once every 15 min)
+    dt_index = _pd.date_range(
+        start = dt_list[0].strftime('%Y-%m-%d %H:%M:%S'),
+        end = dt_list[0].strftime('%Y-%m-%d')+' 23:59:30',
+        freq='30S'
+    )
+
+    for dt in dt_list[1:]:
+        dt_index = dt_index.append(_pd.date_range(start=dt, end=dt.strftime('%Y-%m-%d')+' 23:59:30', freq='30S'))
+    dt_count = len(dt_index)
+
+    sv_index = []
+    for val in df_sp3.index.get_level_values(1).unique().values:
+        sv_index += [val]*dt_count
+
+    dt_idx = list(dt_index.values)*len(df_sp3.index.get_level_values(1).unique().values)
+    
+    df_sp3_reset = df_sp3.reset_index()
+    colsp3 = df_sp3_reset.columns
+    df_sp3_reset.columns = ['time','sv']+list(colsp3[2:])
+    df_sp3_reset['time'] = j20002datetime(df_sp3_reset['time'].values)
+    df_sp3 = df_sp3_reset.set_index(['time','sv'])
+
+    long_indices = _pd.MultiIndex.from_arrays([dt_idx,sv_index],names=['time','sv'])
+
+    # Interpolate angle data in sp3 dataframe
+    df_long_sp3 = _pd.merge(_pd.DataFrame(index=long_indices),df_sp3[['nad_ang','el_ang','az_ang','dist']],how='outer',on=['time','sv'])
+    df_long_sp3['nad_ang'] = df_long_sp3.reset_index().pivot(index='time',columns='sv',values='nad_ang').interpolate(method='cubic').melt(ignore_index=False)[['value']].set_index(long_indices).value
+    df_long_sp3['el_ang'] = df_long_sp3.reset_index().pivot(index='time',columns='sv',values='el_ang').interpolate(method='cubic').melt(ignore_index=False)[['value']].set_index(long_indices).value
+    df_long_sp3['az_ang'] = df_long_sp3.reset_index().pivot(index='time',columns='sv',values='az_ang').interpolate(method='cubic').melt(ignore_index=False)[['value']].set_index(long_indices).value
+    df_long_sp3['dist'] = df_long_sp3.reset_index().pivot(index='time',columns='sv',values='dist').interpolate(method='cubic').melt(ignore_index=False)[['value']].set_index(long_indices).value
+
+    # Combine rnx and sp3 data - output dataframe
+    df_rnx_reset = df_rnx.reset_index()
+    df_rnx_reset['level_1'] = j20002datetime(df_rnx_reset['level_1'].values)
+
+    cols = df_rnx_reset.columns
+    df_rnx_reset = df_rnx_reset[cols[1:]]
+    df_rnx_reset.columns = ['time','sv'] + list(cols[3:])
+
+    return _pd.merge(df_rnx_reset.set_index(['time','sv']).sort_index(),df_long_sp3[['nad_ang','el_ang','az_ang','dist']],how='outer',on=['time','sv'])
 
 
 def rmv_cons(num_list):
@@ -218,7 +279,7 @@ def quick_plot(obs, code, station, st_idx, end_idx, title_add):
 
 
 def add_all_angs(
-    df_sats_pos,
+    df,
     station_pos,
     nad=True,
     el=True,
@@ -233,7 +294,7 @@ def add_all_angs(
     The raw data can also be returned as a tuple of lists (nad_angs, el_angs, az_angs, distances)
     '''
     
-    sat_pos_arr = df_sats_pos[['x','y','z']].to_numpy(dtype=float)
+    sat_pos_arr = df[['X','Y','Z']].to_numpy(dtype=float)
     disp_vec_arr = sat_pos_arr - (station_pos.reshape(1,3)/1000)
     
     nad_angs = []
@@ -245,7 +306,7 @@ def add_all_angs(
     sat_norm =_np.linalg.norm(sat_pos_arr,axis=1)
 
     if nad:
-        df_sats_pos['nad_ang'] =_np.arccos(inner1d(sat_pos_arr, disp_vec_arr)/(sat_norm*sat_rec_dist))*(180/_np.pi)    
+        df['nad_ang'] =_np.arccos(inner1d(sat_pos_arr, disp_vec_arr)/(sat_norm*sat_rec_dist))*(180/_np.pi)    
     
     if el or az:
         station_llh = xyz2llh_heik(station_pos.T)[0]
@@ -255,12 +316,12 @@ def add_all_angs(
         enu_bar = enu_pos /_np.linalg.norm(enu_pos,axis=1).reshape(len(enu_pos),1)
         
         if el:
-            df_sats_pos['el_ang'] =_np.arcsin(enu_bar[:,2])*(180/_np.pi)
+            df['el_ang'] =_np.arcsin(enu_bar[:,2])*(180/_np.pi)
         if az:
-            df_sats_pos['az_ang'] =_np.arctan2(enu_bar[:,0],enu_bar[:,1])
+            df['az_ang'] =_np.arctan2(enu_bar[:,0],enu_bar[:,1])
     
     if dist:
-        df_sats_pos['dist'] = sat_rec_dist
+        df['dist'] = sat_rec_dist
 
     if return_lists:
         return nad_angs, el_angs, az_angs, distances
@@ -437,9 +498,9 @@ if __name__ == "__main__":
 
 '''
 For the new find_flex_events 
-- get sp3 and rinex 3 files
-- load using new read_sp3 and read_rnx functions
-- combine using code I've used in jupyter notebook
+- X get sp3 and rinex 3 files 
+- X load using new read_sp3 and read_rnx functions 
+- X combine using code I've used in jupyter notebook
 - add all angles and distances
 - filter based on elevation
 - search for flex events 

@@ -165,7 +165,7 @@ def dates_type_convert(dates):
         dates = [_np.datetime64(dates)]
         typ_dt = type(dates)
 
-    if type(dates) == list:
+    if (type(dates) == list) or (type(dates) == _np.ndarray):
         dt_list = []
         for dt in dates:
             if type(dt) == _datetime:
@@ -178,7 +178,7 @@ def dates_type_convert(dates):
     return dt_list
 
 
-def get_rinex3(dates, station, dest, dwn_src='cddis', ftps=False):
+def download_rinex3(dates, station, dest, dwn_src='cddis', ftps=False):
     '''
     Function used to get the RINEX3 observation file from download server of choice, default: CDDIS
     '''
@@ -187,6 +187,10 @@ def get_rinex3(dates, station, dest, dwn_src='cddis', ftps=False):
 
     f_pref = f'{station}_R_'
     f_suff_crx = f'0000_01D_30S_MO.crx.gz'
+
+    # Create directory if doesn't exist:
+    if not _Path(dest).is_dir():
+        _Path(dest).mkdir(parents=True)
 
     # If ftps not provided, establish ftps, otherwise download straight from provided ftps:
     if not ftps:
@@ -210,7 +214,7 @@ def get_rinex3(dates, station, dest, dwn_src='cddis', ftps=False):
             check_n_download(f, dwndir=dest, ftps=ftps, uncomp=True, remove_crx=True)
 
 
-def get_sp3(dates, dest, pref='igs', dwn_src='cddis', ftps=False):
+def download_sp3(dates, dest, pref='igs', dwn_src='cddis', ftps=False):
     '''
     Function used to get the sp3 orbit file from download server of choice, default: CDDIS
 
@@ -222,7 +226,14 @@ def get_sp3(dates, dest, pref='igs', dwn_src='cddis', ftps=False):
     '''
 
     # Convert input to list of datetime dates (if not already)
-    dt_list = dates_type_convert(dates)
+    if (type(dates) == list) and (type(dates[0]) == _datetime):
+        dt_list = dates
+    else:
+        dt_list = dates_type_convert(dates)
+
+    # Create directory if doesn't exist:
+    if not _Path(dest).is_dir():
+        _Path(dest).mkdir(parents=True)
 
     # If ftps not provided, establish ftps, otherwise download straight from provided ftps:
     if not ftps:
