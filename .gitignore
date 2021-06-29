@@ -13,6 +13,7 @@
 
 # data directories in examples
 examples/*/
+examples/*.gz
 
 # ignore cmake build
 src/build/
