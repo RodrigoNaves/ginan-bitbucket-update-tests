@@ -6,25 +6,19 @@ Given a station and time range, find flex events.
 With flex events it is important to remember only GPS Block IIR-M and onwards have this capability
 Therefore, we need to choose GPS satellites that can actually have flex power events
 '''
-import sys as _sys
 import argparse
-import pandas as _pd
-
 import numpy as _np
-from numpy.core.umath_tests import inner1d
+import pandas as _pd
 
 import matplotlib.pyplot as _plt
 import matplotlib.dates as mdates
 from datetime import timedelta as _timedelta
-
 from pathlib import Path as _Path
-
-from read_metadata import df_sat_info, svn_prn_dates
 
 
 from gn_lib.gn_io.rinex import _read_rnx, _rnx_pos
 from gn_lib.gn_io.sp3 import read_sp3 as _read_sp3
-from gn_lib.gn_download import gpsweekD, download_rinex3, download_sp3
+from gn_lib.gn_download import download_rinex3, download_sp3
 from gn_lib.gn_datetime import j20002datetime
 from gn_lib.gn_transform import xyz2llh_heik, llh2rot
 
@@ -94,7 +88,7 @@ def get_load_rnxsp3(start_date, end_date, station, directory, sp3pref='igs'):
     print('Loading sp3 files ...')
     df_sp3 = load_sp3s(sp3s, rec_loc=rec_pos)
     
-    # Create long index for sp3 data (initially once every 15 min)
+    # Create long index for sp3 data (30-sec spacing)
     dt_index = _pd.date_range(
         start = dt_list[0].strftime('%Y-%m-%d %H:%M:%S'),
         end = dt_list[0].strftime('%Y-%m-%d')+' 23:59:30',
@@ -137,145 +131,145 @@ def get_load_rnxsp3(start_date, end_date, station, directory, sp3pref='igs'):
     return _pd.merge(df_rnx_reset.set_index(['time','sv']).sort_index(),df_long_sp3[['nad_ang','el_ang','az_ang','dist']],how='outer',on=['time','sv'])
 
 
-def rmv_cons(num_list):
+def find_flex_events(
+    df_in, 
+    codes, 
+    station='None',
+    start_floor=33.0, 
+    end_floor=30.0, 
+    jump=5.0, 
+    el_min=15.0,
+    GPS_flex=True,
+    csv_out=True,
+    csv_dest=False,
+    csv_name=False,
+    plot=False, 
+    plot_dest=False, 
+    plot_spread=1500,
+    file_nameorder=['date','prn','code']):
     '''
-    Remove consecutive nums in list (there will be overlap in plotting the events anyway)
+    Return a DataFrame with "flex" events given the DataFrame df_in
+    Output a .csv file with DataFrame information
     '''
-    num_list = sorted(num_list)
-    if num_list:
-        return [num_list[0]] + [
-                                st 
-                                for idx,st in enumerate(num_list) 
-                                if (idx != 0) & (st > num_list[idx-1] + 10)
-                                ]
+    # Set up the dataframe that will be exported:
+    cols = ['Station','Time','Event_type','PRN', 'Code']
+    df_fe = _pd.DataFrame(columns = cols)        
+    
+    if el_min:
+        df_c = df_in[df_in['el_ang']>el_min]
     else:
-        return []
+        df_c = df_in
 
+    if GPS_flex:
+        df_c = df_c[df_c.index.get_level_values('sv').str.startswith('G')]
 
-def get_flex_sats(obs):
-    '''
-    Based on the given dataset 'obs', get list of Flex sats
+    for code in codes:
 
-    Input
-    obs - 
+        # Filter the df_in for the code input:
+        dfc = df_c[[code]]
 
-    Output
-    List of GPS satellite PRNs that are in site and have flex mode
-    '''
-    # List of GPS satellites found in the obs data store (Rinex)
-    gps_list = [sat for sat in obs.sv.values if 'G' in sat]
-
-    # Get list of GPS satellites that have flex power capabilities
-    flex_blocks = ['GPS-IIR-M','GPS-IIF','GPS-IIIA']
-    df_fb = df_sat_info(('Block',flex_blocks))
-    flex_svns = list(df_fb['SVN'])
-
-    # Establish start and end times for the period of interest
-    st = obs.time.values[0]
-    en = obs.time.values[-1]
-    # Convert the SVNs to PRNs for the time period of interest
-    flex_prns = []
-    for svn in flex_svns:
-        arr = svn_prn_dates(svn,st,en)['PRN'].values
-        if arr.size == 0:
+        for prn in dfc.index.get_level_values('sv').unique():
+        
+            # The values of the code being investigated
+            prn_mask = dfc.index.get_level_values('sv') == prn
+            dfv = dfc[prn_mask].droplevel('sv')
+            vals = dfv.to_numpy(dtype=float)
+            
+            # Look for flex events by comparing current value to four increments ago
+            for i,v in enumerate(vals[4:]):
+                
+                if (v > vals[i]+jump) & (v > start_floor):
+                        new_row = {
+                            'Station':station,
+                            'Time':dfv.index[i+4],
+                            'Event_type':'Start',
+                            'PRN':prn,
+                            'Code':code
+                        }
+                        df_fe = df_fe.append(new_row,ignore_index=True)
+                
+                elif (v < vals[i]-jump) & (v > end_floor):
+                        new_row = {
+                            'Station':station,
+                            'Time':dfv.index[i+4],
+                            'Event_type':'End',
+                            'PRN':prn,
+                            'Code':code
+                        }
+                        df_fe = df_fe.append(new_row,ignore_index=True)
+    
+    # Remove duplicates and consecutive time periods finds
+    df_fe = df_fe.drop_duplicates()
+    df_out = _pd.DataFrame(columns=['Station','Time','Event_type','PRN','Code'])
+    
+    for i,t in enumerate(df_fe['Time'][1:]):
+        if t == df_fe['Time'][i]+_pd.Timedelta(seconds=30):
             continue
         else:
-            flex_prns.append(arr[0])
-
-    # Intersection of visible GPS sats and Flex enabled GPS sats:
-    return [x for x in gps_list if x in flex_prns]
-
-
-
-# Find possible flex power events
-def find_flex_events(station, orb, obs, code, start_floor, end_floor, frac):
-
-    # Get a list of the GPS satellites with flex mode and in view
-    gps_flex = get_flex_sats(obs)
-
-    # Predefine lists for memoing 
-    st_idxs = []
-    end_idxs = []
+            df_out = df_out.append(df_fe.iloc[i])
     
-    # Set up the dataframe that will be exported:
-    cols = ['Station','Time','Event Type','GPS Satellite']
-    df = _pd.DataFrame(
-        columns = cols
-    )            
-    
-    for gps in gps_flex:
-        
-        # The values of the code being investigated
-        vals = obs[code].sel(sv = gps).values
-        
-        # Look for flex events by comparing current value to four increments ago
-        for i,v in enumerate(vals[4:]):
+    if csv_out:
+        if not csv_dest:
+            csv_dest = _Path().cwd()
+        else:
+            csv_dest = _Path(csv_dest)
+            if not csv_dest.is_dir():
+                csv_dest.mkdir(parents=True)
+
+        if not csv_name:
+            f1 = df_in.index.get_level_values('time')[0].date().strftime('%Y%j')
+            f2 = df_in.index.get_level_values('time')[-1].date().strftime('%Y%j')
+            csv_f = csv_dest/f'Flex_{station}_{f1}-{f2}.csv'    
+            df_out.to_csv(str(csv_f),index=False)
+        else:
+            csv_f = csv_dest/csv_name
+            df_out.to_csv(str(csv_f))
+
+
+    if plot:
+        if not plot_dest:
+            plot_dest = _Path().cwd()
+        else:
+            plot_dest = _Path(plot_dest)
+            if not plot_dest.is_dir():
+                plot_dest.mkdir(parents=True)
+
+        for code in codes:
+
+            # Filter the df_in for the code input:
+            dfc = df_c[[code]]
+            dfp = dfc.reset_index().pivot(index='time',columns='sv',values=code)
             
-            # If current greater by some fraction 'frac', store in df as 'Start'
-            if (v > vals[i]*(1.0+frac)) & (v > start_floor):
-                #print(f'GPS Satellite {gps} has possible start event at index {i+4}')
-                if i+4 not in st_idxs:
-                    st_idxs.append(i+4)
-                    new_row = {
-                        'Station':station,
-                        'Time':obs.time.values[i+4],
-                        'Event Type':'Start',
-                        'GPS Satellite':gps
-                    }
-                    df = df.append(new_row,ignore_index=True)
-            
-            # If current less by some fraction 'frac', store in df as 'End'
-            elif (v < vals[i]*(1.0-frac)) & (v > end_floor):
-                #print(f'GPS Satellite {gps} has possible end event at index {i+4}')
-                if i+4 not in end_idxs:
-                    end_idxs.append(i+4)
-                    new_row = {
-                        'Station':station,
-                        'Time':obs.time.values[i+4],
-                        'Event Type':'End',
-                        'GPS Satellite':gps
-                    }
-                    df = df.append(new_row,ignore_index=True)
+            for i in df_out.index:
+                fig1,ax1 = _plt.subplots()
+                ax1.tick_params(axis='x', labelsize=14)
+                ax1.tick_params(axis='y', labelsize=14)
+                
+                row = df_out.loc[i]
+                date_str = row['Time'].date().strftime('%Y-%m-%d')
+                datetime_str = row['Time'].strftime('%Y%m%d-%H%M')
+                cond1 = dfp.index > row['Time']-_pd.Timedelta(seconds=plot_spread)
+                cond2 = dfp.index < row['Time']+_pd.Timedelta(seconds=plot_spread)
+                dfp[cond1 & cond2][row['PRN']].plot(figsize=(12,8),ax=ax1)
+                
+                ax1.set_xlabel('Time',fontsize=16)
+                ax1.set_ylabel(f'$C/N_0$ {row["Code"]} (dB-Hz)',fontsize=16)
+                ax1.set_title(f'Flex Event - {row["Event_type"]} - {row["Code"]} - {row["PRN"]} - {date_str}',fontsize=18)
 
-    sts = rmv_cons(st_idxs)
-    ens = rmv_cons(end_idxs)
-
-    return sts, ens, df
-
-
-# Use a quick plot function (not using the obs_code_plot here)
-def quick_plot(obs, code, station, st_idx, end_idx, title_add):
+                plt_names = []
+                for name in file_nameorder:
+                    if name == 'date':
+                        plt_names.append(datetime_str)
+                    elif name == 'prn':
+                        plt_names.append(row["PRN"])
+                    elif name == 'code':
+                        plt_names.append(row["Code"])
     
+                out_f = plot_dest/f'Flex_{"_".join(plt_names)}.png'
+                fig1.savefig(str(out_f),facecolor='w',bbox_inches="tight")
+                _plt.close(fig=fig1)
 
-    gps_flex = get_flex_sats(obs)
-
-    df = _pd.DataFrame(
-        data = obs[code].sel(sv = gps_flex).values[st_idx:end_idx],
-        index = obs.time.values[st_idx:end_idx],
-        columns = gps_flex
-    )
-
-    vis_gps_list = [sat for sat in gps_flex if not df[sat].isnull().all()]
-
-    fig1,ax1 = _plt.subplots() 
-    df[vis_gps_list].plot(ax = ax1)
-    ax1.legend(loc = 'upper left')
-    ax1.set_ylabel('Signal strength for obs code: '+code+' (dB-Hz)')
-    dts = _pd.to_datetime(obs.time.values[st_idx+30])
-    
-    
-
-    if not _Path.exists(_Path('flex_plots')):
-        _Path.mkdir(_Path('flex_plots')) 
-
-    if not _Path.exists(_Path(f'flex_plots/{dts.strftime("%Y-%m-%d")}')):
-        _Path.mkdir(_Path(f'flex_plots/{dts.strftime("%Y-%m-%d")}'))
-
-    fname = f'{station}_'+dts.strftime('%Y-%m-%d_%H%M_')+f'{title_add}_{code}'
-    fig1.suptitle(fname)
-    fig1.savefig(f'flex_plots/{dts.strftime("%Y-%m-%d")}/{fname}.png',format='png')
-    _plt.close()
-    return #fig1.show()
+    return df_out
 
 
 def add_all_angs(
@@ -306,7 +300,7 @@ def add_all_angs(
     sat_norm =_np.linalg.norm(sat_pos_arr,axis=1)
 
     if nad:
-        df['nad_ang'] =_np.arccos(inner1d(sat_pos_arr, disp_vec_arr)/(sat_norm*sat_rec_dist))*(180/_np.pi)    
+        df['nad_ang'] =_np.arccos(_np.einsum("ij,ij->j", sat_pos_arr.T, disp_vec_arr.T)/(sat_norm*sat_rec_dist))*(180/_np.pi)    
     
     if el or az:
         station_llh = xyz2llh_heik(station_pos.T)[0]
@@ -352,146 +346,147 @@ if __name__ == "__main__":
         )
 
     parser.add_argument(
+        "-doy",
+        "--day_of_year", 
+        action='store_true', default=False,
+        help = "Enter Dates in YYYY-DOY format instead"
+        )
+
+    parser.add_argument(
         "obs_codes",
-        help = 'RINEX3 Observation code/s to search, e.g. "S1W" or "S2W" '
+        help = 'Comma separated RINEX3 Observation code/s to search, e.g. S1W,S2W '
         )
 
     parser.add_argument(
-        "start_floor",
-        help = 'Min. Decibel-Hertz level at which to search for start of flex events (anything below ignored)'
-        )
-
-    parser.add_argument(
-        "end_floor",
-        help = 'Min. Decibel-Hertz level at which to search for end of flex events (anything below ignored)'
-        )
-
-    parser.add_argument(
-        "frac",
-        help = 'Fractional increase/decrease used to identify Start/End of event'
-        )
-
-    parser.add_argument(
-        "el_min",
-        help = 'Min. elevation angle of satellite to consider (anything below ignored)'
-        )
-
-    parser.add_argument(
-        "dwn_dir",
+        "data_dir",
         help = 'The download directory for RINEX3 and sp3 files'
         )
 
+    parser.add_argument(
+        "-c",
+        "--csv",
+        action='store_true', default=True,
+        help = 'Produce plots of Flex events'
+    )
+
+    parser.add_argument(
+        "-c_dir",
+        "--flex_csv_dir",
+        action='store', default='pwd',
+        help = 'The directory to save csv files with list of flex events'
+        )
 
     parser.add_argument(
         "-p",
         "--plot",
-        help = 'Produce plots of Flex events',
-        action = "store_true"
+        action='store_true', default=False,
+        help = 'Produce plots of Flex events'
     )
+
+    parser.add_argument(
+        "-p_dir",
+        "--flex_plt_dir",
+        action='store', default='pwd',
+        help = 'The directory to save png plot files of flex events'
+        )
+
+    parser.add_argument(
+        "-p_span",
+        "--plot_time_span", type=float,
+        action='store', default=1500.0,
+        help = 'The time span for the plot (+/- seconds from time of the flex event)'
+        )
+
+    parser.add_argument(
+        "-p_name_ord",
+        "--plot_naming_order",
+        action='store', default='date,prn,code',
+        help = '''Plot naming convention - comma separated and must include "date", "prn" and "code"
+        Default: date,prn,code '''
+        )
+
+    parser.add_argument(
+        "-j",
+        "--jump", type=float,
+        action='store', default=5.0,
+        help = 'Increase/decrease of C/N0 used to identify Start/End of event'
+        )
+
+    parser.add_argument(
+        "-el_min",
+        "--elevation_min", type=float,
+        action='store', default=0.0,
+        help = 'Min. elevation angle of satellite to consider (anything below ignored)'
+        )
+
+    parser.add_argument(
+        "-st_fl",
+        "--start_floor", type=float,
+        action='store', default=33.0,
+        help = 'Min. Decibel-Hertz level at which to search for start of flex events (anything below ignored)'
+        )
+
+    parser.add_argument(
+        "-en_fl",
+        "--end_floor", type=float,
+        action='store', default=30.0,
+        help = 'Min. Decibel-Hertz level at which to search for end of flex events (anything below ignored)'
+        )
+    
 
 
     # Get command line args:
     args = parser.parse_args()
     # And start assigning to variables:
     station = args.station
-    st_date = _pd.to_datetime(args.st_date)
-    en_date = _pd.to_datetime(args.en_date)
+    st_date = args.st_date
+    en_date = args.en_date
+    doy = args.day_of_year
     codes = args.obs_codes
-    st_lvl = float(args.start_floor)
-    en_lvl = float(args.end_floor)
-    frac = float(args.frac)
-    el_min = float(args.el_min)
-    dwn_dir = args.dwn_dir
+    st_lvl = args.start_floor
+    en_lvl = args.end_floor
+    el_min = args.elevation_min
+    jump = args.jump
+    dwn_dir = args.data_dir
+    csv_flag = args.csv
+    plot_flag = args.plot
+    p_span = args.plot_time_span
+    p_name_list = args.plot_naming_order.split(',')
+    
+    if args.flex_csv_dir == 'pwd':
+        c_dir = False
+    else:
+        c_dir = args.flex_csv_dir
 
-    date_range = [st_date + _timedelta(days = x) for x in range((en_date - st_date).days + 1)]
+    if args.flex_plt_dir == 'pwd':
+        p_dir = False
+    else:
+        p_dir = args.flex_plt_dir
 
-    for date in date_range:
-        # Get (download) or just load the necessary rinex and sp3 files for given day
-        obs = get_load_rinex(station, date.strftime('%Y'), date.strftime('%j'), codes)
-        sp3 = get_load_sp3(date.year, date.dayofyear)
+    if doy:
+        st_date = _pd.to_datetime(st_date).strftime('%Y-%m-%d')
+        en_date = _pd.to_datetime(en_date).strftime('%Y-%m-%d')
 
-        # Calculate the elevation angle for all satellites and add to obs xarrau DataSet
-        obs = add_elevation_angles(sp3,obs)
-
-        # Filter for values that have elevation angles greater than 'el_min'
-        obs_el_mask = obs.where(obs.el_ang > el_min)
-
-        # Run through each inputted code
-        for code in codes.split(','): 
+    # Download and load RINEX and SP3 files into DataFrame:
+    df = get_load_rnxsp3(start_date=st_date,end_date=en_date,station=station,directory=dwn_dir,sp3pref='igr')
+    # Find flex events, plot if chosen:
+    df_out = find_flex_events(
+        df_in=df, 
+        codes=codes.split(','), 
+        station=station,
+        start_floor=st_lvl, 
+        end_floor=en_lvl, 
+        jump=jump, 
+        el_min=el_min,
+        GPS_flex=True,
+        csv_out=csv_flag,
+        csv_dest=c_dir,
+        csv_name=False,
+        plot=plot_flag, 
+        plot_dest=p_dir, 
+        plot_spread=p_span,
+        file_nameorder=p_name_list)
             
-            
-
-            sts, ens, df = find_flex_events(
-                                            station = station, 
-                                            orb = sp3, 
-                                            obs = obs_el_mask, 
-                                            code = code, 
-                                            start_floor = st_lvl, 
-                                            end_floor = en_lvl, 
-                                            frac = frac
-            )
-
-            # If there are any events detected (non-empty df) write to a .csv file
-            if not df.empty:
-                # Order dataframe in terms of time:
-                df.set_index('Time', inplace=True)
-                df.sort_index(inplace=True)
-                cl = sts + ens
-                dts = _pd.to_datetime(obs.time.values[cl[0]])
-                
-                # Check directories exist:
-                if not _Path.exists(_Path('flex_events')):
-                    _Path.mkdir(_Path('flex_events'))
-                if not _Path.exists(_Path(f'flex_events/{dts.strftime("%Y-%m-%d")}')):
-                    _Path.mkdir(_Path(f'flex_events/{dts.strftime("%Y-%m-%d")}'))
-                
-                # Save dataframe to csv
-                fname = f'{station}_'+dts.strftime('%Y-%m-%d_%H%M_')+f'_{code}'
-                df.to_csv(f'flex_events/{dts.strftime("%Y-%m-%d")}/{fname}.csv')
-
-                # If the plot option has been chosen in the 
-                if args.plot:
-                    
-                    if sts:
-                        for pt in sts:
-                            # Start and end points/indexes to the plot
-                            stpt = pt-30
-                            enpt = pt+30
-                            # Adjust if start points are before earliest or after latest index:
-                            if stpt < 0:
-                                stpt = 0
-                            
-                            if enpt > 2880:
-                                enpt = 2880
-                            # Plot
-                            quick_plot(
-                                obs_el_mask,
-                                code,
-                                station,
-                                stpt,
-                                enpt,
-                                'start'
-                            )
-
-                    if ens:
-                        for pt in ens:
-                            stpt = pt-30
-                            enpt = pt+30
-
-                            if stpt < 0:
-                                stpt = 0
-                            
-                            if enpt > 2880:
-                                enpt = 2880
-
-                            quick_plot(
-                                obs_el_mask,
-                                code,
-                                station,
-                                stpt,
-                                enpt,
-                                'end'
-                            )
 
 
 
@@ -501,7 +496,7 @@ For the new find_flex_events
 - X get sp3 and rinex 3 files 
 - X load using new read_sp3 and read_rnx functions 
 - X combine using code I've used in jupyter notebook
-- add all angles and distances
-- filter based on elevation
+- X add all angles and distances
+- X filter based on elevation
 - search for flex events 
 '''

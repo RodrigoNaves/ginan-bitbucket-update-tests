@@ -53,20 +53,29 @@ def check_n_download(comp_filename, dwndir, ftps, uncomp=True, remove_crx=False)
     if not check_file_present(comp_filename, dwndir):
         
         print(f'Downloading {comp_filename}')
-        
-        with open(comp_file, 'wb') as local_f:
-            ftps.retrbinary(f'RETR {comp_filename}', local_f.write)
-        
-        if uncomp:
-            _sp.run(['uncompress',f'{comp_file}'])
-            # If RINEX file, need to convert from Hatanaka compression
-            if comp_filename.endswith('.crx.gz'):
-                crx_file = _Path(dwndir+comp_filename[:-3])
-                _sp.run(['crx2rnx',f'{str(crx_file)}'])
+        try:
+            
+            with open(comp_file, 'wb') as local_f:
+                ftps.retrbinary(f'RETR {comp_filename}', local_f.write)
+            
+            try:
+            
+                if uncomp:
+                    _sp.run(['uncompress',f'{comp_file}'])
+                    # If RINEX file, need to convert from Hatanaka compression
+                    if comp_filename.endswith('.crx.gz'):
+                        crx_file = _Path(dwndir+comp_filename[:-3])
+                        _sp.run(['crx2rnx',f'{str(crx_file)}'])
 
-            print(f'Downloaded and uncompressed {comp_filename}')
-        else:
-            print(f'Downloaded {comp_filename}')
+                    print(f'Downloaded and uncompressed {comp_filename}')
+                else:
+                    print(f'Downloaded {comp_filename}')
+            
+            except:
+                print(f'CRX file {comp_file} did not uncompress')
+
+        except:
+            print(f"Unsuccessful Download from {ftps.__dict__['host']}")
         
         if remove_crx:
             if comp_filename.endswith('.crx.gz'):
