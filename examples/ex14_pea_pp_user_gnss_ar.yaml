@@ -1,4 +1,4 @@
-# Ex01 - PPP Ionosphere-Free Observable Example
+# ex12 - PPP Ionosphere-Free Observable Example GPS+GAL
 
 input_files:
 
@@ -8,16 +8,13 @@ input_files:
     snxfiles: [ "igs*.snx"          ]  # SINEX file for meta data and initial position
     blqfiles: [ OLOAD_GO.BLQ        ]  # ocean loading is applied
     navfiles: [ brdm1990.19p        ]  # broadcast navigation file
-    sp3files: [ igs20624.sp3        ]  # satellite orbit files in SP3 format
-    clkfiles: [ igs20624.clk_30s    ]  # Clk files
-    #sp3files:   [ GFZ0MGXRAP_20191990000_01D_05M_ORB.SP3 ]     # satellite orbit files in SP3 format
-    #erpfiles:   [ GFZ0MGXRAP_20191990000_01D_01D_ERP.ERP ]     #config parser doesn't accept weekly files yet.
-    #dcbfiles:   [ GFZ0MGXRAP_20191990000_01D_30S_ABS.BIA ]     # Hardware bias file (RINEX 2 DCB or bias SINEX)
-    #clkfiles:   [ GFZ0MGXRAP_20191990000_01D_30S_CLK.CLK ]     # Clk file
+    sp3files: [ TUG0R03FIN_20191990000_01D_05M_ORB.SP3 ] # satellite orbit files in SP3 format
+    clkfiles: [ TUG0R03FIN_20191990000_01D_30S_CLK.CLK ] # satellite clock files in RNX CLK format
+    dcbfiles: [ TUG0R03FIN_20191990000_01D_01D_OSB.BIA ] # daily signal biases files
     
 station_data:
 
-    root_stations_directory: /data/ginan/examples/data/
+    root_stations_directory: data/ #need to have it absolute till fixed
 
     rnxfiles:
         # Select files to run by:
@@ -28,22 +25,20 @@ station_data:
 
 output_files:
 
-    root_output_directory:          <CONFIG>/
+    root_output_directory:          <CONFIG>/ #creates another empty <CONFIG> dir inside <CONFIG> if not absolute
 
     # TO DO change trace_level to log_level
     output_trace:                   true
     trace_level:                    2
-    trace_directory:                ./
+    trace_directory:                TUG/
     trace_filename:                 <CONFIG>-<STATION><YYYY><DDD><HH>.TRACE
-
     output_residuals:               true
-
     output_sinex:                   true
     sinex_directory:                ./
 
 output_options:
 
-    config_description:             ex11
+    config_description:             ex14
     analysis_agency:                GAA
     analysis_center:                Geoscience Australia
     analysis_program:               AUSACS
@@ -67,10 +62,10 @@ processing_options:
     process_sys:
         gps:            true
         glo:            false
-        gal:            false
+        gal:            true
         bds:            false
 
-    elevation_mask:     7   #degrees
+    elevation_mask:     10   #degrees
 
     tide_solid:         true
     tide_pole:          true
@@ -121,25 +116,21 @@ default_filter_parameters:
 
         pos:
             estimated:          true
-            sigma:              [0.1]
-            proc_noise:         [0.001]
-            proc_noise_dt:      hour
-            #apriori:                                   # taken from other source, rinex file etc.
-            #frame:              xyz #ned
-            #proc_noise_model:   Gaussian
+            sigma:              [100.0] # check if this is reasonable 
+            proc_noise:         [100.0]
+            proc_noise_dt:      second
+
 
         clk:
             estimated:          true
             sigma:              [0]
-            proc_noise:         [1.8257418583505538]
-            proc_noise_dt:      second
+            proc_noise:         [1.8257418583505538] #where is this coming from?
             #proc_noise_model:   Gaussian
 
         clk_rate:
             estimated:          false
             sigma:              [500]
             proc_noise:         [1e-4]
-            proc_noise_dt:      second
             clamp_max:          [+500]
             clamp_min:          [-500]
 
@@ -147,40 +138,54 @@ default_filter_parameters:
             estimated:          true
             sigma:              [60]
             proc_noise:         [0]
-            #proc_noise_dt:      day
-            #proc_noise_model:   RandomWalk
 
         trop:
             estimated:          true
             sigma:              [0.1]
             proc_noise:         [0.3]
             proc_noise_dt:      hour
-            #proc_noise_model:   RandomWalk
 
         trop_grads:
             estimated:          false
             sigma:              [1]
             proc_noise:         [0]
-            proc_noise_dt:      second
-            #proc_noise_model:   RandomWalk
 
     satellites:
 
         clk:
             estimated:          false
             sigma:              [0]
-            proc_noise:         [0.03651483716701108]
-            proc_noise_dt:      second
-            #proc_noise_model:   RandomWalk
+            proc_noise:         [0.03651483716701108] #another magic number
 
         clk_rate:
             estimated:          false
             sigma:              [500]
             proc_noise:         [1e-4]
-            proc_noise_dt:      second
             clamp_max:          [+500]
             clamp_min:          [-500]
 
         orb:
             estimated:          false
+
+ambiguity_resolution_options:
+    Min_elev_for_AR:            15.0
+    GPS_amb_resol:              true
+    GAL_amb_resol:              false
+    
+    WL_mode:                    round           # AR mode for WL: off, round, iter_rnd, bootst, lambda, lambda_alt, lambda_al2, lambda_bie
+    WL_succ_rate_thres:         0.9999
+    WL_sol_ratio_thres:         3.0
+    WL_procs_noise_sat:         0.00001
+    WL_procs_noise_sta:         0.0001
+    
+    NL_mode:                    lambda_bie      # AR mode for WL: off, round, iter_rnd, bootst, lambda, lambda_alt, lambda_al2, lambda_bie
+    NL_succ_rate_thres:         0.9999
+    NL_sol_ratio_thres:         3.0
+    
+    #Set_size_for_lambda:        10
+    #Max_round_iterat:           3
+
+override_filter_parameters:
+
+    stations:
 
