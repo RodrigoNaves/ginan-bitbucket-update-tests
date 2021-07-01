@@ -175,7 +175,7 @@ do
           print*,'Default master POD config file = POD.in'
 		  print*,'To run from default config file: ',trim(pgm_name),' or ',trim(pgm_name),' -c POD.in'
           print*,''
-		  print*,'POD.in config file options by defaut can be overridden on the command line'
+		  print*,'POD.in config file options by default can be overridden on the command line'
           print*,''
           print*,'Command line: ',trim(pgm_name),' -c -m -s -o -e -v -a -p -r -t -n -i -u -q -k -w -y -h '
           print*,''

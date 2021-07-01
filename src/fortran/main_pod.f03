@@ -157,7 +157,7 @@ CALL read_cmdline
 if (trim(yaml_config) .eq. '') then
 ! Check if non-default config file given on the command line
 If ( trim(POD_fname_cfg) .ne. 'DEFAULT' ) then
-	PODfname = trim(POD_fname_cfg)
+    PODfname = trim(POD_fname_cfg)
 End If
 
 ! Check for existance of POD config file
@@ -166,10 +166,10 @@ INQUIRE(FILE=PODfname, EXIST=pod_config_exists)
 
 pgm_name = 'pod'
 If ( .not. pod_config_exists) then
-	call get_command_argument( 0, pgm_name )
+    call get_command_argument( 0, pgm_name )
     write(*,'(3a)') 'No Default config file found (POD.in)  - Type: ',trim(pgm_name),' --help'
     write(*,'(3a)') 'If using a non-default config.filename - Type: ',trim(pgm_name),' -c config.filename'
-	STOP
+    STOP
 End If
 else
 pgm_name = 'pod'
@@ -241,9 +241,11 @@ CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_ic_input_format
 
 ! Initial Conditions reference frame
+if (.not. yaml_found) then
 param_id = 'IC_refsys'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) IC_REF_cfg
+end if
 
 ! Initial Conditions file name
 param_id = 'IC_filename_cfg'

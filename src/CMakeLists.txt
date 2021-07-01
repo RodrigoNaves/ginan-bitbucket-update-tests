@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 cmake_policy(SET CMP0063 NEW)
 
-project(ginarn)
+project(ginan)
 macro(print_all_variables)
     message(STATUS "print_all_variables------------------------------------------{")
     get_cmake_property(_variableNames VARIABLES)
@@ -18,9 +18,9 @@ if ( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif ()
 
 set (CMAKE_Fortran_SOURCE_FILE_EXTENSIONS "f03;F90;f90;for;f;F")
-set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../../lib")
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../../lib")
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../../bin")
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../lib")
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../lib")
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../bin")
 #this bit doesn't work on DARWIN (MAC)
 #have to modify cmake configure file directly
 file(GLOB_RECURSE sources fortran/*.f90 fortran/*.F90 fortran/*.f03 fortran/*.f fortran/*.for fortran/*.F)
@@ -829,7 +829,7 @@ list(APPEND CTEST_CUSTOM_WARNING_EXCEPTION
   ".*warning: .*Consider increasing DOT_GRAPH_MAX_NODES."
 )
 
-link_directories(/usr/lib64 ${CMAKE_BINARY_DIR}/../../lib)
+link_directories(/usr/lib64 ${CMAKE_BINARY_DIR}/../../build/lib)
 
 target_include_directories(pod PUBLIC
 	.

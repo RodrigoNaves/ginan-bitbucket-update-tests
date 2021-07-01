@@ -11,6 +11,10 @@
 # GNSS data
 *.[cr]nx
 
+# data directories in examples
+examples/*/
+examples/*.gz
+
 # ignore cmake build
 src/build/
 bin/

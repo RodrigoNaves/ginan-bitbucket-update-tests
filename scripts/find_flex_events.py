@@ -1,4 +1,6 @@
 '''
+NEEDS TO BE RE-WRITTEN TO USE NEW DIRECTORY STRUCTURE (pull functions from gn_io.gn_download)
+
 Given a station and time range, find flex events.
 
 With flex events it is important to remember only GPS Block IIR-M and onwards have this capability
@@ -315,6 +317,55 @@ def quick_plot(obs, code, station, st_idx, end_idx, title_add):
     fig1.savefig(f'flex_plots/{dts.strftime("%Y-%m-%d")}/{fname}.png',format='png')
     plt.close()
     return #fig1.show()
+
+
+def add_all_angs(
+    df_sats_pos,
+    station_pos,
+    nad=True,
+    el=True,
+    az=True,
+    dist=True,
+    return_lists=False):
+    '''
+    Add new columns to dataframe (dist, nad_ang, el_ang and/or az_ang) after 
+    calculating nadir, elevation and/or azimuth angles and distance between satellite
+    and given site 'station_pos'
+    Default is to add all options these options but can be set to False (nad, el, az, dist)
+    The raw data can also be returned as a tuple of lists (nad_angs, el_angs, az_angs, distances)
+    '''
+    
+    sat_pos_arr = df_sats_pos[['x','y','z']].to_numpy(dtype=float)
+    disp_vec_arr = sat_pos_arr - (station_pos.reshape(1,3)/1000)
+    
+    nad_angs = []
+    el_angs = []
+    az_angs = []
+    distances = []
+    
+    sat_rec_dist =_np.linalg.norm(disp_vec_arr,axis=1)
+    sat_norm =_np.linalg.norm(sat_pos_arr,axis=1)
+
+    if nad:
+        df_sats_pos['nad_ang'] =_np.arccos(inner1d(sat_pos_arr, disp_vec_arr)/(sat_norm*sat_rec_dist))*(180/_np.pi)    
+    
+    if el or az:
+        station_llh = xyz2llh_heik(station_pos.T)[0]
+        R = llh2rot(_np.array([station_llh[0]]),_np.array([station_llh[1]]))
+
+        enu_pos =_np.matmul(R[0],disp_vec_arr.T).T
+        enu_bar = enu_pos /_np.linalg.norm(enu_pos,axis=1).reshape(len(enu_pos),1)
+        
+        if el:
+            df_sats_pos['el_ang'] =_np.arcsin(enu_bar[:,2])*(180/_np.pi)
+        if az:
+            df_sats_pos['az_ang'] =_np.arctan2(enu_bar[:,0],enu_bar[:,1])
+    
+    if dist:
+        df_sats_pos['dist'] = sat_rec_dist
+
+    if return_lists:
+        return nad_angs, el_angs, az_angs, distances
 
 
 
