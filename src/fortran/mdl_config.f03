@@ -85,11 +85,11 @@ MODULE mdl_config
 ! ---------------------------------------------------------------------------
 ! EOP filename by IERS EOP :: Solutions 1 and 2
 ! EOP_filename              eopc04_14_IAU2000.62-now 		! EOP_sol=1: eopc04_08_IAU2000.62-now	! EOP_sol=2: finals2000A.daily
-      CHARACTER (LEN=50) :: EOP_fname_cfg
+      CHARACTER (LEN=512) :: EOP_fname_cfg
 
 ! ERP filename (Earth Rotation Parameters by IGS) :: Solution 3 (requires also finals2000A.daily data from EOP_sol=2 for Precession-Nutation corrections)
 ! ERP_filename              igu18543_12.erp
-      CHARACTER (LEN=50) :: ERP_fname_cfg
+      CHARACTER (LEN=512) :: ERP_fname_cfg
 
 ! EOP data interpolation number of points	  
       !INTEGER (KIND = prec_int4) :: EOP_Nint_cfg
@@ -152,7 +152,7 @@ MODULE mdl_config
 ! ----------------------------------------------------------------------
 ! Leap Second filename (leapsec_filename)
 ! need to keep this because brdc uses it
-      CHARACTER (LEN=100) :: leapsec_filename_cfg				
+      CHARACTER (LEN=512) :: leapsec_filename_cfg				
 ! ----------------------------------------------------------------------
 
 ! ----------------------------------------------------------------------

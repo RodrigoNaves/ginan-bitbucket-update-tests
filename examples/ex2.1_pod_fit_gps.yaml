@@ -10,6 +10,7 @@ pod_data:    # Use initial condition input data below
    state_vector:  6804571.8859999999,  -15232535.475000001,  -20431678.779000003, 1697.1661907155067,  2026.6151679363102,  -982.28787769004703 # X, Y, Z, VX, VY, VZ
  
 pod_options: 
+   output_directory: ex2.1_pod_fit_gps
 # can only choose one option here
 #----------------------------------------------------------------------
    pod_mode_fit:     true   # pod_mode = 1 Orbit Determination (pseudo-observations; orbit fitting)
@@ -59,7 +60,7 @@ pod_options:
    ext_orbit_type_kepler:    false        # Keplerian orbit
    ext_orbit_type_lagrange:  false        # 3-day Lagrange interpolation
    ext_orbit_type_position_sp3:    false        # Position and SP3 file
-   ext_orbit_filename:       products/igs19424.sp3 # External (comparison)  orbit filename					
+   ext_orbit_filename:       products/igs19424.sp3 # External (comparison)  orbit filename
    ext_orbit_interp_step:    900          # Interval (sec) of the interpolated/Kepler orbit
    ext_orbit_interp_points:  12           # Number of data points used in Lagrange interpolation
 
@@ -75,10 +76,10 @@ pod_options:
    EOP_soln_c04:   true         # IERS C04 solution : EOP_sol = 1
    EOP_soln_rapid: false        # IERS rapid service/prediction center (RS/PC) Daily : EOP_sol = 2
    EOP_soln_igs:   false        # IGS ultra-rapid ERP + IERS RS/PC Daily (dX,dY) : EOP_sol = 3. Need both rapid_file AND igs_file
-   EOP_soln_c04_file: products/tables/test.62-now
-   EOP_soln_rapid_file: finals2000A.daily
-   ERP_soln_igs_file: igu18543_12.erp
-   EOP_soln_interp_points: 4    # EOP solution interpolation points 	
+   EOP_soln_c04_file: products/tables/EOP_14_C04_IAU2000A_one_file_1962-now.txt
+   # EOP_soln_rapid_file: finals2000A.daily
+   # ERP_soln_igs_file: igu18543_12.erp
+   EOP_soln_interp_points: 4    # EOP solution interpolation points
  
 # ---------------------------------------------------------------------------
 # IAU Precession-Nutation model:
@@ -87,7 +88,7 @@ pod_options:
 
 #---------------------------------------------------------------------------
 # Gravity model file
-   gravity_model_file: products/tables/goco05s.gfc  # goco05s.gfc, eigen-6s2.gfc, ITSG-Grace2014k.gfc	
+   gravity_model_file: products/tables/goco05s.gfc  # goco05s.gfc, eigen-6s2.gfc, ITSG-Grace2014k.gfc
 
 #---------------------------------------------------------------------------
 # Planetary/Lunar ephemeris - JPL DE Ephemeris
@@ -137,8 +138,8 @@ pod_options:
 # full_boxwing   : use full box-wing model from repro3 routines - mode 3
 # none           : no a priori SRP model - mode 0
    srp_apriori_model: 
-      no_model:   false
-      cannon_ball_model:   true
+      no_model:               false
+      cannon_ball_model:      true
       simple_boxwing_model:   false
       full_boxwing_model:     false
       #

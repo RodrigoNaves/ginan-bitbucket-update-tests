@@ -6,14 +6,15 @@ pod_data:    # Use initial condition input data below
       icrf: false
       kepler: false
    orbit_arc_length: 86400
-   initial_epoch: 2019-07-18-00.0000000 # YYYY-MM-DD-SEC.DSEC
+   initial_epoch: 2015-04-12-00.0000 # YYYY-MM-DD-SEC.DSEC
    state_vector:  6804571.8859999999,  -15232535.475000001,  -20431678.779000003, 1697.1661907155067,  2026.6151679363102,  -982.28787769004703 # X, Y, Z, VX, VY, VZ
  
-pod_options: 
+pod_options:
+   output_directory: ex2.3_pod_prd_gps
 # can only choose one option here
 #----------------------------------------------------------------------
-   pod_mode_fit:     true   # pod_mode = 1 Orbit Determination (pseudo-observations; orbit fitting)
-   pod_mode_predict: false  # pod_mode = 2 Orbit Determination and Prediction
+   pod_mode_fit:     false  # pod_mode = 1 Orbit Determination (pseudo-observations; orbit fitting)
+   pod_mode_predict: true   # pod_mode = 2 Orbit Determination and Prediction
    pod_mode_eqm_int: false  # pod_mode = 3 Orbit Integration (Equation of Motion only)
    pod_mode_ic_int:  false  # pod_mode = 4 Orbit Integration and Partials (Equation of Motion and Variational Equations)
       
@@ -30,7 +31,7 @@ pod_options:
    ic_input_format:
       sp3:  true   # Input a-priori orbit in sp3 format
       icf:  false  # Input a-priori orbit in POD Initial Conditions File (ICF) format
-      ic_filename: some_file
+      ic_filename: orb_pea.out
 
 # can only choose one option here
 #----------------------------------------------------------------------   
@@ -41,14 +42,14 @@ pod_options:
 
 #---------------------------------------------------------------------------
 # Observation Model                                                                                            
-   pseudobs_orbit_filename: COD0MGXFIN_20191990000_01D_05M_ORB.SP3 # Pseudo observations orbit filename       
+   pseudobs_orbit_filename: products/igs20010.sp3 # Pseudo observations orbit filename       
    pseudobs_interp_step:    900          # Interval (sec) of the interpolated orbit
    pseudobs_interp_points:  12           # Number of data points used in Lagrange interpolation
 
 #----------------------------------------------------------------------
 # Orbit arc length (in hours) 
    orbit_arc_determination: 24  # Orbit Estimation arc
-   orbit_arc_prediction:    2  # Orbit Prediction arc
+   orbit_arc_prediction:    26  # Orbit Prediction arc
    orbit_arc_backwards:     2   # Orbit Propagation backwards arc
 
 #---------------------------------------------------------------------------
@@ -59,7 +60,7 @@ pod_options:
    ext_orbit_type_kepler:    false        # Keplerian orbit
    ext_orbit_type_lagrange:  false        # 3-day Lagrange interpolation
    ext_orbit_type_position_sp3:    false        # Position and SP3 file
-   ext_orbit_filename:       COD0MGXFIN_20191990000_01D_05M_ORB.SP3 # External (comparison)  orbit filename					
+   ext_orbit_filename:       products/igs20011.sp3 # External (comparison)  orbit filename					
    ext_orbit_interp_step:    900          # Interval (sec) of the interpolated/Kepler orbit
    ext_orbit_interp_points:  12           # Number of data points used in Lagrange interpolation
 
@@ -75,10 +76,10 @@ pod_options:
    EOP_soln_c04:   true         # IERS C04 solution : EOP_sol = 1
    EOP_soln_rapid: false        # IERS rapid service/prediction center (RS/PC) Daily : EOP_sol = 2
    EOP_soln_igs:   false        # IGS ultra-rapid ERP + IERS RS/PC Daily (dX,dY) : EOP_sol = 3. Need both rapid_file AND igs_file
-   EOP_soln_c04_file: eop_c04_14_iau2000a_19
-   EOP_soln_rapid_file: finals2000A.daily 		
-   ERP_soln_igs_file: igu18543_12.erp	
-   EOP_soln_interp_points: 6    # EOP solution interpolation points 	
+   EOP_soln_c04_file: products/tables/EOP_14_C04_IAU2000A_one_file_1962-now.txt
+   EOP_soln_rapid_file: finals2000A.daily
+   ERP_soln_igs_file: igu18543_12.erp
+   EOP_soln_interp_points: 4    # EOP solution interpolation points 	
  
 # ---------------------------------------------------------------------------
 # IAU Precession-Nutation model:
@@ -87,24 +88,24 @@ pod_options:
 
 #---------------------------------------------------------------------------
 # Gravity model file
-   gravity_model_file: goco05s.gfc  # goco05s.gfc, eigen-6s2.gfc, ITSG-Grace2014k.gfc	
+   gravity_model_file: products/tables/goco05s.gfc  # goco05s.gfc, eigen-6s2.gfc, ITSG-Grace2014k.gfc	
 
 #---------------------------------------------------------------------------
 # Planetary/Lunar ephemeris - JPL DE Ephemeris
-   DE_fname_header: header.430_229
-   DE_fname_data:   ascp1950.430
+   DE_fname_header: products/tables/header.430_229
+   DE_fname_data:   products/tables/ascp1950.430
 
 #---------------------------------------------------------------------------
 # Ocean tide model file
-   ocean_tides_model_file: fes2004_Cnm-Snm.dat # FES2004 ocean tide model
+   ocean_tides_model_file: products/tables/fes2004_Cnm-Snm.dat # FES2004 ocean tide model
 
 #----------------------------------------------------------------------
 # Leap second filename
-   leapsec_filename: leap.second
+   leapsec_filename: products/tables/leap.second
 
 #----------------------------------------------------------------------
 # Satellite metadata SINEX
-   satsinex_filename: igs_metadata_2063.snx
+   satsinex_filename: products/tables/igs_metadata_2063.snx
 
 #---------------------------------------------------------------------------
 # Parameter Estimation
@@ -120,6 +121,7 @@ pod_options:
    veq_refsys:
       itrs: true      # ITRS: Terrestrial Reference System
       icrs: false     # ICRS: Celestial Reference System
+      kepler: false
 
 #----------------------------------------------------------------------
 # Write to sp3 orbit format: Option for write Satellite Velocity vector 
@@ -144,8 +146,8 @@ pod_options:
 #----------------------------------------------------------------------
 # SRP modes - Default srp_parameters  = ECOM1 + EMP
    srp_modes:
-      ECOM1:        false
-      ECOM2:        true
+      ECOM1:        true        
+      ECOM2:        false
       hybrid:       false
       SBOXW:        false
       EMPirical:    false
@@ -180,7 +182,7 @@ eqm_options:
       RK4_integrator_method: false
       RKN7_integrator_method: true
       RK8_integrator_method: false
-      integrator_step: 300         # Integrator stepsize in seconds
+      integrator_step: 900         # Integrator stepsize in seconds
 
 #---------------------------------------------------------------------------
 # Gravitational Forces
@@ -200,8 +202,8 @@ eqm_options:
       solid_tides_nonfreq:    true   # Solid Earth Tides frequency-independent terms
       solid_tides_freq:       true   # Solid Earth Tides frequency-dependent terms
       ocean_tides:            true   # Ocean Tides
-      solid_earth_pole_tides: false   # Solid Earth Pole Tide
-      ocean_pole_tide:        false   # Ocean Pole Tide
+      solid_earth_pole_tides: true   # Solid Earth Pole Tide
+      ocean_pole_tide:        true   # Ocean Pole Tide
       ocean_tides_degree_max: 15     # Ocean Tides model maximum degree/order
 
 #---------------------------------------------------------------------------
@@ -224,11 +226,11 @@ eqm_options:
       EMP_R_bias:   true
       EMP_T_bias:   true
       EMP_N_bias:   true
-      ECOM_D_cpr:   false 
-      ECOM_Y_cpr:   false 
+      ECOM_D_cpr:   true 
+      ECOM_Y_cpr:   true 
       ECOM_B_cpr:   true 
-      ECOM_D_2_cpr: true 
-      ECOM_D_4_cpr: true
+      ECOM_D_2_cpr: false 
+      ECOM_D_4_cpr: false
       EMP_R_cpr:    true
       EMP_T_cpr:    true
       EMP_N_cpr:    true
@@ -243,7 +245,7 @@ veq_options:
       RK4_integrator_method: false
       RKN7_integrator_method: true
       RK8_integrator_method: false
-      integrator_step: 300         # Integrator stepsize in seconds
+      integrator_step: 900         # Integrator stepsize in seconds
 
 #---------------------------------------------------------------------------
 # Gravitational Forces
@@ -263,8 +265,8 @@ veq_options:
       solid_tides_nonfreq:    true   # Solid Earth Tides frequency-independent terms
       solid_tides_freq:       true   # Solid Earth Tides frequency-dependent terms
       ocean_tides:            true   # Ocean Tides
-      solid_earth_pole_tides: false   # Solid Earth Pole Tide
-      ocean_pole_tide:        false   # Ocean Pole Tide
+      solid_earth_pole_tides: true   # Solid Earth Pole Tide
+      ocean_pole_tide:        true   # Ocean Pole Tide
       ocean_tides_degree_max: 15     # Ocean Tides model maximum degree/order
 
 #---------------------------------------------------------------------------
@@ -287,11 +289,11 @@ veq_options:
       EMP_R_bias:   true
       EMP_T_bias:   true
       EMP_N_bias:   true
-      ECOM_D_cpr:   false 
-      ECOM_Y_cpr:   false 
+      ECOM_D_cpr:   true 
+      ECOM_Y_cpr:   true 
       ECOM_B_cpr:   true 
-      ECOM_D_2_cpr: true 
-      ECOM_D_4_cpr: true
+      ECOM_D_2_cpr: false 
+      ECOM_D_4_cpr: false
       EMP_R_cpr:    true
       EMP_T_cpr:    true
       EMP_N_cpr:    true

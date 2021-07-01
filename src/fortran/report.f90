@@ -47,6 +47,7 @@
 !   rep_unit    - Unit number for the file.  Returned by this
 !               - routine
  
+      use pod_yaml
       integer*4 rep_unit
  
 !   prog      - Name of the prog calling report_stat
@@ -72,7 +73,7 @@
  
 !***  First generate the file name
  
-      rep_file = TRIM(prog) // extent
+      rep_file = TRIM (yml_output_dir) // "/" // TRIM(prog) // extent
  
 !     Now find an available unit.  Units 100-499 are searched
       unit_open = .true.

@@ -97,9 +97,10 @@ module pod_yaml
    real*8        yml_Zo(6), yml_pulse_offset, yml_pulse_interval
    character(512) yml_pod_data_state_vector
 
-   character(128) yml_orbit_filename, yml_ext_orbit_filename, yml_satsinex_filename, yml_leapsecond_filename, yml_eop_filename
-   character(128) yml_gravity_filename, yml_ephemeris_header, yml_ephemeris_data_file, yml_ocean_tides_file, yml_erp_filename
-   character(128) yml_ic_filename
+   character(512) yml_orbit_filename, yml_ext_orbit_filename, yml_satsinex_filename, yml_leapsecond_filename, yml_eop_filename
+   character(512) yml_gravity_filename, yml_ephemeris_header, yml_ephemeris_data_file, yml_ocean_tides_file, yml_erp_filename
+   character(512) yml_ic_filename, yml_output_dir, cmd
+   integer        dir_status
 
    integer*4 yml_orbit_steps, yml_orbit_points, yml_orbit_arc_determination, yml_orbit_arc_prediction, yml_orbit_arc_backwards
    integer*4 yml_ext_orbit_steps, yml_ext_orbit_points, yml_eop_option, yml_eop_int_points, yml_estimator_iterations
@@ -219,6 +220,7 @@ module pod_yaml
 subroutine get_yaml(yaml_filepath)
 
    character (*) yaml_filepath
+   logical   show_mesg
 
    nullify(root_dict)
    nullify(pod_data_dict)
@@ -307,6 +309,16 @@ subroutine get_yaml(yaml_filepath)
       write(*,*) "could not find pod_options label in YAML config"
       STOP
    else
+      ! if output directory not specified, default it to '.'
+      yml_output_dir = pod_options_dict%get_string("output_directory", ".", my_error_p)
+      if (yml_output_dir .ne. '.') then
+          cmd = "mkdir -p " // trim(yml_output_dir)
+          call system(trim(cmd), dir_status)
+          if (dir_status .ne. 0) then
+              write (*,*) "could not create output directory ", yml_output_dir
+              STOP
+          end if
+      end if
       yml_pod_mode = get_pod_mode(pod_options_dict, my_error)
       yml_ic_input_format = get_input_format(pod_options_dict, yml_ic_filename, my_error)
       yml_ic_input_refsys = get_input_refsys(pod_options_dict, my_error)
@@ -419,6 +431,7 @@ subroutine get_yaml(yaml_filepath)
       yml_eqm_gravity_time_max_degree = gravity_dict%get_integer("timevar_degree_max", -1, my_error_p)
       yml_eqm_planetary_perturbations_enabled = planets_dict%get_logical("enabled", .false., my_error_p)
       yml_eqm_tidal_effects_enabled = tides_dict%get_logical("enabled", .false., my_error_p)
+
       yml_eqm_tidal_effects = get_tidal_effects(tides_dict, my_error)
       yml_eqm_tides_max_degree = tides_dict%get_integer("ocean_tides_degree_max", -1, my_error_p)
       yml_eqm_rel_effects_enabled = rel_dict%get_logical("enabled", .false., my_error_p)
@@ -539,9 +552,70 @@ subroutine get_yaml(yaml_filepath)
    end if
 
    if (yml_veq_srp_parameters /= yml_eqm_srp_parameters) then
-         write (*,*) "srp parameters in eqm and veq sections must be identical"
-         STOP
+       write (*,*) "srp parameters in eqm and veq sections must be identical"
+       STOP
    end if
+
+   if (.not. yml_EMP_mode .and. yml_veq_empnum > 0) then
+       write (*,*) "Empirical model is off but you are asking for empirical parameters to be estimated." // &
+              " Turning them off"
+       yml_veq_empnum = 0
+       yml_eqm_empnum = 0
+       if (BTEST(yml_veq_srp_parameters, EMP_R_BIAS - one)) yml_veq_srp_parameters = yml_veq_srp_parameters - &
+              pow (2, EMP_R_BIAS - one)
+       if (BTEST(yml_veq_srp_parameters, EMP_T_BIAS - one)) yml_veq_srp_parameters = yml_veq_srp_parameters - &
+              pow (2, EMP_T_BIAS - one)
+       if (BTEST(yml_veq_srp_parameters, EMP_N_BIAS - one)) yml_veq_srp_parameters = yml_veq_srp_parameters - &
+              pow (2, EMP_N_BIAS - one)
+       if (BTEST(yml_veq_srp_parameters, EMP_R_CPR - one)) yml_veq_srp_parameters = yml_veq_srp_parameters - &
+              pow (2, EMP_R_CPR - one)
+       if (BTEST(yml_veq_srp_parameters, EMP_T_CPR - one)) yml_veq_srp_parameters = yml_veq_srp_parameters - &
+              pow (2, EMP_T_CPR - one)
+       if (BTEST(yml_veq_srp_parameters, EMP_N_CPR - one)) yml_veq_srp_parameters = yml_veq_srp_parameters - &
+              pow (2, EMP_N_CPR - one)
+
+      yml_eqm_srp_parameters = yml_veq_srp_parameters
+   end if
+
+   if (yml_ECOM_mode .eq. ECOM1) then
+       show_mesg = .false.
+       if (BTEST(yml_veq_srp_parameters, ECOM_D_2_CPR)) then
+               yml_veq_srp_parameters = yml_veq_srp_parameters - pow (2, ECOM_D_2_CPR - one)
+               show_mesg = .true.
+               yml_veq_ecomnum = yml_veq_ecomnum - 2
+       endif 
+       if (BTEST(yml_veq_srp_parameters, ECOM_D_4_CPR)) then
+               yml_veq_srp_parameters = yml_veq_srp_parameters - pow (2, ECOM_D_4_CPR - one)
+               yml_veq_ecomnum = yml_veq_ecomnum - 2
+               show_mesg = .true.
+       endif 
+       if (show_mesg) write(*,*) "ECOM1 model selected - turning off D2_CPR and D4_CPR parameters"
+       yml_eqm_srp_parameters = yml_veq_srp_parameters
+       yml_eqm_ecomnum = yml_veq_ecomnum
+   end if
+
+   if (yml_ECOM_mode .eq. ECOM2) then
+       show_mesg = .false.
+       if (BTEST(yml_veq_srp_parameters, ECOM_D_CPR)) then
+               yml_veq_srp_parameters = yml_veq_srp_parameters - pow (2, ECOM_D_CPR - one)
+               show_mesg = .true.
+               yml_veq_ecomnum = yml_veq_ecomnum - 2
+       endif 
+       if (BTEST(yml_veq_srp_parameters, ECOM_Y_CPR)) then
+               yml_veq_srp_parameters = yml_veq_srp_parameters - pow (2, ECOM_Y_CPR - one)
+               yml_veq_ecomnum = yml_veq_ecomnum - 2
+               show_mesg = .true.
+       endif 
+       if (show_mesg) write(*,*) "ECOM2 model selected - turning off D_CPR and Y_CPR parameters"
+       yml_eqm_srp_parameters = yml_veq_srp_parameters
+       yml_eqm_ecomnum = yml_veq_ecomnum
+   end if
+
+   if ((yml_eqm_tidal_effects_enabled .or. yml_veq_tidal_effects_enabled) .and. yml_ocean_tides_file == "") then
+       write (*,*) "tidal effects enabled and no tidal effects file specified"
+       STOP
+   end if
+
 end subroutine get_yaml
 
 function get_yaml_pulses(dict, error, yml_pulses, yml_pulse_ref_frame,& 

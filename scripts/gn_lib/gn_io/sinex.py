@@ -159,6 +159,9 @@ def _get_snx_vector(path_or_bytes, stypes=('APR', 'EST'), snx_format=True,verbos
     if isinstance(path_or_bytes, str):
         path = path_or_bytes
         snx_bytes = path2bytes(path)
+    elif isinstance(path_or_bytes, list):
+        path, stypes, snx_format,verbose = path_or_bytes
+        snx_bytes = path2bytes(path)
     else:
         snx_bytes = path_or_bytes
 
@@ -233,9 +236,7 @@ def _get_snx_vector(path_or_bytes, stypes=('APR', 'EST'), snx_format=True,verbos
     types_mask = output.TYPE.isin(['STAX','STAY', 'STAZ', 'VELX', 'VELY', 'VELZ',])
     output = output.loc[types_mask]
     output['CODE_PT'] = output.CODE.values + '_' + output.PT.values.astype(object)
-    return output.pivot_table(index=['CODE_PT', 'REF_EPOCH'],
-                                            columns=['TYPE'],
-                                            values=values)
+    return output.drop(columns=['CODE','PT','SOLN']).set_index(['CODE_PT', 'REF_EPOCH','TYPE']).unstack(2)
 
 def _matrix_raw2square(matrix_raw,matrix_content_type,stypes_form,n_elements=None):
     if matrix_content_type == b'CORR':
