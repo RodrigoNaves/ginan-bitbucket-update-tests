@@ -22,86 +22,29 @@ To clean up code need to:
 Ronald Maj
 2020-11-14 14:23
 '''
-import numpy as np
-import subprocess
+
 import argparse
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
-import wget
-from ftplib import FTP, FTP_TLS
-from ..src.python.gn_lib.gn_io.common import path2bytes
+from datetime import datetime, timedelta
 
-def gpsweekD(yr, doy, wkday_suff=False):
-    """
-    Convert year, day-of-year to GPS week format: WWWWD or WWWW
-    Based on code from Kristine Larson's gps.py
-    https://github.com/kristinemlarson/gnssIR_python/gps.py
-    
-    Input:
-    yr - year (int)
-    doy - day-of-year (int)
-
-    Output:
-    GPS Week in WWWWD format - weeks since 7 Jan 1980 + day of week number (str)
-    """
-
-    # Set up the date and time variables
-    yr = int(yr)
-    doy = int(doy)
-    dt_str = f"{yr}-{doy:03d} 01"
-    dt = datetime.strptime(dt_str,"%Y-%j %H")
-    
-    wkday = dt.weekday() + 1
-
-    if wkday == 7:
-        wkday = 0
-    
-    mn, dy = dt.month, dt.day
-    hr = dt.hour
-    
-    if mn <= 2:
-        yr = yr-1
-        mn = mn+12
-
-    A = np.floor(365.25*yr)
-    B = np.floor(30.6001*(mn+1))
-    C = hr/24.0
-    JD = A + B + dy + C + 1720981.5
-    GPS_wk = np.floor((JD-2444244.5)/7.0)
-    GPS_wk = np.int(GPS_wk)
-    
-    if wkday_suff:
-        return str(GPS_wk)+str(wkday)
-    else:
-        return str(GPS_wk)
+from ftplib import FTP_TLS as _FTP_TLS
+from pathlib import Path as _Path
+import subprocess as _sp
+import urllib.request as _rqs
+import pandas as _pd
+import numpy as _np
+import sys as _sys
 
 
 
-def download_prod_cddis(filename, yr, doy, dwndir):
-    '''
-    Download file from the products subfolder in CDDIS
+import matplotlib.pyplot as _plt
+import matplotlib.dates as mdates
+from datetime import timedelta as _timedelta
 
-    Input:
-    filename    - filename to be downloaded - str
-    yr          - year of interest          - str
-    doy         - day-of-year of interest   - str
-
-    Output:
-    Download the file to the pwd
-
-    '''
-    # GPS Week + Day
-    gpswk = gpsweekD(yr,doy,False)
-    
-    # Get the file from the ftps server
-    ftps = FTP_TLS('gdc.cddis.eosdis.nasa.gov')
-    ftps.login()
-    ftps.prot_p()
-    ftps.cwd(f'/pub/gps/products/{gpswk}')
-    check_n_download(filename, dwndir, ftps)
-    
-    return filename 
-
+from gn_lib.gn_datetime import j20002datetime
+from gn_lib.gn_io.rinex import _read_rnx, _rnx_pos
+from gn_lib.gn_io.sp3 import read_sp3 as _read_sp3
+from gn_lib.gn_transform import xyz2llh_heik, llh2rot
+from gn_lib.gn_download import check_n_download_url, dates_type_convert, download_rinex3, download_sp3
 
 
 def dwn_rapid_product_files(dt, dwndir):
@@ -304,82 +247,6 @@ def dwn_rapid_product_files(dt, dwndir):
 
     return out_dict
 
-def check_file_present(Z_filename, dwndir):
-    '''Check if file Z_filename already present in directory dwndir/products'''
-    
-    uncomp_Z_file = Path(dwndir+'/products/'+Z_filename[:-2])
-    
-    if uncomp_Z_file.is_file():
-        print(f'File {uncomp_Z_file} already present in {dwndir}/products/')
-        present = True
-    else:
-        present = False
-    
-    return present
-
-
-
-def check_n_download(Z_filename, dwndir, ftps, check_only = False):
-    ''' Download .Z file to {dwndir}/products if not already present'''
-    
-    Z_file = Path(dwndir+'/products/'+Z_filename)
-    uncomp_Z_file = Path(dwndir+'/products/'+Z_filename[:-2])    
-
-    if not check_file_present(Z_filename, dwndir):
-        print(f'Downloading {Z_filename} from CDDIS')
-        
-        with open(Z_file, 'wb') as local_f:
-            ftps.retrbinary(f'RETR {Z_filename}', local_f.write)
-        
-        with open(uncomp_Z_file, 'wb') as uncomp_f:
-            uncomp_f.write(path2bytes(str(Z_file)))
-        
-        Z_file.unlink()
-        print(f'Downloaded and uncompressed {Z_filename}')
-
-
-def download_daily_cddis(filename, yr, doy):
-    '''
-    Download file from the daily subfolder in CDDIS.
-
-    In this case it will be either the observation or navigation file
-    (obs_file, nav_file)
-
-    Input:
-    filename    - filename to be downloaded - str
-    yr          - year of interest          - str
-    doy         - day-of-year of interest   - str
-
-    Output:
-    Download the file to the pwd
-    '''
-    
-    # Connect to CDDIS
-    ftps = FTP_TLS('gdc.cddis.eosdis.nasa.gov')
-    ftps.login()
-    ftps.prot_p()
-    ftps.cwd('gnss/data/daily')
-
-    # Beginning part of url string:
-    #begin_url = 'ftps://gdc.cddis.eosdis.nasa.gov/gnss/data/daily/'
-    
-    # Get data type from filename and therefore correct directory: 
-    data_type = filename[-9:-7]
-    t = daily_opts[data_type]
-    if t == 'p':
-        destination_dir = f'{yr}/brdc/'
-    else:
-        destination_dir = f'{yr}/{doy}/{yr[-2:]+t}/'
-    ftps.cwd(destination_dir)
-
-    print(f'==> Downloading {filename} from CDDIS server')
-    with open(filename,'wb') as local_f:
-        ftps.retrbinary(f'RETR {filename}', local_f.write)
-    print(f'\n Complete \n\n')
-
-    return filename 
-
-
 
 def download_daily(f, yr, doy):
     '''
@@ -433,71 +300,11 @@ def download_daily(f, yr, doy):
     return f
 
 
-
-def check_station(args):
-    # Ensure the station name has 9 characters
-    if len(args.station) == 9:
-        station = args.station
-    else:
-        print('\n\n->->-> Station names must be new RINEX3 9 character name including country code---\n\n')
-    return station
-
-
-
-def check_year(args):
-    # Ensure the year argument is 4 characters long
-    if len(args.year) == 4:
-        year = args.year
-    else:
-        print('\n\n->->-> Year must be 4 characters long: YYYY\n\n')
-    return year
-
-
-
-def check_monthday(args):
-    # Ensure the month-day argument is 5 characters long
-    if len(args.doy) == 5:
-        mn_dy = args.doy
-    else:
-        print('\n\n->->-> month-day must be 5 characters long: MM-DD\n\n')
-    return mn_dy
-
-
-
-def check_doy(args):
-    # Ensure the doy argument is 4 characters long
-    if len(args.doy) == 3:
-        doy = args.doy
-    else:
-        print('\n\n->->-> day-of-year (doy) must be 3 characters long: DDD\n\n')
-    return doy    
-
-
-
-def get_install_crx2rnx(override=False):
+def get_pea_product_files(dates, station, dest, trop_vmf3 = False, rapid = False, out_dict = None):
     '''
-    Check for presence of crx2rnx in pwd.
-    If not present, download and extract to pwd.
-    If override = True, will download if present or not
+    Download necessary pea files for station and date/s provided
     '''
-    if (not Path('crx2rnx').is_file()) or (override):
-        tmp_dir = Path('tmp')
-        if not tmp_dir.is_dir():
-            tmp_dir.mkdir()
-        url = 'https://terras.gsi.go.jp/ja/crx2rnx/RNXCMP_4.0.8_src.tar.gz'
-        wget.download(url,out = 'tmp')
-        subprocess.run(['tar', '-xvf', 'tmp/RNXCMP_4.0.8_src.tar.gz', '-C', 'tmp'])
-        cp = ['gcc','-ansi','-O2','-static','tmp/RNXCMP_4.0.8_src/source/crx2rnx.c','-o','crx2rnx']
-        subprocess.run(cp)
-        subprocess.run(['mv','crx2rnx','../../..'])
-        subprocess.run(['rm','-r','tmp'])
-
-
-
-def get_pea_files(station, year, doy, dwndir, trop_vmf3 = False, rapid = False, out_dict = None):
-    '''
-    Download ncessary pea files from various sources (mainly CDDIS server)
-    '''
+    dt_list = dates_type_convert(dates)
 
     # Output dict for the files that are downloaded
     if not out_dict:
@@ -514,48 +321,50 @@ def get_pea_files(station, year, doy, dwndir, trop_vmf3 = False, rapid = False, 
 
 
     # Get the ATX file if not present already:
-    if not Path(dwndir + '/products/igs14.atx').is_file():
+    if not _Path(dest + '/products/igs14.atx').is_file():
         
-        if not Path(dwndir+'/products').is_dir():
-            Path(dwndir+'/products').mkdir(parents=True)
+        if not _Path(dest+'/products').is_dir():
+            _Path(dest+'/products').mkdir(parents=True)
+
         url = 'https://files.igs.org/pub/station/general/igs14.atx'
-        wget.download(url,out = dwndir+'/products')
+        check_n_download_url(url,dwndir=dest+'/products')
+
 
     # Get the BLQ file if not present already:
-    if not Path(dwndir + '/products/OLOAD_GO.BLQ').is_file():
+    if not _Path(dest + '/products/OLOAD_GO.BLQ').is_file():
         url = 'https://peanpod.s3-ap-southeast-2.amazonaws.com/pea/examples/EX03/products/OLOAD_GO.BLQ'
-        wget.download(url,out = dwndir+'/products')
+        check_n_download_url(url,dwndir=dest+'/products')
 
     # For the troposphere, have two options: gpt2 or vmf3. If flag is set to True, download 6-hourly trop files:
     if trop_vmf3:
 
         # If directory for the Tropospheric model files doesn't exist, create it:
-        if not Path(dwndir + '/products/grid5').is_dir():
-            Path(dwndir + '/products/grid5').mkdir(parents=True)
+        if not _Path(dest + '/products/grid5').is_dir():
+            _Path(dest + '/products/grid5').mkdir(parents=True)
 
-        # Create urls to the four 6-hourly files associated with the tropospheric model
-        begin_url = f'https://vmf.geo.tuwien.ac.at/trop_products/GRID/5x5/VMF3/VMF3_OP/{year}/'
-        dt = datetime.strptime(year + ' ' + doy, '%Y %j')
-        f_begin = 'VMF3_' + dt.strftime('%Y%m%d') + '.H'
+        for dt in dt_list:
+            year = dt.strftime('%Y')
+            # Create urls to the four 6-hourly files associated with the tropospheric model
+            begin_url = f'https://vmf.geo.tuwien.ac.at/trop_products/GRID/5x5/VMF3/VMF3_OP/{year}/'
+            f_begin = 'VMF3_' + dt.strftime('%Y%m%d') + '.H'
+            urls = [ begin_url+f_begin+en for en in ['00','06','12','18'] ]
+            urls.append(begin_url+'VMF3_' + (dt+timedelta(days=1)).strftime('%Y%m%d') + '.H00')
 
-        urls = [ begin_url+f_begin+en for en in ['00','06','12','18'] ]
-        urls.append(begin_url+'VMF3_' + (dt+timedelta(days=1)).strftime('%Y%m%d') + '.H00')
-
-        # Run through model files, downloading if they are not in directory
-        for url in urls:
-            if not Path(dwndir + f'/products/grid5/{url[-17:]}').is_file():
-                wget.download(url, out = dwndir+'/products/grid5')
+            # Run through model files, downloading if they are not in directory
+            for url in urls:
+                if not _Path(dest + f'/products/grid5/{url[-17:]}').is_file():
+                    check_n_download_url(url,dwndir=dest+'/products/grid5')
     else:
         # Otherwise, check for GPT2 model file or download if necessary:
-        if not Path(dwndir + '/products/gpt_25.grd').is_file():
+        if not _Path(dest + '/products/gpt_25.grd').is_file():
             url = 'https://peanpod.s3-ap-southeast-2.amazonaws.com/pea/examples/EX03/products/gpt_25.grd'
-            wget.download(url,out = dwndir+'/products')
+            check_n_download_url(url,dwndir=dest+'/products')
     
     dt = datetime.strptime(f'{year} {doy} 00','%Y %j %H')
     
     # If rapid versions of files desired, find the most recent files that match input date:
     if rapid:
-        prod_files = dwn_rapid_product_files(dt, dwndir)
+        prod_files = dwn_rapid_product_files(dt, dest)
         
         # Change year and doy to the date of file actually downloaded (if input is too recent)
         dt = prod_files['clk_date']
@@ -595,7 +404,7 @@ def get_pea_files(station, year, doy, dwndir, trop_vmf3 = False, rapid = False, 
     # Download, extract and move obs and nav files to chosen directory
     for f in gz_filenames.values():
         # If the file already exists, move to the next file
-        if Path(dwndir+'/products/'+f[:-3]).is_file():
+        if Path(dest+'/products/'+f[:-3]).is_file():
             continue
         else:            
             
@@ -603,7 +412,7 @@ def get_pea_files(station, year, doy, dwndir, trop_vmf3 = False, rapid = False, 
             if f[-9:-7] == 'MO':
                 
                 # If the RNX file is already in the directory, continue to next one
-                if Path(dwndir+'/data/'+f[:-6]+'rnx').is_file():
+                if Path(dest+'/data/'+f[:-6]+'rnx').is_file():
                     continue
                 
                 # Otherwise download
@@ -611,8 +420,8 @@ def get_pea_files(station, year, doy, dwndir, trop_vmf3 = False, rapid = False, 
                     download_daily(f, year, doy)
 
                     # If the directory doesn't exist, make it
-                    if not Path(dwndir + '/data').is_dir():
-                        Path(dwndir + '/data').mkdir(parents=True)
+                    if not Path(dest + '/data').is_dir():
+                        Path(dest + '/data').mkdir(parents=True)
                     
                     # If the CRX2RNX file doesn't exits, get and install it
                     if not Path('crx2rnx').is_file():

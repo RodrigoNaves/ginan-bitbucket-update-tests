@@ -8,11 +8,10 @@ rnx (including transformation from crx to rnx)
 from datetime import datetime as _datetime
 from ftplib import FTP_TLS as _FTP_TLS
 from pathlib import Path as _Path
+import urllib.request as _rqs
 import subprocess as _sp
-import requests as _rqs
 import numpy as _np
 import sys as _sys
-
 
 
 def check_file_present(comp_filename, dwndir):
@@ -40,6 +39,24 @@ def check_file_present(comp_filename, dwndir):
     
     return present
 
+
+def check_n_download_url(url, dwndir, filename=False):
+    '''
+    Download single file given URL to download from. 
+    Optionally provide filename if different from url name
+    '''
+
+    if dwndir[-1] != '/':
+        dwndir += '/'
+
+    if not filename:
+        filename = _Path(url).name
+    
+    if not check_file_present(filename, dwndir):
+
+        print(f'Downloading {_Path(url).name}')
+        out_f = _Path(dwndir)/filename
+        _rqs.urlretrieve(url,out_f)
 
 
 def check_n_download(comp_filename, dwndir, ftps, uncomp=True, remove_crx=False):
@@ -147,9 +164,8 @@ def get_install_crx2rnx(override=False,verbose=False):
             tmp_dir.mkdir()
 
         url = 'https://terras.gsi.go.jp/ja/crx2rnx/RNXCMP_4.0.8_src.tar.gz'
-        rq = _rqs.get(url,allow_redirects=True)
-        with open(_Path('tmp/RNXCMP_4.0.8_src.tar.gz'),'wb') as f:
-            f.write(rq.content)
+        out_f = _Path('tmp/RNXCMP_4.0.8_src.tar.gz')
+        _rqs.urlretrieve(url,out_f)
 
         _sp.run(['tar', '-xvf', 'tmp/RNXCMP_4.0.8_src.tar.gz', '-C', 'tmp'])
         cp = ['gcc','-ansi','-O2','-static','tmp/RNXCMP_4.0.8_src/source/crx2rnx.c','-o','crx2rnx']

@@ -1,10 +1,6 @@
 '''
-NEEDS TO BE RE-WRITTEN TO USE NEW DIRECTORY STRUCTURE (pull functions from gn_io.gn_download)
-
-Given a station and time range, find flex events.
-
-With flex events it is important to remember only GPS Block IIR-M and onwards have this capability
-Therefore, we need to choose GPS satellites that can actually have flex power events
+Find flex events for a given station, date range and observation code.
+Directories for download and output also need to be supplied
 '''
 import argparse
 import numpy as _np
@@ -486,17 +482,3 @@ if __name__ == "__main__":
         plot_dest=p_dir, 
         plot_spread=p_span,
         file_nameorder=p_name_list)
-            
-
-
-
-
-'''
-For the new find_flex_events 
-- X get sp3 and rinex 3 files 
-- X load using new read_sp3 and read_rnx functions 
-- X combine using code I've used in jupyter notebook
-- X add all angles and distances
-- X filter based on elevation
-- search for flex events 
-'''
