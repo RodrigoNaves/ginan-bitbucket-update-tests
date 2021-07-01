@@ -1,26 +1,22 @@
-# This is a sample build configuration for Other.
-# Check our guides at https://confluence.atlassian.com/x/5Q4SMw for more examples.
-# Only use spaces to indent your .yml configuration.
-# -----
-# You can specify a custom docker image from Docker Hub as your build environment.
-#image: cmorgan2019/pod-test:0.4
-
 clone:
   lfs: true
 
 pipelines:
   default:
-  branches:
-      docker*:
-          - step:
-              # trigger: manual
-              name: Update docker image
-              services:
-                  - docker
-              size: 2x
-              script:
-                  - cd aws/docker/
-                  - ./bitbucket-pipelines.sh
+    - step:
+        name: Build docker image
+        services:
+            - docker
+        caches:
+            - docker
+        size: 2x
+        script:
+            - export TAG=$(git describe --tags --always)
+            - export IMAGE="$DOCKER_HUB_USERNAME/ginan-test-alpha:$TAG"
+            - docker build -t "$IMAGE" -f ./aws/docker/Dockerfile .
+            - docker login -u "$DOCKER_HUB_USERNAME" -p "$DOCKER_HUB_PASSWORD"
+            - docker push "$IMAGE"
+
 definitions:
   services:
     docker:
