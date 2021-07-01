@@ -16,7 +16,7 @@ parser.add_argument("-em", "--errormargin", dest='errormargin', type=float, requ
 def test(solutionrms, solutionout, runout, runrms, errormargin):
     # Get summary stats for each satellite from pod.out and solution/pod.out and save to a list 
     
-    solution_pod_out_log_location = r"solution/" + solutionout
+    solution_pod_out_log_location = solutionout
     regex = 'RMS-XYZ ITRF CMP ([A-Z]\d\d) +([0-9.0-9?]+) +([0-9.0-9?]+) +([0-9.0-9?]+)'
     
     solution_pod_out = []
@@ -49,7 +49,7 @@ def test(solutionrms, solutionout, runout, runrms, errormargin):
 
     # Get summart stats from pod.rms and solution/pod.rms
     
-    solution_pod_rms_log_location = r"solution/" + solutionrms
+    solution_pod_rms_log_location = solutionrms
     regex = 'PRN:.(.........)...........ALL:.(.[0-9.0-9?]+).(.[0-9.0-9?]+).(.[0-9.0-9?]+).(.[0-9.0-9?]+)'
     
     solution_rms_out = []
