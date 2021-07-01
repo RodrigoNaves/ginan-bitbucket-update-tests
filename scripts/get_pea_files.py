@@ -22,7 +22,6 @@ To clean up code need to:
 Ronald Maj
 2020-11-14 14:23
 '''
-
 import numpy as np
 import subprocess
 import argparse
@@ -30,7 +29,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import wget
 from ftplib import FTP, FTP_TLS
-from gn_lib.gn_io.common import path2bytes
+from ..src.python.gn_lib.gn_io.common import path2bytes
 
 def gpsweekD(yr, doy, wkday_suff=False):
     """
