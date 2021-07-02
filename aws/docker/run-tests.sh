@@ -2,9 +2,15 @@
 
 set -euo pipefail
 
-cd /ginan
+# activate conda environment
+eval "$(/root/.miniconda3/bin/conda shell.bash hook)"
 conda activate gn37
+
+# download example tests
+cd /ginan
 python scripts/download_examples.py
+
+# run example tests
 cd /ginan/examples
 pod -y ex21_pod_fit_gps.yaml
 pod -y ex22_pod_fit_gnss.yaml

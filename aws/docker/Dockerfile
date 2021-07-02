@@ -6,6 +6,8 @@ ENV HOME /root
 RUN apt update -y
 RUN apt install -y git gobjc gobjc++ gfortran libopenblas-dev openssl curl net-tools openssh-server cmake make liblapack-dev gzip vim libssl-dev awscli gnupg2 libnetcdf-dev libnetcdf-c++4-dev libzstd-dev libssl-dev doxygen libgomp1 graphviz
 
+RUN ulimit -c unlimited
+RUN systemctl mask apport.service
 RUN mkdir -p /tmp/build
 
 WORKDIR /tmp/build
@@ -57,7 +59,6 @@ RUN echo installing conda completed.
 COPY scripts/conda_gn37.yaml /tmp/build/conda_gn37.yaml
 ENV PATH "${HOME}/.miniconda3/bin:${PATH}"
 RUN conda env create -f /tmp/build/conda_gn37.yaml
-COPY aws/docker/.bashrc "$HOME/.bashrc"
 
 WORKDIR /tmp/build
 RUN wget -c https://boostorg.jfrog.io/artifactory/main/release/1.75.0/source/boost_1_75_0.tar.gz
