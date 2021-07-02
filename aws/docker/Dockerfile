@@ -1,6 +1,7 @@
 FROM ubuntu:20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
+ENV HOME /root
 
 RUN apt update -y
 RUN apt install -y git gobjc gobjc++ gfortran libopenblas-dev openssl curl net-tools openssh-server cmake make liblapack-dev gzip vim libssl-dev awscli gnupg2 libnetcdf-dev libnetcdf-c++4-dev libzstd-dev libssl-dev doxygen libgomp1 graphviz
@@ -49,13 +50,14 @@ RUN apt -y install mongodb-org
 
 RUN echo installing conda ...
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/build/miniconda.sh
-RUN bash /tmp/build/miniconda.sh -b -p /home/ubuntu/.miniconda3
+RUN bash /tmp/build/miniconda.sh -b -p "$HOME/.miniconda3"
 RUN rm /tmp/build/miniconda.sh
 RUN echo installing conda completed.
 
 COPY scripts/conda_gn37.yaml /tmp/build/conda_gn37.yaml
-ENV PATH="/home/ubuntu/.miniconda3/bin:${PATH}"
+ENV PATH "${HOME}/.miniconda3/bin:${PATH}"
 RUN conda env create -f /tmp/build/conda_gn37.yaml
+COPY aws/docker/.bashrc "$HOME/.bashrc"
 
 WORKDIR /tmp/build
 RUN wget -c https://boostorg.jfrog.io/artifactory/main/release/1.75.0/source/boost_1_75_0.tar.gz
@@ -72,5 +74,7 @@ ADD . /ginan
 WORKDIR /ginan
 RUN mkdir -p src/build
 WORKDIR /ginan/src/build
-RUN cmake ..
+RUN cmake -DENABLE_OPTIMISATION=TRUE ..
 RUN make
+
+ENV PATH "/ginan/bin:${PATH}"
