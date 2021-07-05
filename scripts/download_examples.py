@@ -30,30 +30,30 @@ def download_examples_tar(url,relpath = '../examples/'):
     destfile = os.path.abspath(os.path.join(script_path,relpath,destfile))
     # print(destfile)
     if os.path.exists(destfile):
-        print('file found')
+        print('examples tarball found on disk. Validating...')
         with urllib.request.urlopen(url) as response:
             if response.status == 200:
-                print('server says OK')
-                
-                # print(f'md5 = {get_checksum_S3(destfile)}')
+                print('server says OK -> computing MD5 of the file found---')
+                md5_checksum = get_checksum_S3(destfile).decode()
+                print('requesting MD5 from the server---')
                 md5_checksum_response =  response.getheader('x-amz-meta-md5checksum')
                 if md5_checksum_response is not None: #md5 checksum exists on server
-                    print('---computing md5 checksum---')
-                    if get_checksum_S3(destfile) == md5_checksum_response.encode():
+                    
+                    if md5_checksum == md5_checksum_response:
                         print("MD5 verified, skipping the download step")
                         untar(destfile)
                     else:
-                        print("MD5 check failed, redownloading the file")
+                        print(f"MD5 checksum failed. Expected MD5 is '{md5_checksum}'. Force redownloading the file")
                         if os.path.exists(destfile): os.remove(destfile)
                 else:
-                    print('no checksum found -> force redownloading the file')
+                    print(f'no MD5 checksum header on the server. Expected MD5 is {md5_checksum}. Force redownloading the file')
                     print(destfile)
                     if os.path.exists(destfile): os.remove(destfile)
 
     if not os.path.exists(destfile):
         with urllib.request.urlopen(url) as response:
             if response.status == 200:
-                print('Downloading from {} to {}'.format(url, destfile))
+                print('downloading from {} to {}'.format(url, destfile))
                 with open(destfile, 'wb') as out_file: shutil.copyfileobj(response, out_file)
         untar(destfile)
 
