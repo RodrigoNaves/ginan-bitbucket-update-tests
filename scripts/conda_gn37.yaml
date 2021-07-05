@@ -9,6 +9,7 @@ dependencies:
   - matplotlib
   - ruamel.yaml
   - wget
+  - boto3
   - ipython = 6.5.0 #need this version
   - plotly = 4.9.0  #MongoDash
   - notebook>=5.3   #MongoDash
