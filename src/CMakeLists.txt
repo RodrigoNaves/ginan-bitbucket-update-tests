@@ -110,33 +110,33 @@ IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../.git)
         EXECUTE_PROCESS(
 	    COMMAND ${GIT_EXECUTABLE} describe --tags --always
 	    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.."
-            OUTPUT_VARIABLE "PEA_COMMIT_VERSION"
+	    OUTPUT_VARIABLE "GINAN_COMMIT_VERSION"
             OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 	EXECUTE_PROCESS(
             COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.."
-	    OUTPUT_VARIABLE "PEA_BRANCH_NAME"
+	    OUTPUT_VARIABLE "GINAN_BRANCH_NAME"
             OUTPUT_STRIP_TRAILING_WHITESPACE)
 
         EXECUTE_PROCESS(
             COMMAND ${GIT_EXECUTABLE} log -1 --format=%cd --date=local
             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.."
-	    OUTPUT_VARIABLE "PEA_COMMIT_DATE"
+	    OUTPUT_VARIABLE "GINAN_COMMIT_DATE"
 	    OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-        MESSAGE( STATUS "Git version: ${PEA_COMMIT_VERSION}")
-        MESSAGE( STATUS "Git branch: ${PEA_BRANCH_NAME}")
+    MESSAGE( STATUS "Git version: ${GINAN_COMMIT_VERSION}")
+    MESSAGE( STATUS "Git branch: ${GINAN_BRANCH_NAME}")
     ELSE(GIT_FOUND)
-															      SET(PEA_COMMIT_VERSION 0)
-         SET(PEA_BRANCH_NAME "unknown branch")
-         MESSAGE( STATUS "Git not found: ${PEA_COMMIT_VERSION}" )
+	 SET(GINAN_COMMIT_VERSION 0)
+	 SET(GINAN_BRANCH_NAME "unknown branch")
+	 MESSAGE( STATUS "Git not found: ${GINAN_COMMIT_VERSION}" )
      ENDIF(GIT_FOUND)
 ELSE()
     MESSAGE( STATUS "Git not found in ${CMAKE_CURRENT_SOURCE_DIR}/..")
 ENDIF()
 
-#    CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/cpp/pea/peaCommitVersion.h.in ${CMAKE_CURRENT_SOURCE_DIR}/cpp/pea/peaCommitVersion.h @ONLY)
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/cpp/pea/peaCommitVersion.h.in ${CMAKE_CURRENT_SOURCE_DIR}/cpp/pea/peaCommitVersion.h @ONLY)
 
 
 add_library(pod_lib
@@ -504,312 +504,397 @@ add_executable(test_yaml
 fortran/test_yaml.F90
 )
 
-#add_executable(pea
-#        cpp/3rdparty/enum.h
-#        cpp/common/acsConfig.hpp
-#        cpp/common/acsConfig.cpp
-#        cpp/common/acsQC.hpp
-#        cpp/common/acsQC.cpp
-#        cpp/common/acsFileStream.hpp
-#        cpp/common/acsNtripStream.cpp
-#        cpp/common/acsNtripStream.hpp
-#        cpp/common/acsRinexStream.hpp
-#        cpp/common/acsRtcmStream.hpp
-#        cpp/common/acsStream.cpp
-#        cpp/common/acsStream.hpp
-#        cpp/common/algebra.cpp
-#        cpp/common/algebra_old.cpp
-#        cpp/common/algebra.hpp
-#        cpp/common/algebraTrace.cpp
-#        cpp/common/algebraTrace.hpp
-#        cpp/common/antenna.h
-#        cpp/common/antenna.cpp
-#        cpp/common/biasSINEX.hpp
-#        cpp/common/biasSINEXread.cpp
-#        cpp/common/biasSINEXwrite.cpp
-#        cpp/common/constants.h
-#        cpp/common/constants.cpp
-#        cpp/common/corrections.cpp
-#        cpp/common/debug.cpp
-#        cpp/common/debug.hpp
-#        cpp/common/eigenIncluder.hpp
-#        cpp/common/newsnx.hpp
-#        cpp/common/newsnx.cpp
-#        cpp/common/enums.h
-#        cpp/common/gaTime.cpp
-#        cpp/common/gaTime.hpp
-#        cpp/common/navigation.hpp
-#        cpp/common/orbits.cpp
-#        cpp/common/orbits.hpp
-#        cpp/common/observations.hpp
-#        cpp/common/linearCombo.cpp
-#        cpp/common/linearCombo.hpp
-#        cpp/common/mongo.cpp
-#        cpp/common/mongo.hpp
-#        cpp/common/rtsSmoothing.cpp
-#        cpp/common/satStat.hpp
-#        cpp/common/summary.hpp
-#        cpp/common/satSys.cpp
-#        cpp/common/satSys.hpp
-#        cpp/common/station.hpp
-#        cpp/common/streamTrace.cpp
-#        cpp/common/streamTrace.hpp
-#        cpp/common/testUtils.cpp
-#        cpp/common/testUtils.hpp
-#        cpp/common/writeClock.cpp
-#        cpp/common/writeClock.hpp
-#
-#        cpp/iono/ionoMeas.cpp
-#        cpp/iono/ionoModel.cpp
-#        cpp/iono/ionoModel.hpp
-#        cpp/iono/ionoSpherical.cpp
-#        cpp/iono/ionoSphericalCaps.cpp
-#        cpp/iono/ionoBSplines.cpp
-#        cpp/iono/ionexWrite.cpp
-#
-#        cpp/ambres/GNSSambres.hpp
-#        cpp/ambres/GNSSambres.cpp
-#        cpp/ambres/GNSSpivot.cpp
-#        cpp/ambres/WLambest.cpp
-#        cpp/ambres/NLambest.cpp
-#        cpp/ambres/ARmain.cpp
-#        cpp/ambres/ARoutput.cpp
-#        
-#        cpp/pea/cycleSlip.cpp
-#        cpp/pea/cycleSlip.hpp
-#        cpp/pea/main.cpp
-#        cpp/pea/minimumConstraints.cpp
-#        cpp/pea/minimumConstraints.hpp
-#        cpp/pea/networkEstimator.cpp
-#        cpp/pea/networkEstimator.hpp
-#        cpp/pea/pea_snx.cpp
-#        cpp/pea/ppp.cpp
-#        cpp/pea/ppp_user.cpp
-#        cpp/pea/ppp_network.cpp
-#        cpp/pea/ppp.hpp
-#        cpp/pea/spp.cpp
-#
-#        cpp/rtklib/ionex.cpp
-#        cpp/rtklib/lambda.cpp
-#        cpp/rtklib/lambda.h
-#        cpp/rtklib/ephemeris.cpp
-#        cpp/rtklib/preceph.cpp
-#        cpp/rtklib/readtrop.cpp
-#        cpp/rtklib/rinex.cpp
-#        cpp/rtklib/rinex.hpp
-#        cpp/rtklib/rtkcmn.cpp
-#        cpp/rtklib/tides.cpp
-#        cpp/rtklib/tides.hpp
-#        cpp/rtklib/trop.h
-#        cpp/rtklib/trop.cpp
-#        cpp/rtklib/vmf3.h
-#        cpp/rtklib/vmf3.cpp
-#        cpp/rtklib/wancorr.cpp
-#        cpp/rtklib/wancorr.h
-#        )
+add_executable(pea
+        cpp/3rdparty/enum.h
+        cpp/common/acsConfig.hpp
+        cpp/common/acsConfig.cpp
+        cpp/common/acsQC.hpp
+        cpp/common/acsQC.cpp
+        cpp/common/acsFileStream.hpp
+        cpp/common/acsNtripStream.cpp
+        cpp/common/acsNtripStream.hpp
+        cpp/common/acsRinexStream.hpp
+        cpp/common/acsRtcmStream.hpp
+        cpp/common/acsStream.cpp
+        cpp/common/acsStream.hpp
+        cpp/common/algebra.cpp
+        cpp/common/algebra_old.cpp
+        cpp/common/algebra.hpp
+        cpp/common/algebraTrace.cpp
+        cpp/common/algebraTrace.hpp
+        cpp/common/antenna.hpp
+        cpp/common/antenna.cpp
+        cpp/common/biasSINEX.hpp
+        cpp/common/biasSINEXread.cpp
+        cpp/common/biasSINEXwrite.cpp
+        cpp/common/constants.h
+        cpp/common/constants.cpp
+        cpp/common/corrections.cpp
+        cpp/common/debug.cpp
+        cpp/common/debug.hpp
+        cpp/common/eigenIncluder.hpp
+        cpp/common/newsnx.hpp
+        cpp/common/newsnx.cpp
+        cpp/common/enums.h
+        cpp/common/gaTime.cpp
+        cpp/common/gaTime.hpp
+        cpp/common/navigation.hpp
+        cpp/common/orbits.cpp
+        cpp/common/orbits.hpp
+        cpp/common/observations.hpp
+        cpp/common/linearCombo.cpp
+        cpp/common/linearCombo.hpp
+        cpp/common/mongo.cpp
+        cpp/common/mongo.hpp
+        cpp/common/rtsSmoothing.cpp
+        cpp/common/satStat.hpp
+        cpp/common/summary.hpp
+        cpp/common/satSys.cpp
+        cpp/common/satSys.hpp
+        cpp/common/sp3.cpp
+        cpp/common/station.hpp
+        cpp/common/streamTrace.cpp
+        cpp/common/streamTrace.hpp
+        cpp/common/testUtils.cpp
+        cpp/common/testUtils.hpp
+        cpp/common/writeClock.cpp
+        cpp/common/writeClock.hpp
 
-#target_include_directories(pea PUBLIC
-#        cpp/pea
-#        cpp/common
-#        cpp/3rdparty
-#        cpp/iono
-#        cpp/ambres
-#        cpp/rtklib
-#        ${EIGEN3_INCLUDE_DIRS}
-#        ${LAPACK_INCLUDE_DIRS}
-#        ${OPENBLAS_INCLUDE_DIRS}
-#        ${YAML_INCLUDE_DIRS}
-#        ${Boost_INCLUDE_DIRS}
-#		${LIBMONGOCXX_INCLUDE_DIR}
-#		${LIBBSONCXX_INCLUDE_DIR}
-#		"/usr/local/include/mongocxx/v_noabi"
-#		"/usr/local/include/bsoncxx/v_noabi"
-#		"/usr/local/include/libmongoc-1.0"
-#		"/usr/local/include/libbson-1.0"
-#		"/usr/local/lib"
-#        )
+        cpp/iono/ionoMeas.cpp
+        cpp/iono/ionoModel.cpp
+        cpp/iono/ionoModel.hpp
+        cpp/iono/ionoSpherical.cpp
+        cpp/iono/ionoSphericalCaps.cpp
+        cpp/iono/ionoBSplines.cpp
+        cpp/iono/ionexWrite.cpp
 
-#if(OpenMP_CXX_FOUND)
-#    target_link_libraries(pea PUBLIC OpenMP::OpenMP_CXX)
-#endif()
+        cpp/ambres/GNSSambres.hpp
+        cpp/ambres/GNSSambres.cpp
+        cpp/ambres/GNSSpivot.cpp
+        cpp/ambres/WLambest.cpp
+        cpp/ambres/NLambest.cpp
+        cpp/ambres/ARmain.cpp
+        cpp/ambres/ARoutput.cpp
+        
+        cpp/pea/cycleSlip.cpp
+        cpp/pea/cycleSlip.hpp
+        cpp/pea/main.cpp
+        cpp/pea/minimumConstraints.cpp
+        cpp/pea/minimumConstraints.hpp
+        cpp/pea/networkEstimator.cpp
+        cpp/pea/networkEstimator.hpp
+        cpp/pea/pea_snx.cpp
+        cpp/pea/ppp.cpp
+        cpp/pea/ppp_user.cpp
+        cpp/pea/ppp_network.cpp
+        cpp/pea/ppp.hpp
+        cpp/pea/spp.cpp
 
-#target_compile_definitions(pea PRIVATE
-#							EIGEN_USE_BLAS=1
-#							DEBUGLOM
-#						  )
+        cpp/rtklib/ionex.cpp
+        cpp/rtklib/lambda.cpp
+        cpp/rtklib/lambda.h
+        cpp/rtklib/ephemeris.cpp
+        cpp/rtklib/preceph.cpp
+        cpp/rtklib/readtrop.cpp
+        cpp/rtklib/rinex.cpp
+        cpp/rtklib/rinex.hpp
+        cpp/rtklib/rtkcmn.cpp
+        cpp/rtklib/tides.cpp
+        cpp/rtklib/tides.hpp
+        cpp/rtklib/trop.h
+        cpp/rtklib/trop.cpp
+        cpp/rtklib/vmf3.h
+        cpp/rtklib/vmf3.cpp
+        cpp/rtklib/wancorr.cpp
+        cpp/rtklib/wancorr.h
+        )
+
+target_include_directories(pea PUBLIC
+        cpp/pea
+        cpp/common
+        cpp/3rdparty
+        cpp/iono
+        cpp/ambres
+        cpp/rtklib
+        ${EIGEN3_INCLUDE_DIRS}
+        ${LAPACK_INCLUDE_DIRS}
+        ${OPENBLAS_INCLUDE_DIRS}
+        ${YAML_INCLUDE_DIRS}
+        ${Boost_INCLUDE_DIRS}
+		${LIBMONGOCXX_INCLUDE_DIR}
+		${LIBBSONCXX_INCLUDE_DIR}
+		"/usr/local/include/mongocxx/v_noabi"
+		"/usr/local/include/bsoncxx/v_noabi"
+		"/usr/local/include/libmongoc-1.0"
+		"/usr/local/include/libbson-1.0"
+		"/usr/local/lib"
+        )
+
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(pea PUBLIC OpenMP::OpenMP_CXX)
+endif()
+
+target_compile_definitions(pea PRIVATE
+							EIGEN_USE_BLAS=1
+							DEBUGLOM
+						  )
 
 #==================================================
 # Ocean tide loading
 
-#set (NETCDF_CXX "YES")
-#find_package (NetCDF REQUIRED)
+set (NETCDF_CXX "YES")
+find_package (NetCDF REQUIRED)
 
 # message(STATUS "...NETCDF     >>>>>>   ${NETCDF_LIBRARIES}     ${NETCDF_INCLUDES}" )
 # message(STATUS "...NETCDF_C++ >>>>>>   ${NETCDF_LIBRARIES_CXX} ${NETCDF_INCLUDES_CXX}" )
 # find_package(netCDFCxx REQUIRED)
 
-#add_library(otl
-#        STATIC
-#        cpp/loading/loading.cpp
-#        cpp/loading/tide.cpp
-#        cpp/loading/utils.cpp
-#        cpp/loading/load_functions.cpp
-#        cpp/loading/loadgrid.cpp
-#        )
+add_library(otl
+        STATIC
+        cpp/loading/loading.cpp
+        cpp/loading/tide.cpp
+        cpp/loading/utils.cpp
+        cpp/loading/load_functions.cpp
+        cpp/loading/loadgrid.cpp
+        )
 
-#add_executable(make_otl_blq
-#        cpp/loading/make_otl_blq.cpp
-#        )
-
-
-#add_executable(interpolate_loading
-#        cpp/loading/interpolate_loading.cpp
-#        )
-
-#target_include_directories(otl PUBLIC
-#        cpp/loading
-#        ${YAML_INCLUDE_DIRS}
-#        ${Boost_INCLUDE_DIRS}
-#        ${NETCDF_INCLUDES}
-#        ${NETCDF_INCLUDES_CXX}
-#        )
-
-#target_include_directories(make_otl_blq PUBLIC
-#        cpp/loading
-#        ${YAML_INCLUDE_DIRS}
-#        ${Boost_INCLUDE_DIRS}
-#        ${NETCDF_INCLUDES}
-#        ${NETCDF_INCLUDES_CXX}
-#        )
-
-#target_include_directories(interpolate_loading PUBLIC
-#        cpp/loading
-#        ${YAML_INCLUDE_DIRS}
-#        ${Boost_INCLUDE_DIRS}
-#        ${NETCDF_INCLUDES}
-#        ${NETCDF_INCLUDES_CXX}
-#        )
+add_executable(make_otl_blq
+        cpp/loading/make_otl_blq.cpp
+        )
 
 
-#target_link_libraries(make_otl_blq PUBLIC
-#        otl
-#        ${NETCDF_LIBRARIES_CXX}
-#        ${NETCDF_LIBRARIES}
-#        Boost::timer
-#        Boost::program_options
-#        Boost::log
-#        Boost::log_setup
-#        ${YAML_CPP_LIBRARIES}
-#        ${YAML_CPP_LIB}
-#        )
+add_executable(interpolate_loading
+        cpp/loading/interpolate_loading.cpp
+        )
 
-#target_link_libraries(interpolate_loading PUBLIC
-#        otl
-#        ${NETCDF_LIBRARIES_CXX}
-#        ${NETCDF_LIBRARIES}
-#        Boost::timer
-#        Boost::program_options
-#        Boost::log
-#        Boost::log_setup
-#        ${YAML_CPP_LIBRARIES}
-#        ${YAML_CPP_LIB}
-#        )
+target_include_directories(otl PUBLIC
+        cpp/loading
+        ${YAML_INCLUDE_DIRS}
+        ${Boost_INCLUDE_DIRS}
+        ${NETCDF_INCLUDES}
+        ${NETCDF_INCLUDES_CXX}
+        )
 
+target_include_directories(make_otl_blq PUBLIC
+        cpp/loading
+        ${YAML_INCLUDE_DIRS}
+        ${Boost_INCLUDE_DIRS}
+        ${NETCDF_INCLUDES}
+        ${NETCDF_INCLUDES_CXX}
+        )
 
-#if(OpenMP_CXX_FOUND)
-#    target_link_libraries(make_otl_blq PUBLIC OpenMP::OpenMP_CXX)
-#    target_link_libraries(interpolate_loading PUBLIC OpenMP::OpenMP_CXX)
-#endif()
+target_include_directories(interpolate_loading PUBLIC
+        cpp/loading
+        ${YAML_INCLUDE_DIRS}
+        ${Boost_INCLUDE_DIRS}
+        ${NETCDF_INCLUDES}
+        ${NETCDF_INCLUDES_CXX}
+        )
 
 
-#==============================================================
-#add_executable(test_sinex
-#        cpp/3rdparty/enum.h
-#        cpp/test/sinex/test_sinex.cpp
-#        cpp/test/include/minunit.h
-#        cpp/common/newsnx.cpp
-#        cpp/common/algebra_old.cpp
-#        cpp/common/algebra.cpp
-#        cpp/common/gaTime.cpp
-#        cpp/common/antenna.cpp
-#        cpp/common/constants.cpp
-#        cpp/common/satSys.cpp
-#        cpp/common/streamTrace.cpp
-#        cpp/common/testUtils.cpp
+target_link_libraries(make_otl_blq PUBLIC
+        otl
+        ${NETCDF_LIBRARIES_CXX}
+        ${NETCDF_LIBRARIES}
+        Boost::timer
+        Boost::program_options
+        Boost::log
+        Boost::log_setup
+        ${YAML_CPP_LIBRARIES}
+        ${YAML_CPP_LIB}
+        )
+
+target_link_libraries(interpolate_loading PUBLIC
+        otl
+        ${NETCDF_LIBRARIES_CXX}
+        ${NETCDF_LIBRARIES}
+        Boost::timer
+        Boost::program_options
+        Boost::log
+        Boost::log_setup
+        ${YAML_CPP_LIBRARIES}
+        ${YAML_CPP_LIB}
+        )
+
+
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(make_otl_blq PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(interpolate_loading PUBLIC OpenMP::OpenMP_CXX)
+endif()
+
+
+#=================================================
+                      #add_executable(test_sinex2
+                      #        cpp/3rdparty/enum.h
+                      #        cpp/test/sinex/test_sinex2.cpp
+                      #        cpp/test/include/minunit.h
+                      #        cpp/common/newsnx.cpp
+                      #        cpp/common/gaTime.cpp
+                      #        cpp/common/gaTime.hpp
+                      #        cpp/common/constants.h
+                      #        cpp/common/constants.cpp
+                      #)
 #
-#        cpp/rtklib/rtkcmn.cpp
-#)
+#target_include_directories(test_sinex2 PUBLIC
+#	cpp/pea
+#	cpp/3rdparty
+#    cpp/common
+#	cpp/rtklib
+#	cpp/test/include
+#	cpp/test/sinex
+#        )
+#==============================================================
+add_executable(test_sinex
+        cpp/3rdparty/enum.h
+        cpp/test/sinex/test_sinex.cpp
+        cpp/test/include/minunit.h
+        cpp/common/newsnx.cpp
+#         cpp/common/acsStream.cpp
+        cpp/common/algebra_old.cpp
+        cpp/common/algebra.cpp
+        cpp/common/gaTime.cpp
+        cpp/common/antenna.cpp
+        cpp/common/constants.cpp
+        cpp/common/satSys.cpp
+        cpp/common/streamTrace.cpp
+        cpp/common/testUtils.cpp
 
-#target_include_directories(test_sinex PUBLIC
-#        cpp/pea
-#        cpp/3rdparty
-#        cpp/common
-#        cpp/rtklib
-#        cpp/test/include
-#        cpp/test/sinex
-#)
+        cpp/rtklib/rtkcmn.cpp
+)
 
-#target_compile_definitions(test_sinex PRIVATE DEBUGLOM)
-
-#target_link_libraries(test_sinex m ${Boost_LIBRARIES} ${YAML_CPP_LIB})
-
-
-#add_executable(dump_sinex
-#        cpp/test/sinex/dump_sinex.cpp
-#        cpp/test/include/minunit.h
-#        cpp/common/newsnx.cpp
-#        cpp/common/algebra_old.cpp
-#        cpp/common/algebra.cpp
-#        cpp/common/gaTime.cpp
-#        cpp/common/antenna.cpp
-#        cpp/common/constants.cpp
-#        cpp/common/satSys.cpp
-#        cpp/common/streamTrace.cpp
-#        cpp/common/testUtils.cpp
+target_include_directories(test_sinex PUBLIC
+        cpp/pea
+        cpp/3rdparty
+        cpp/common
+        cpp/rtklib
+        cpp/test/include
+        cpp/test/sinex
+)
 #
-#        cpp/rtklib/rtkcmn.cpp
-#)
 
-#target_include_directories(dump_sinex PUBLIC
-#        cpp/pea
-#        cpp/3rdparty
-#        cpp/common
-#        cpp/rtklib
-#        cpp/test/include
-#        cpp/test/sinex
-#)
-#target_link_libraries (dump_sinex m ${Boost_LIBRARIES})
+target_compile_definitions(test_sinex PRIVATE DEBUGLOM)
+target_compile_definitions(test_sinex PRIVATE)
+
+target_link_libraries(test_sinex m ${Boost_LIBRARIES} ${YAML_CPP_LIB})
+
+
+add_executable(dump_sinex
+        cpp/test/sinex/dump_sinex.cpp
+        cpp/test/include/minunit.h
+        cpp/common/newsnx.cpp
+#         cpp/common/acsStream.cpp
+        cpp/common/algebra_old.cpp
+        cpp/common/algebra.cpp
+        cpp/common/gaTime.cpp
+        cpp/common/antenna.cpp
+        cpp/common/constants.cpp
+        cpp/common/satSys.cpp
+        cpp/common/streamTrace.cpp
+        cpp/common/testUtils.cpp
+
+        cpp/rtklib/rtkcmn.cpp
+)
+
+target_include_directories(dump_sinex PUBLIC
+        cpp/pea
+        cpp/3rdparty
+        cpp/common
+        cpp/rtklib
+        cpp/test/include
+        cpp/test/sinex
+)
+target_link_libraries (dump_sinex m ${Boost_LIBRARIES})
 #==============================================================
 
-#if(ENABLE_UNIT_TESTS)
-#	target_compile_definitions(pea PRIVATE ENABLE_UNIT_TESTS=1)
-#endif()
+if(ENABLE_UNIT_TESTS)
+	target_compile_definitions(pea PRIVATE ENABLE_UNIT_TESTS=1)
+endif()
 
 
-#if(ENABLE_MONGODB)
-#	target_compile_definitions(pea PRIVATE ENABLE_MONGODB=1)
-#endif()
+if(ENABLE_MONGODB)
+	target_compile_definitions(pea PRIVATE ENABLE_MONGODB=1)
+endif()
 
 
-#if(ENABLE_PARALLELISATION)
-#	target_compile_definitions(pea PRIVATE ENABLE_PARALLELISATION=1)
-#endif()
+if(ENABLE_PARALLELISATION)
+	target_compile_definitions(pea PRIVATE ENABLE_PARALLELISATION=1)
+endif()
 
 
-#target_link_libraries(pea PUBLIC
-#                        m
-#                        pthread
-#                        ${Boost_LIBRARIES}
-#			${BLAS_LIBRARIES}
-#                        ${LAPACK_LIBRARIES}
-#                        ${YAML_CPP_LIBRARIES}
-#                        ${YAML_CPP_LIB}
-#                        ${LIBMONGOCXX_LIBRARIES}
-#                        ${LIBBSONCXX_LIBRARIES}
-#                        ${OPENSSL_LIBRARY_DIRS}
-#                        ssl
-#                        crypto
-#					 )
+target_link_libraries(pea PUBLIC
+                        m
+                        pthread
+                        ${Boost_LIBRARIES}
+			${BLAS_LIBRARIES}
+                        ${LAPACK_LIBRARIES}
+                        ${YAML_CPP_LIBRARIES}
+                        ${YAML_CPP_LIB}
+                        ${LIBMONGOCXX_LIBRARIES}
+                        ${LIBBSONCXX_LIBRARIES}
+			${BLAS_LIBRARY_DIRS}
+                        ${OPENSSL_LIBRARY_DIRS}
+                        ssl
+                        crypto
+					 )
+
+                 #target_link_libraries(test_sinex2 PUBLIC
+                 #                        m
+                 #                        pthread
+                 #                        ${Boost_LIBRARIES}
+                 #                        ${OpenBLAS_LIB}
+                 #                        ${LAPACK_LIBRARIES}
+                 #                        ${YAML_CPP_LIBRARIES}
+                 #                        ${YAML_CPP_LIB} )
+
+
+# first we can indicate the documentation build as an option and set it to ON by default
+option(BUILD_DOC "Build documentation" ON)
+
+# check if Doxygen is installed
+find_package(Doxygen)
+if (DOXYGEN_FOUND)
+
+    # set input and output files
+    set(DOXYGEN_IN      ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in)
+    set(DOXYGEN_OUT     ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+    set(DOXYGEN_LAYIN   ${CMAKE_CURRENT_SOURCE_DIR}/docs/DoxygenLayout.xml.in)
+    set(DOXYGEN_LAYOUT  ${CMAKE_CURRENT_BINARY_DIR}/DoxygenLayout.xml)
+
+    # request to configure the file
+    if (EXISTS "${DOXYGEN_IN}")
+		configure_file(${DOXYGEN_IN}		${DOXYGEN_OUT}		@ONLY)
+	endif()
+    if (EXISTS "${DOXYGEN_LAYIN}")
+		configure_file(${DOXYGEN_LAYIN}		${DOXYGEN_LAYOUT}	@ONLY)
+	endif()
+
+    # note the option ALL which allows to build the docs together with the application
+    add_custom_target( doc_doxygen
+        COMMAND				${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+        WORKING_DIRECTORY	${CMAKE_CURRENT_SOURCE_DIR}/docs/PeaDocs
+        COMMENT				"Generating API documentation with Doxygen"
+        VERBATIM )
+
+else (DOXYGEN_FOUND)
+
+  message("Doxygen need to be installed to generate the doxygen documentation")
+
+endif (DOXYGEN_FOUND)
+
+list(APPEND CTEST_CUSTOM_WARNING_EXCEPTION
+  ".*warning: ignoring loop annotation.*"
+  ".*warning: .*Consider increasing DOT_GRAPH_MAX_NODES."
+)
+
+if(ENABLE_MONGODB)
+	target_compile_definitions(pea PRIVATE ENABLE_MONGODB=1)
+endif()
+
+
+if(ENABLE_PARALLELISATION)
+	target_compile_definitions(pea PRIVATE ENABLE_PARALLELISATION=1)
+endif()
+
 
 # first we can indicate the documentation build as an option and set it to ON by default
 option(BUILD_DOC "Build documentation" ON)
