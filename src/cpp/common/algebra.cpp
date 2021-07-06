@@ -727,9 +727,18 @@ int KFState::kFilter(
 
 	dx = K * v;
 	xp = x + dx;
-	Pp = P - K * HP;
+	
+	if (acsConfig.joseph_stabilisation)
+	{
+		MatrixXd IKH = MatrixXd::Identity(P.rows(), P.cols()) - K * H;
+		Pp = IKH * P * IKH.transpose() + K * R.asDiagonal() * K.transpose();
+	}
+	else
+	{
+		Pp = P - K * HP;
+		Pp = (Pp + Pp.transpose()).eval() / 2;
+	}
 
-	Pp = (Pp + Pp.transpose()).eval() / 2;
 
 	bool error = xp.array().isNaN().any();
 	if (error)
