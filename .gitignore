@@ -46,6 +46,10 @@ docs/manual/main.ilg
 docs/manual/main.ind
 docs/manual/main.lol
 
+docs/html/
+docs/DoxygenLayout.xml
+docs/Doxyfile
+
 *.swp
 # Node artifact files
 node_modules/
@@ -95,3 +99,4 @@ Thumbs.db
 
 # vscode settings
 .vscode/
+
