@@ -188,6 +188,7 @@ struct GlobalOptions
 	double	wait_next_epoch		= 60;
 	double	wait_all_stations	= 0;
 
+	bool	joseph_stabilisation	= false;
 
 	list<string>							station_files;
 

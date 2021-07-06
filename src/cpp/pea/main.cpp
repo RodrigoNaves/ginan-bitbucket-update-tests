@@ -854,6 +854,7 @@ int main(int argc, char **argv)
 	if (!acsConfig.biasSINEX_directory	.empty())	boost::filesystem::create_directories(acsConfig.biasSINEX_directory);
 	if (!acsConfig.sinex_directory		.empty())	boost::filesystem::create_directories(acsConfig.sinex_directory);
 	if (!acsConfig.testOpts.directory	.empty())	boost::filesystem::create_directories(acsConfig.testOpts.directory);
+	if (!acsConfig.persistance_directory.empty())	boost::filesystem::create_directories(acsConfig.persistance_directory);
 
 	BOOST_LOG_TRIVIAL(info)
 	<< "Logging with trace level:" << acsConfig.trace_level << std::endl << std::endl;

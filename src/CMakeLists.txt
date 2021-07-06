@@ -744,67 +744,6 @@ endif()
 #	cpp/test/sinex
 #        )
 #==============================================================
-add_executable(test_sinex
-        cpp/3rdparty/enum.h
-        cpp/test/sinex/test_sinex.cpp
-        cpp/test/include/minunit.h
-        cpp/common/newsnx.cpp
-#         cpp/common/acsStream.cpp
-        cpp/common/algebra_old.cpp
-        cpp/common/algebra.cpp
-        cpp/common/gaTime.cpp
-        cpp/common/antenna.cpp
-        cpp/common/constants.cpp
-        cpp/common/satSys.cpp
-        cpp/common/streamTrace.cpp
-        cpp/common/testUtils.cpp
-
-        cpp/rtklib/rtkcmn.cpp
-)
-
-target_include_directories(test_sinex PUBLIC
-        cpp/pea
-        cpp/3rdparty
-        cpp/common
-        cpp/rtklib
-        cpp/test/include
-        cpp/test/sinex
-)
-#
-
-target_compile_definitions(test_sinex PRIVATE DEBUGLOM)
-target_compile_definitions(test_sinex PRIVATE)
-
-target_link_libraries(test_sinex m ${Boost_LIBRARIES} ${YAML_CPP_LIB})
-
-
-add_executable(dump_sinex
-        cpp/test/sinex/dump_sinex.cpp
-        cpp/test/include/minunit.h
-        cpp/common/newsnx.cpp
-#         cpp/common/acsStream.cpp
-        cpp/common/algebra_old.cpp
-        cpp/common/algebra.cpp
-        cpp/common/gaTime.cpp
-        cpp/common/antenna.cpp
-        cpp/common/constants.cpp
-        cpp/common/satSys.cpp
-        cpp/common/streamTrace.cpp
-        cpp/common/testUtils.cpp
-
-        cpp/rtklib/rtkcmn.cpp
-)
-
-target_include_directories(dump_sinex PUBLIC
-        cpp/pea
-        cpp/3rdparty
-        cpp/common
-        cpp/rtklib
-        cpp/test/include
-        cpp/test/sinex
-)
-target_link_libraries (dump_sinex m ${Boost_LIBRARIES})
-#==============================================================
 
 if(ENABLE_UNIT_TESTS)
 	target_compile_definitions(pea PRIVATE ENABLE_UNIT_TESTS=1)
@@ -855,10 +794,10 @@ find_package(Doxygen)
 if (DOXYGEN_FOUND)
 
     # set input and output files
-    set(DOXYGEN_IN      ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in)
-    set(DOXYGEN_OUT     ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
-    set(DOXYGEN_LAYIN   ${CMAKE_CURRENT_SOURCE_DIR}/docs/DoxygenLayout.xml.in)
-    set(DOXYGEN_LAYOUT  ${CMAKE_CURRENT_BINARY_DIR}/DoxygenLayout.xml)
+    set(DOXYGEN_IN      ${CMAKE_CURRENT_SOURCE_DIR}/doc_templates/Doxyfile.in)
+    set(DOXYGEN_OUT     ${CMAKE_CURRENT_BINARY_DIR}/../../docs/Doxyfile)
+    set(DOXYGEN_LAYIN   ${CMAKE_CURRENT_SOURCE_DIR}/doc_templates/DoxygenLayout.xml.in)
+    set(DOXYGEN_LAYOUT  ${CMAKE_CURRENT_BINARY_DIR}/../../docs/DoxygenLayout.xml)
 
     # request to configure the file
     if (EXISTS "${DOXYGEN_IN}")
@@ -870,8 +809,9 @@ if (DOXYGEN_FOUND)
 
     # note the option ALL which allows to build the docs together with the application
     add_custom_target( doc_doxygen
+	ALL
         COMMAND				${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-        WORKING_DIRECTORY	${CMAKE_CURRENT_SOURCE_DIR}/docs/PeaDocs
+        WORKING_DIRECTORY	${CMAKE_CURRENT_SOURCE_DIR}/../docs
         COMMENT				"Generating API documentation with Doxygen"
         VERBATIM )
 
@@ -894,25 +834,6 @@ endif()
 if(ENABLE_PARALLELISATION)
 	target_compile_definitions(pea PRIVATE ENABLE_PARALLELISATION=1)
 endif()
-
-
-# first we can indicate the documentation build as an option and set it to ON by default
-option(BUILD_DOC "Build documentation" ON)
-
-# check if Doxygen is installed
-find_package(Doxygen)
-# request to configure the file
-if (EXISTS "${DOXYGEN_IN}")
-        configure_file(${DOXYGEN_IN}        ${DOXYGEN_OUT}        @ONLY)
-endif()
-if (EXISTS "${DOXYGEN_LAYIN}")
-        configure_file(${DOXYGEN_LAYIN}        ${DOXYGEN_LAYOUT}    @ONLY)
-endif()
-
-list(APPEND CTEST_CUSTOM_WARNING_EXCEPTION
-  ".*warning: ignoring loop annotation.*"
-  ".*warning: .*Consider increasing DOT_GRAPH_MAX_NODES."
-)
 
 link_directories(/usr/lib64 ${CMAKE_BINARY_DIR}/../../build/lib)
 

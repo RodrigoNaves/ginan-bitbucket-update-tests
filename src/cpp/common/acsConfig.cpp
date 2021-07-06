@@ -136,7 +136,6 @@ void ACSConfig::addStationFile(
 	string fileName,			///< Filename to create station from
 	string type)				///< Type of data in file
 {
-	tryAddRootToPath(root_stations_dir, fileName);
 	
 	if (streamDOAMap.find(fileName) != streamDOAMap.end())
 	{
@@ -541,7 +540,7 @@ void trySetKalmanFromYaml(
 		{
 			for (auto& proc : output.proc_noise)
 			{
-				proc /= proc_noise_dt;
+				proc /= sqrt(proc_noise_dt);
 			}
 		}
 		if (foundTau)
@@ -996,7 +995,6 @@ bool ACSConfig::parse(
 		trySetFromAny(rnxfiles,				commandOpts, station_data,	{"rnxfiles"					});
 		trySetFromAny(rtcmfiles,			commandOpts, station_data,	{"rtcmfiles"				});
 
-		tryAddRootToPath(root_input_dir,	root_stations_dir);
 		tryAddRootToPath(root_stations_dir, rnxfiles);
 		tryAddRootToPath(root_stations_dir, rtcmfiles);
 
@@ -1141,6 +1139,7 @@ bool ACSConfig::parse(
 				}
 			}
 		}
+		trySetFromYaml(joseph_stabilisation,		processing_options, {"joseph_stabilisation"						});
 	}
 
 	auto user_filter = stringsToYamlObject(yaml, {"user_filter_parameters"});
@@ -1330,7 +1329,6 @@ bool ACSConfig::parse(
 	tryAddRootToPath(root_output_dir,				summary_directory);
 	tryAddRootToPath(root_output_dir,				clocks_directory);
 	tryAddRootToPath(root_output_dir,				ionex_directory);
-	tryAddRootToPath(root_output_dir,				ionex_directory);
 	tryAddRootToPath(root_output_dir,				ionstec_directory);
 	tryAddRootToPath(root_output_dir,				biasSINEX_directory);
 	
@@ -1381,6 +1379,7 @@ bool ACSConfig::parse(
 	replaceTimes(root_stations_dir,		start_epoch);
 	replaceTimes(sinex_directory,		start_epoch);
 	replaceTimes(sinex_filename,		start_epoch);
+	replaceTimes(persistance_directory,         start_epoch);
 	replaceTimes(persistance_filename,			start_epoch);
 	replaceTimes(pppOpts.rts_filename,			start_epoch);
 	replaceTimes(netwOpts.rts_filename,			start_epoch);
