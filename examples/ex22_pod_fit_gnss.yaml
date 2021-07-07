@@ -42,7 +42,7 @@ pod_options:
 
 #---------------------------------------------------------------------------
 # Observation Model                                                                                            
-   pseudobs_orbit_filename: products/TUG0R03FIN_20191990000_01D_05M_ORB.SP3 # Pseudo observations orbit filename       
+   pseudobs_orbit_filename: products/COD0MGXFIN_20191990000_01D_05M_ORB.SP3 # Pseudo observations orbit filename       
    pseudobs_interp_step:    900          # Interval (sec) of the interpolated orbit
    pseudobs_interp_points:  12           # Number of data points used in Lagrange interpolation
 
@@ -60,7 +60,7 @@ pod_options:
    ext_orbit_type_kepler:    false        # Keplerian orbit
    ext_orbit_type_lagrange:  false        # 3-day Lagrange interpolation
    ext_orbit_type_position_sp3:    false        # Position and SP3 file
-   ext_orbit_filename:       products/TUG0R03FIN_20191990000_01D_05M_ORB.SP3 # External (comparison)  orbit filename
+   ext_orbit_filename:       products/COD0MGXFIN_20191990000_01D_05M_ORB.SP3 # External (comparison)  orbit filename
    ext_orbit_interp_step:    900          # Interval (sec) of the interpolated/Kepler orbit
    ext_orbit_interp_points:  12           # Number of data points used in Lagrange interpolation
 
