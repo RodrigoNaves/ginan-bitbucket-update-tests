@@ -1,4 +1,6 @@
-# ex12 - PPP Ionosphere-Free Observable Example GPS+GAL
+# ex14 - PPP Ionosphere-Free Observable Example GPS+GAL
+# Uses TU GRAZ orbit and clock products to produce kinematic PPP solition (GPS+GAL, resolved ambiguities)
+# Total processing duration  ~ 1.8 minutes on 2-cores
 
 input_files:
 
@@ -47,7 +49,7 @@ output_options:
 
 processing_options:
 
-    #start_epoch:                2019-07-18 00:00:00
+    start_epoch:                2019-07-18 00:00:00
     #end_epoch:                  2019-07-18 23:59:30
     epoch_interval:             30          #seconds
     #max_epochs:                 200        #0 is infinite
@@ -88,10 +90,10 @@ processing_options:
         orography:  orography_ell_5x5
         # gpt2grid: EX03/general/gpt_25.grd
 
-    pivot_station:        "USN7"
-    pivot_satellite:      "G01"
+    # pivot_station:        "USN7"
+    # pivot_satellite:      "G01"
 
-    code_priorities: [  L1C, L1P, L1Y, L1W, L1M, L1N, L1S, L1L,
+    code_priorities: [  L1C, L1P, L1Y, L1W, L1M, L1N, L1S, L1L, L1X,
                         L2W, L2P, L2Y, L2C, L2M, L2N, L2D, L2S, L2L, L2X,
                         L5I, L5Q, L5X]
 
@@ -116,23 +118,26 @@ default_filter_parameters:
 
         pos:
             estimated:          true
-            sigma:              [100.0] # check if this is reasonable 
-            proc_noise:         [100.0]
+            sigma:              [0.1]
+            proc_noise:         [0.00057] #0.57 mm/sqrt(s), Gipsy default value from slow-moving
             proc_noise_dt:      second
+            #apriori:                                   # taken from other source, rinex file etc.
+            #frame:              xyz #ned
+            #proc_noise_model:   Gaussian
 
 
         clk:
             estimated:          true
             sigma:              [0]
-            proc_noise:         [1.8257418583505538] #where is this coming from?
+            proc_noise:         [10] #where is this coming from?
             #proc_noise_model:   Gaussian
 
         clk_rate:
             estimated:          false
             sigma:              [500]
             proc_noise:         [1e-4]
-            clamp_max:          [+500]
-            clamp_min:          [-500]
+            # clamp_max:          [+500]
+            # clamp_min:          [-500]
 
         amb:
             estimated:          true
@@ -142,27 +147,30 @@ default_filter_parameters:
         trop:
             estimated:          true
             sigma:              [0.1]
-            proc_noise:         [0.3]
-            proc_noise_dt:      hour
+            proc_noise:         [0.0001] #0.1 mm/sqrt(s)
+            proc_noise_dt:      second
+            #proc_noise_model:   RandomWalk
 
         trop_grads:
-            estimated:          false
+            estimated:          true
             sigma:              [1]
-            proc_noise:         [0]
+            proc_noise:         [0.01]
+            proc_noise_dt:      second
+            #proc_noise_model:   RandomWalk
 
     satellites:
 
         clk:
             estimated:          false
-            sigma:              [0]
-            proc_noise:         [0.03651483716701108] #another magic number
+            # sigma:              [0]
+            # proc_noise:         [0.03651483716701108] #another magic number
 
         clk_rate:
             estimated:          false
-            sigma:              [500]
-            proc_noise:         [1e-4]
-            clamp_max:          [+500]
-            clamp_min:          [-500]
+            # sigma:              [500]
+            # proc_noise:         [1e-4]
+            # clamp_max:          [+500]
+            # clamp_min:          [-500]
 
         orb:
             estimated:          false

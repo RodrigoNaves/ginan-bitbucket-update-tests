@@ -1,4 +1,6 @@
 # ex13 - GPS-only single frequency PPP Example
+# Uses TU GRAZ orbit and clock products to produce kinematic PPP solition (GPS+GLONASS, float ambiguities)
+# Total processing duration  ~ 1.2 minutes on 2-cores
 
 input_files:
 
@@ -47,7 +49,7 @@ output_options:
 
 processing_options:
 
-    #start_epoch:                2019-07-18 00:00:00
+    start_epoch:                2019-07-18 00:00:00
     #end_epoch:                  2019-07-18 23:59:30
     epoch_interval:             30          #seconds
     #max_epochs:                 200        #0 is infinite
@@ -84,10 +86,10 @@ processing_options:
 
     troposphere:
         model:      gpt2    #vmf3
-        gpt2grid: gpt_25.grd
+        gpt2grid:   gpt_25.grd
 
-    pivot_station:        "USN7"
-    pivot_satellite:      "G01"
+    # pivot_station:        "USN7"
+    # pivot_satellite:      "G01"
 
     code_priorities: [  L1C, L1P, L1Y, L1W, L1M, L1N, L1S, L1L,
                         L2W, L2P, L2Y, L2C, L2M, L2N, L2D, L2S, L2L, L2X,
@@ -144,15 +146,15 @@ default_filter_parameters:
         trop:
             estimated:          true
             sigma:              [0.1]
-            proc_noise:         [0.0001]
-            # proc_noise_dt:      hour # second is the default
+            proc_noise:         [0.0001] #0.1 mm/sqrt(s)
+            proc_noise_dt:      second
             #proc_noise_model:   RandomWalk
 
         trop_grads:
             estimated:          true
             sigma:              [1]
             proc_noise:         [0.01]
-            #proc_noise_dt:      hour
+            proc_noise_dt:      second
             #proc_noise_model:   RandomWalk
 
     satellites:
