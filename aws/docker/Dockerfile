@@ -1,3 +1,4 @@
+FROM gnssanalysis/ginan-env:latest
 
 ENV HOME /root
 RUN mkdir -p /ginan
