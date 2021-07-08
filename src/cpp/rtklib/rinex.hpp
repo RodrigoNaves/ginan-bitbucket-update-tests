@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "observations.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 #include "enums.h"
 
 struct RinexStation;

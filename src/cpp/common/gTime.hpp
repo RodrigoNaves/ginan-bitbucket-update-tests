@@ -14,14 +14,14 @@ struct GTime;
 void    time2str(GTime t, char *str, int n);
 
 /** Time structure used throughout this software
- */
+*/
 struct GTime
 {
-    time_t time	= 0;		///< Time (s) expressed by standard time_t
-    double sec	= 0;		///< Fractions of second ( 0 < sec < 1 )
+	time_t time	= 0;		///< Time (s) expressed by standard time_t
+	double sec	= 0;		///< Fractions of second ( 0 < sec < 1 )
 
-    /** Uninitialised time for comparisons
-	 */
+	/** Uninitialised time for comparisons
+	*/
 	static GTime noTime()
 	{
 		GTime nothing = {};
@@ -36,14 +36,14 @@ struct GTime
 		return result;
 	}
 
-    bool operator ==(const GTime &t2) const
+	bool operator ==(const GTime &t2) const
 	{
 		if (this->time	!= t2.time)	return false;
 		if (this->sec	!= t2.sec)	return false;
 		else						return true;
 	}
 
-    bool operator !=(const GTime &t2) const
+	bool operator !=(const GTime &t2) const
 	{
 		return !(*this == t2);
 	}
@@ -56,7 +56,7 @@ struct GTime
 // 		else						return false;
 // 	}
 
-    bool operator <(const GTime &t2) const
+	bool operator <(const GTime &t2) const
 	{
 		if (this->time	< t2.time)	return true;
 		if (this->time	> t2.time)	return false;
@@ -64,7 +64,7 @@ struct GTime
 		else						return false;
 	}
 
-    bool operator >(const GTime &t2) const
+	bool operator >(const GTime &t2) const
 	{
 		if (this->time	> t2.time)	return true;
 		if (this->time	< t2.time)	return false;
@@ -72,7 +72,7 @@ struct GTime
 		else						return false;
 	}
 
-    friend ostream& operator<<(ostream& os, const GTime& time);
+	friend ostream& operator<<(ostream& os, const GTime& time);
 
 	GTime operator +(const double t) const
 	{
@@ -101,18 +101,15 @@ struct GTime
 	}
 
 
-    template<class ARCHIVE>
-    void serialize(ARCHIVE& ar, const unsigned int& version)
-    {
+	template<class ARCHIVE>
+	void serialize(ARCHIVE& ar, const unsigned int& version)
+	{
 		long int time_int = time;
 		ar & time_int;
 		time = time_int;
-    }
+	}
 };
-
-[[deprecated]]
-typedef GTime gtime_t;
-
+	
 GTime timeadd  (GTime t, double sec);
 double  timediff (GTime t1, GTime t2);
 GTime gpst2utc (GTime t);

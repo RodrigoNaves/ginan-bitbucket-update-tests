@@ -4,7 +4,7 @@
 
 #include "eigenIncluder.hpp"
 #include "streamTrace.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 
 
 //forward declaration

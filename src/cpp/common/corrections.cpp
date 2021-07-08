@@ -7,7 +7,7 @@
 #include "constants.h"
 #include "satStat.hpp"
 #include "algebra.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 #include "common.hpp"
 #include "enums.h"
 
@@ -139,7 +139,7 @@ double ionmapf(Vector3d& rr, const double el)
 *          fixing bug on ref [2] A.4.4.10.1 A-22,23
 *-----------------------------------------------------------------------------*/
 double ionppp(const double* pos, const double* azel, double re,
-                     double hion, double* posp)
+					double hion, double* posp)
 {
 	double cosaz, rp, ap, sinap, tanap;
 

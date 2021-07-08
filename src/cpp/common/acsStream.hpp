@@ -54,7 +54,7 @@ using boost::asio::ip::tcp;
 #include "constants.h"
 #include "station.hpp"
 #include "common.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 #include "rinex.hpp"
 #include "enum.h"
 

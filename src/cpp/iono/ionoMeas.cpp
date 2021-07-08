@@ -20,8 +20,8 @@ extern int Ipp_in_range(GTime time, double *Ion_pp)
 		case E_IonoModel::SPHERICAL_HARMONICS:	return Ipp_check_sphhar(time,Ion_pp);
 		case E_IonoModel::SPHERICAL_CAPS:		return Ipp_check_sphcap(time,Ion_pp);
 		case E_IonoModel::BSPLINE:				return Ipp_check_bsplin(time,Ion_pp);
-    }
-    return 0;
+	}
+	return 0;
 }
 
 /*----------------------------------------------------------------------------------------------*/
@@ -58,7 +58,7 @@ int update_receivr_measr(
 
 	ObsList& obsList = rec.obsList;
 	for (auto& obs : obsList)
-    {
+	{
 		SatNav& 	satNav	= *obs.satNav_ptr;
 		SatStat&	satStat	= *obs.satStat_ptr;
 		string satidstr = obs.Sat.id();
@@ -105,20 +105,20 @@ int update_receivr_measr(
 			}
 			
 			obs.latIPP[j] = posp[0];
-            obs.lonIPP[j] = posp[1];
-            tracepde(4,trace,"  %8.3f %8.3f\n", posp[0]*R2D, posp[1]*R2D);
+			obs.lonIPP[j] = posp[1];
+			tracepde(4,trace,"  %8.3f %8.3f\n", posp[0]*R2D, posp[1]*R2D);
 		}
 		
 		if (obs.ionExclude) 
 			continue;
 
-        if (fabs(timediff(satStat.lastObsTime, obs.time)) > 300)
+		if (fabs(timediff(satStat.lastObsTime, obs.time)) > 300)
 		{
-            satStat.ambvar	= 0;
-        }
-        satStat.lastObsTime = obs.time;
+			satStat.ambvar	= 0;
+		}
+		satStat.lastObsTime = obs.time;
 
-        double varL = obs.Sigs.begin()->second.phasVar;
+		double varL = obs.Sigs.begin()->second.phasVar;
 		double varP = obs.Sigs.begin()->second.codeVar;
 
 		double amb = - (lc.GF_Phas_m + lc.GF_Code_m);	//todo aaron, the signs of these come out a bit weird
@@ -127,32 +127,32 @@ int update_receivr_measr(
 			||satStat.ambvar <= 0)
 		{
 			satStat.gf_amb = amb;
-            satStat.ambvar = varP;     /* 1.0001*varP; */
-        }
-        else
+			satStat.ambvar = varP;     /* 1.0001*varP; */
+		}
+		else
 		{
-            double SmtG = satStat.ambvar / (varP + satStat.ambvar);
-            satStat.gf_amb	+= SmtG * (amb - satStat.gf_amb);
-            satStat.ambvar	 = SmtG * (varP);
-        }
+			double SmtG = satStat.ambvar / (varP + satStat.ambvar);
+			satStat.gf_amb	+= SmtG * (amb - satStat.gf_amb);
+			satStat.ambvar	 = SmtG * (varP);
+		}
 		obs.STECtype = 1;
-        obs.STECsmth = (satStat.gf_amb + lc.GF_Phas_m);
-        obs.STECsmvr = (satStat.ambvar + 2*varL) + SQR(PHASE_BIAS_STD);
+		obs.STECsmth = (satStat.gf_amb + lc.GF_Phas_m);
+		obs.STECsmvr = (satStat.ambvar + 2*varL) + SQR(PHASE_BIAS_STD);
 
 
 		int obstweek;
 		double obstsec = time2gpst(obs.time, &obstweek);
-        tracepde(4,trace,"ION_MEAS %s %8.0f  %10.4f  %10.3e  %10.4f  %10.4f  %10.4f\n",
-        			satidstr.c_str(),
-        			obstsec,
-        			obs.STECsmth,
-        			obs.STECsmvr,
-        			obs.Sigs[f2].P - obs.Sigs[L1].P,
-        			obs.Sigs[L1].L * satNav.lamMap[L1] - obs.Sigs[f2].L * satNav.lamMap[f2],
-        			obs.STECtoDELAY);
-    }
-    
-    return 1;
+		tracepde(4,trace,"ION_MEAS %s %8.0f  %10.4f  %10.3e  %10.4f  %10.4f  %10.4f\n",
+					satidstr.c_str(),
+					obstsec,
+					obs.STECsmth,
+					obs.STECsmvr,
+					obs.Sigs[f2].P - obs.Sigs[L1].P,
+					obs.Sigs[L1].L * satNav.lamMap[L1] - obs.Sigs[f2].L * satNav.lamMap[f2],
+					obs.STECtoDELAY);
+	}
+	
+	return 1;
 }
 
 void write_receivr_measr(
@@ -195,9 +195,9 @@ void write_receivr_measr(
 				continue;
 			
 			tracepdeex(2,stecfile,"#IONO_MEA, %5d, %12.3f, %s, %s, %10.4f, %10.4e,   %d,     %2d   ",week, tow, 
-        		rec.id, obs.Sat.id().c_str(), obs.STECsmth, obs.STECsmvr, obs.STECtype, nlayer);
-        	
-        	if (nlayer<=0)
+				rec.id, obs.Sat.id().c_str(), obs.STECsmth, obs.STECsmvr, obs.STECtype, nlayer);
+			
+			if (nlayer<=0)
 			{
 				tracepdeex(2,stecfile,", %13.3f, %13.3f, %13.3f, %13.3f, %13.3f, %13.3f\n",
 					rec.aprioriPos[0],
@@ -212,7 +212,7 @@ void write_receivr_measr(
 			for (int j=0; j<nlayer; j++)
 			{
 				tracepdeex(2,stecfile,", %8.0f, %8.2f, %8.3f, %8.3f", acsConfig.ionFilterOpts.layer_heights[j]/1000,
-        			obs.latIPP[j]*R2D, 
+					obs.latIPP[j]*R2D, 
 					obs.lonIPP[j]*R2D,
 					obs.angIPP[j]);
 			}

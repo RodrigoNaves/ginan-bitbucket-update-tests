@@ -510,7 +510,7 @@ void RtcmDecoder::SSRDecoder::decodeSSR(
 			//tracepdeex(rtcmdeblvl,std::cout, "\n#RTCM_DEC SSRCLK %s %s      %10.3f %10.3f %10.3f", Sat.id(),ssrClk.t0.to_string(2), ssrClk.dclk[0],ssrClk.dclk[1],ssrClk.dclk[2]);
 			if	( ssr.ssrClk_map.size() == 0
 				||ssrClk.iod		!= ssr.ssrClk_map.begin()->second.iod
- 				||ssrClk.t0			!= ssr.ssrClk_map.begin()->second.t0)
+				||ssrClk.t0			!= ssr.ssrClk_map.begin()->second.t0)
 			{
 				ssr.ssrClk_map[ssrClk.t0] = ssrClk;
 			}

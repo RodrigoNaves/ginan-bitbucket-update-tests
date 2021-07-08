@@ -7,7 +7,7 @@ using std::string;
 
 #include "eigenIncluder.hpp"
 #include "observations.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 
 
 struct nav_t;

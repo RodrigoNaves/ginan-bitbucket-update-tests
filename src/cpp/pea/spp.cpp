@@ -27,7 +27,7 @@
 
 
 /** get tgd parameter (m)
- */
+*/
 double gettgd(
 	SatNav&		satNav)		///< Satellite navigation object
 {
@@ -39,7 +39,7 @@ double gettgd(
 }
 
 /** Calculate pseudorange with code bias correction
- */
+*/
 bool	prange(
 	Obs&		obs,		///< Observation to calculate pseudorange for
 	int			iter,		///< Iteration number (allows extra tests when elevation values are initialised)
@@ -129,7 +129,7 @@ bool	prange(
 }
 
 /** Compute ionospheric corrections
- */
+*/
 int ionocorr(
 	GTime	time,		///< Time
 	double*	pos,		///< Receiver position in LLH
@@ -164,7 +164,7 @@ int ionocorr(
 }
 
 /** Compute tropospheric corrections
- */
+*/
 int tropcorr(
 	GTime	time,		///< Time
 	double*	pos,		///< Receiver position in LLH
@@ -185,7 +185,7 @@ int tropcorr(
 }
 
 /** Validate Dilution of Precision of solution
- */
+*/
 int validateDOP(
 	Trace&		trace,			///< Trace file to output to
 	ObsList&	obsList)		///< List of observations for this epoch
@@ -224,7 +224,7 @@ int validateDOP(
 }
 
 /** Estimate receiver position and biases using code measurements
- */
+*/
 int estpos(
 	Trace&		trace,			///< Trace file to output to
 	ObsList&	obsList,		///< List of observations for this epoch
@@ -436,7 +436,7 @@ int estpos(
 }
 
 /** Receiver autonomous integrity monitoring (RAIM) failure detection and exclution
- */
+*/
 void raim_fde(
 	Trace&		trace,		///< Trace file to output to
 	ObsList&	obsList,	///< List of observations for this epoch
@@ -526,11 +526,11 @@ void raim_fde(
 }
 
 /** Compute receiver position, velocity, clock bias by single-point positioning with pseudorange observables
- */
+*/
 void sppos(
-    Trace&		trace,			///< Trace file to output to
+	Trace&		trace,			///< Trace file to output to
 	ObsList&	obsList,		///< List of observations for this epoch
-    Solution&	sol)			///< Solution object containing initial state and results
+	Solution&	sol)			///< Solution object containing initial state and results
 {
 	TestStack ts(__FUNCTION__);
 
@@ -579,7 +579,7 @@ void sppos(
 	}
 
 	TestStack::testMat("sol.sppRRec", sol.sppRRec);
-    tracepde(3, trace,    "\nsppos  sol: %f %f %f", sol.sppRRec[0], sol.sppRRec[1], sol.sppRRec[2]);
-    tracepde(3, trace,    "\nsppos  clk: %f\n", 	sol.dtRec_m[0]);
+	tracepde(3, trace,    "\nsppos  sol: %f %f %f", sol.sppRRec[0], sol.sppRRec[1], sol.sppRRec[2]);
+	tracepde(3, trace,    "\nsppos  clk: %f\n", 	sol.dtRec_m[0]);
 }
 

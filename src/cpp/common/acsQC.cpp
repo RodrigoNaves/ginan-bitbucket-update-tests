@@ -24,7 +24,7 @@
 
 
 /** Detect cycle slip by reported loss of lock
- */
+*/
 void detslp_ll(
 	ObsList&  obsList)	///< List of observations to detect slips within
 {
@@ -52,7 +52,7 @@ void detslp_ll(
 }
 
 /** Detect cycle slip by geometry free phase jump
- */
+*/
 void detslp_gf(
 	ObsList&  obsList)	///< List of observations to detect slips within
 {
@@ -99,7 +99,7 @@ void detslp_gf(
 }
 
 /** Detect slip by Melbourne-Wubbena linear combination jump
- */
+*/
 void detslp_mw(
 	ObsList&  obsList)	///< List of observations to detect slips within
 {
@@ -149,7 +149,7 @@ void detslp_mw(
 
 
 /** Melbourne-Wenbunna (MW) measurement noise (m)
- */
+*/
 double mwnoise(
 	double sigcode,		///< Code noise
 	double sigphase,	///< Phase noise
@@ -162,7 +162,7 @@ double mwnoise(
 }
 
 /** Melbourne-Wenbunna (MW) measurement noise average over time
- */
+*/
 void mwaverage(
 	double	mw,			///< Calculated mw combination
 	double	mw_pre,		///< Previous mw combination
@@ -193,14 +193,14 @@ void mwaverage(
 	//todo aaron, change to use sliding window rather than reset? looks faster considering the sqrts and low reset value
 
 #if (0)
-    /* close formula */
-    mwSlip.sigma = SQRT(fabs(exp - SQR(mwSlip.mean)));
+	/* close formula */
+	mwSlip.sigma = SQRT(fabs(exp - SQR(mwSlip.mean)));
 #endif
 }
 
 
 /** Single channel detection–identification–adaptation (DIA) for integer cycle slips
- */
+*/
 void scdia(
 	Trace&				trace,		///< Trace to output to
 	SatStat&			satStat,	///< Persistant satellite status parameters
@@ -220,7 +220,7 @@ void scdia(
 	int i, j, m, n, index, ind = 0; /* m-rows measurements, n-cols unknowns */
 
 #ifdef DEBUGLOM
-    GTime t1={0};
+	GTime t1={0};
 #endif
 
 	E_FType frq2=F2,frq3=F5;
@@ -253,7 +253,7 @@ void scdia(
 	v = mat(m, 1);
 
 #ifdef DEBUGLOM
-    t1=utc2gpst(timeget());
+	t1=utc2gpst(timeget());
 #endif
 
 	/* wavelength */
@@ -384,9 +384,9 @@ void scdia(
 #ifdef DEBUGLOM
 				TestStack::testMat("Hlom", Hlom, m*2);
 				TestStack::testMat("P", P, m*m);
-    ind=lsqqc(trace,Hlom,P,Z,v,NULL,NULL,m,2,0,0);
-    *timeStamp=timediff(utc2gpst(timeget()),t1);
-    if (ind==0) tracepdeex(2,trace,"\n");
+	ind=lsqqc(trace,Hlom,P,Z,v,NULL,NULL,m,2,0,0);
+	*timeStamp=timediff(utc2gpst(timeget()),t1);
+	if (ind==0) tracepdeex(2,trace,"\n");
 #else
 	ind = 1;
 #endif
@@ -518,24 +518,24 @@ void scdia(
 		}
 
 #ifdef DEBUGCSACC
-        if (flag) 
-        {
-            tracepde(1,trace,"ILS H=\n");	tracematpde(1,trace,H,m,n,14,7);
-            tracepde(1,trace,"ILS R=\n");	tracematpde(1,trace,P,m,m,14,7);
-            tracepde(1,trace,"ILS Z=  ");	tracematpde(1,trace,Z,1,m,14,7);
-        }
-        else 
-        {
-            tracepde(1,trace,"ACC H=\n");	tracematpde(1,trace,H,m,n,14,7);
-            tracepde(1,trace,"ACC R=\n");	tracematpde(1,trace,P,m,m,14,7);
-            tracepde(1,trace,"ACC Z=  ");	tracematpde(1,trace,Z1,1,m,14,7);
-        }
-        tracepde(1,trace,"ACC x0=\n");	tracematpde(1,trace,x,1,n,14,7);
-        tracepde(1,trace,"ACC P0=\n");	tracematpde(1,trace,Px,n,n,14,7);
-        tracepde(1,trace,"ACC xp=\n");	tracematpde(1,trace,xp,1,n,14,7);
-        tracepde(1,trace,"ACC Pp=\n");	tracematpde(1,trace,Pp,n,n,14,7);
-        tracepde(1,trace,"ACC a=\n"); 	tracematpde(2,trace,a,1,nf,14,4);
-        tracepde(1,trace,"ACC Qa=\n");	tracematpde(2,trace,Qa,nf,nf,14,4);
+		if (flag) 
+		{
+			tracepde(1,trace,"ILS H=\n");	tracematpde(1,trace,H,m,n,14,7);
+			tracepde(1,trace,"ILS R=\n");	tracematpde(1,trace,P,m,m,14,7);
+			tracepde(1,trace,"ILS Z=  ");	tracematpde(1,trace,Z,1,m,14,7);
+		}
+		else 
+		{
+			tracepde(1,trace,"ACC H=\n");	tracematpde(1,trace,H,m,n,14,7);
+			tracepde(1,trace,"ACC R=\n");	tracematpde(1,trace,P,m,m,14,7);
+			tracepde(1,trace,"ACC Z=  ");	tracematpde(1,trace,Z1,1,m,14,7);
+		}
+		tracepde(1,trace,"ACC x0=\n");	tracematpde(1,trace,x,1,n,14,7);
+		tracepde(1,trace,"ACC P0=\n");	tracematpde(1,trace,Px,n,n,14,7);
+		tracepde(1,trace,"ACC xp=\n");	tracematpde(1,trace,xp,1,n,14,7);
+		tracepde(1,trace,"ACC Pp=\n");	tracematpde(1,trace,Pp,n,n,14,7);
+		tracepde(1,trace,"ACC a=\n"); 	tracematpde(2,trace,a,1,nf,14,4);
+		tracepde(1,trace,"ACC Qa=\n");	tracematpde(2,trace,Qa,nf,nf,14,4);
 #endif
 	}
 	free(H);
@@ -558,7 +558,7 @@ void scdia(
 }
 
 /** Cycle slip detection and repair for dual-frequency
- */
+*/
 void cycleslip2(
 	Trace&		trace,		///< Trace to output to
 	SatStat&	satStat,	///< Persistant satellite status parameters
@@ -664,15 +664,15 @@ void cycleslip2(
 	if (satStat.el >= acsConfig.elevation_mask)
 	{
 #ifdef DEBUGLOM
-        /* cycle slip detection by MW */
-        if (TEST&&fabs(fNw) > 0.6)
+		/* cycle slip detection by MW */
+		if (TEST&&fabs(fNw) > 0.6)
 		{
-            tracepdeex(2,trace,"detected by MW12 ");
-            satStat.sigStatMap[F1].slip.MW = true;
+			tracepdeex(2,trace,"detected by MW12 ");
+			satStat.sigStatMap[F1].slip.MW = true;
 			satStat.sigStatMap[frq2].slip.MW = true;
-        }
-        else
-            scdia(trace, satStat, lcBase, lam, sigmaPhase, sigmaCode, 2, sys, 1, timeStamp);
+		}
+		else
+			scdia(trace, satStat, lcBase, lam, sigmaPhase, sigmaCode, 2, sys, 1, timeStamp);
 #else
 		double t1 = utc2gpst(timeget());
 
@@ -701,7 +701,7 @@ void cycleslip2(
 		}
 
 #ifdef DEBUGCSACC
-        else if (satStat->flt.slip == 1)	//todo need to and
+		else if (satStat->flt.slip == 1)	//todo need to and
 		{
 			tracepdeex(2,trace,"                 ");
 
@@ -754,7 +754,7 @@ void cycleslip2(
 }
 
 /** Cycle slip detection and repair for triple-frequency
- */
+*/
 void cycleslip3(
 	Trace&		trace,			///< Trace to output to
 	SatStat&	satStat,		///< Persistant satellite status parameters
@@ -926,24 +926,24 @@ void cycleslip3(
 	if (satStat.el >= acsConfig.elevation_mask)
 	{
 #ifdef DEBUGLOM
-        /* extra wide-lane */
-        if (TEST&&fabs(fNew)>0.5)
+		/* extra wide-lane */
+		if (TEST&&fabs(fNew)>0.5)
 		{
-            tracepdeex(2,trace,"detected by EMW  ");
-            satStat.sigStatMap[F1].slip.EMW = true;
+			tracepdeex(2,trace,"detected by EMW  ");
+			satStat.sigStatMap[F1].slip.EMW = true;
 			satStat.sigStatMap[frq2].slip.EMW = true;
 			satStat.sigStatMap[frq3].slip.EMW = true;
-        }
-        /* wide-lane */
-        else if (TEST&&fabs(fNw)>0.6)
+		}
+		/* wide-lane */
+		else if (TEST&&fabs(fNw)>0.6)
 		{
-            tracepdeex(2,trace,"detected by MW12 ");
-            satStat.sigStatMap[F1].slip.MW = true;
+			tracepdeex(2,trace,"detected by MW12 ");
+			satStat.sigStatMap[F1].slip.MW = true;
 			satStat.sigStatMap[frq2].slip.MW = true;
 			satStat.sigStatMap[frq3].slip.MW = true;
-        }
-        else
-            scdia(trace, satStat, lc, lam, sigmaPhase, sigmaCode, 3, sys, 1, timeStamp);
+		}
+		else
+			scdia(trace, satStat, lc, lam, sigmaPhase, sigmaCode, 3, sys, 1, timeStamp);
 #else
 		t1 = utc2gpst(timeget());
 		/* extra wide-lane */
@@ -951,18 +951,18 @@ void cycleslip3(
 		if (fabs(fNew) > PDESLIPTHRESHOLD)
 		{
 #else
-        if (fabs(fNew)>4*sigemw/lamew) 
-        {
+		if (fabs(fNew)>4*sigemw/lamew) 
+		{
 #endif
 			tracepdeex(2, trace, "detected by EMW  ");
-            satStat.sigStatMap[F1].slip.EMW = true;
+			satStat.sigStatMap[F1].slip.EMW = true;
 			satStat.sigStatMap[frq2].slip.EMW = true;
 			satStat.sigStatMap[frq3].slip.EMW = true;
 		}
 		else if (fabs(gf25) > 4 * siggf + coef1 * sigiono)
 		{
 			tracepdeex(2, trace, "detected by GF25 ");
-            satStat.sigStatMap[F1].slip.GF = true;
+			satStat.sigStatMap[F1].slip.GF = true;
 			satStat.sigStatMap[frq2].slip.GF = true;
 			satStat.sigStatMap[frq3].slip.GF = true;
 		}
@@ -970,14 +970,14 @@ void cycleslip3(
 		else if (fabs(fNw) > 4 * sigmw / lamw)
 		{
 			tracepdeex(2, trace, "detected by MW12 ");
-            satStat.sigStatMap[F1].slip.MW = true;
+			satStat.sigStatMap[F1].slip.MW = true;
 			satStat.sigStatMap[frq2].slip.MW = true;
 			satStat.sigStatMap[frq3].slip.MW = true;
 		}
 		else if (fabs(gf) > 4 * siggf + coef * sigiono)
 		{
 			tracepdeex(2, trace, "detected by GF12 ");
-            satStat.sigStatMap[F1].slip.GF = true;
+			satStat.sigStatMap[F1].slip.GF = true;
 			satStat.sigStatMap[frq2].slip.GF = true;
 			satStat.sigStatMap[frq3].slip.GF = true;
 		}
@@ -993,10 +993,10 @@ void cycleslip3(
 		}
 
 #ifdef DEBUGCSACC
-        else if (ssat->flt.slip==1)
+		else if (ssat->flt.slip==1)
 		{
-            tracepdeex(2,trace,"                 ");
-        }
+			tracepdeex(2,trace,"                 ");
+		}
 #endif
 		else
 			tracepdeex(2, trace, "\n");
@@ -1064,7 +1064,7 @@ void cycleslip3(
 }
 
 /** Cycle slip detection and repair
- */
+*/
 void detectslip(
 			Trace&		trace,		///< Trace to output to
 			SatStat&	satStat,	///< Persistant satellite status parameters
@@ -1221,7 +1221,7 @@ void detectslip(
 	/* track L1 or L2 again, new rising satellite */
 	else if ( dualFreq
 			&&( lc_old.L_m[F1] == 0
-			  ||lc_old.L_m[frq2] == 0))
+			||lc_old.L_m[frq2] == 0))
 	{
 		satStat.flt.slip	= 0;
 		satStat.flt.ne		= 0;
@@ -1246,10 +1246,10 @@ void detectslip(
 }
 
 /** Detect slips for multiple observations
- */
+*/
 void detectslips(
-	 Trace&		trace,		///< Trace to output to
-	 ObsList&	obsList)	///< List of observations to detect slips within
+	Trace&		trace,		///< Trace to output to
+	ObsList&	obsList)	///< List of observations to detect slips within
 {
 	//clear non-persistent status values.
 	for (auto& obs					: obsList)
@@ -1284,7 +1284,7 @@ void detectslips(
 }
 
 /** Clock jump detection and repair
- */
+*/
 void detectjump(
 	Trace&		trace,		///< Trace to output to
 	ObsList&	obsList,	///< List of observations to detect jumps within

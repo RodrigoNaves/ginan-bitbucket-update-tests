@@ -32,8 +32,8 @@ template<class M>
 class csvToMatrix
 {
 public :
-    csvToMatrix();
-    M load_csv( const string) ;
+	csvToMatrix();
+	M load_csv( const string) ;
 
 
 

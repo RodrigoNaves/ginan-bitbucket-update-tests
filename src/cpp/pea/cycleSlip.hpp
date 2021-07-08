@@ -22,10 +22,10 @@ typedef map<ObsKey, vector<double>>	ObsVecMap;
 
 
 /** Abstract class for cycle slip analysis classes (single and combination frequencies).
- *
- * Contains persistant parameters and timeseries data used for cycle slip detection and repair.
- * This class contains operations to clean prefit residual data, used for detecting and repairing cycle slips within the network estimator.
- */
+*
+* Contains persistant parameters and timeseries data used for cycle slip detection and repair.
+* This class contains operations to clean prefit residual data, used for detecting and repairing cycle slips within the network estimator.
+*/
 struct CSAnalyserBase
 {
 	// Config values
@@ -279,11 +279,11 @@ void	initZeroObsIntMap(
 	ObsIntMap&				obsIntMap);
 
 vector<double>	subVecLastN(
-	 vector<double>			vec,
+	vector<double>			vec,
 	int						n);
 
 vector<double>	subVecExclLastN(
-	 vector<double>			vec,
+	vector<double>			vec,
 	int						n);
 
 void	printToFile(

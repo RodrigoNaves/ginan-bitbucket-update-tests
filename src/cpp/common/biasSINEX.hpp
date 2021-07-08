@@ -6,7 +6,7 @@
 #include "constants.h"
 #include "algebra.hpp"
 #include "satSys.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 #include "common.hpp"
 #include "enums.h"
 

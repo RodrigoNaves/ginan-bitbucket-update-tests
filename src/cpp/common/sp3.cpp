@@ -11,7 +11,7 @@ using std::string;
 
 #include "streamTrace.hpp"
 #include "navigation.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 #include "common.hpp"
 #include "enums.h"
 

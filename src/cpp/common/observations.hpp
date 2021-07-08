@@ -13,13 +13,13 @@ using std::map;
 
 #include "constants.h"
 #include "satSys.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 #include "enums.h"
 
 #include "eigenIncluder.hpp"
 
 /** Raw observation data from a receiver for a single frequency. Not to be modified by processing functions
- */
+*/
 struct RawSig
 {
 	E_ObsCode		code	= E_ObsCode::NONE;	///< Reported code type
@@ -36,7 +36,7 @@ struct RawSig
 };
 
 /** Per signal data that is calculated from the raw signals.
- */
+*/
 struct Sig : RawSig
 {
 	Sig()
@@ -61,10 +61,10 @@ struct Sig : RawSig
 };
 
 /** Raw observation data from a receiver. Not to be modified by processing functions
- */
+*/
 struct RawObs
 {
-    GTime	 	time	= {};       		///> Receiver sampling time (GPST)
+	GTime	 	time	= {};       		///> Receiver sampling time (GPST)
 	SatSys		Sat		= {};				///> Satellite ID (system, prn)
 
 	map<E_FType, Sig>			Sigs;		///> Map of signals available in this observation (one per frequency only)
@@ -93,9 +93,9 @@ struct SatNav;
 struct SatOrbit;
 
 /** Observation, and data derived from it.
- * All processing relevant for a single rec:sat:epoch should be stored here.
- * For data that should persist across epochs: use satStat.
- **/
+* All processing relevant for a single rec:sat:epoch should be stored here.
+* For data that should persist across epochs: use satStat.
+**/
 struct Obs : RawObs, IonoObs
 {
 	Obs() : exclude(0)
@@ -114,7 +114,7 @@ struct Obs : RawObs, IonoObs
 	SatStat* 	satStat_ptr		= 0;	///< Pointer to a status object for this satellite
 	SatNav*		satNav_ptr		= 0;	///< Pointer to a navigation object for this satellite
 	SatOrbit*	satOrb_ptr		= 0;	///< Pointer to an orbit object for this satellite
-    string 		mount			= "";	///< ID of the receiver that generated the observation
+	string 		mount			= "";	///< ID of the receiver that generated the observation
 	double		dtSat[2]		= {};	///< Clock bias of the satellite
 	int 		svh				= 0;	///< Satellite vehicle health
 	int 		iode			= 0;	///< Issue of data ephemeris

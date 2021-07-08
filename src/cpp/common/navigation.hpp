@@ -27,7 +27,7 @@ using std::map;
 #include "antenna.hpp"
 #include "orbits.hpp"
 #include "satSys.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 #include "enums.h"
 
 #define MAXDTE      900.0           /* max time difference to ephem time (s) */

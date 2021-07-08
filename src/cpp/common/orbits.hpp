@@ -40,7 +40,7 @@ struct OrbitInfo
 struct SatOrbit
 {
 	InitialOrbit			initialOrbit;
- 	map<GTime, OrbitInfo>	orbitInfoList;
+	map<GTime, OrbitInfo>	orbitInfoList;
 	int						numUnknowns;			///< number of unknowns
 	vector<string>			parameterNames;
 	string					srpModel[2];
@@ -55,8 +55,8 @@ struct orbpod_t
 	int								numSats;				///< number of satellite
 	int								numEpochs;				///< number of epochs
 	int								nint;					///< interval (s)
- 	map<SatSys, SatOrbit>			satOrbitMap;			//key is satSys uid
- 	list<string>					infoList;
+	map<SatSys, SatOrbit>			satOrbitMap;			//key is satSys uid
+	list<string>					infoList;
 };
 
 int readorbit(

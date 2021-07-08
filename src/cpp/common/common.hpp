@@ -16,7 +16,7 @@
 #define SGN(x)      ((x)<=0.0?-1.0:1.0)
 
 #include "eigenIncluder.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 #include "enums.h"
 
 

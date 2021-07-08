@@ -7,7 +7,7 @@ using std::map;
 
 #include "observations.hpp"
 #include "streamTrace.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 #include "satSys.hpp"
 #include "enums.h"
 
@@ -50,8 +50,8 @@ typedef struct
 
 typedef struct
 {
-    GTime	time;       			///< receiver sampling time (GPST) */
-    SatSys	Sat;
+	GTime	time;       			///< receiver sampling time (GPST) */
+	SatSys	Sat;
 
 	map<E_FType, double> L_m;
 	map<E_FType, double> P;

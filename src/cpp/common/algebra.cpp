@@ -17,26 +17,26 @@ using std::pair;
 
 
 /** \file
- * This software uses specialised kalman filter classes to perform filtering.
- * Using a classes such as KFState, KFMeas, etc, prevents duplication of code, and ensures that many edge cases are taken care of
- * without the need for the developer to consider them explicitly.
- *
- * The basic workflow for using the filter is:
- * create filter object,
- * initialise the state transition matrix at the beginning of each epoch
- * create a list of measurements (only adding entries for required states, using KFKeys to reference the state element)
- * combining measurements that were in a list into a single matrix corresponding to the new state,
- * and filtering - filtering internally saves the states for RTS code, using a single sequential file that has some headers added so that it can be traversed backwards
- *
- * The filter has some pre/post fit checks that remove measurements that are out of expected ranges,
- * and there are functions provided for setting, resetting, and getting values, noises, and covariance values.
- *
- * KFKeys are used to identify states. They may have a type, SatStat value, string, and number associated with them, and can be set and read from filter objects as required.
- *
- * KFMeasEntrys are used for an individual measurement, before being combined into KFMeas objects that contain all of the measurements for a filter iteration.
- *
- * Internally, the data is stored in maps and Eigen matrices/vectors, but the accessors should be used rather than the vectors themselves to ensure that states have been initialised and are in the expected order.
- */
+* This software uses specialised kalman filter classes to perform filtering.
+* Using a classes such as KFState, KFMeas, etc, prevents duplication of code, and ensures that many edge cases are taken care of
+* without the need for the developer to consider them explicitly.
+*
+* The basic workflow for using the filter is:
+* create filter object,
+* initialise the state transition matrix at the beginning of each epoch
+* create a list of measurements (only adding entries for required states, using KFKeys to reference the state element)
+* combining measurements that were in a list into a single matrix corresponding to the new state,
+* and filtering - filtering internally saves the states for RTS code, using a single sequential file that has some headers added so that it can be traversed backwards
+*
+* The filter has some pre/post fit checks that remove measurements that are out of expected ranges,
+* and there are functions provided for setting, resetting, and getting values, noises, and covariance values.
+*
+* KFKeys are used to identify states. They may have a type, SatStat value, string, and number associated with them, and can be set and read from filter objects as required.
+*
+* KFMeasEntrys are used for an individual measurement, before being combined into KFMeas objects that contain all of the measurements for a filter iteration.
+*
+* Internally, the data is stored in maps and Eigen matrices/vectors, but the accessors should be used rather than the vectors themselves to ensure that states have been initialised and are in the expected order.
+*/
 
 
 bool KFKey::operator ==(const KFKey& b) const
@@ -66,8 +66,8 @@ bool KFKey::operator <(const KFKey& b) const
 
 
 /** Clears and initialises the state transition matrix to identity at the beginning of an epoch.
- * Also clears any noise that was being added for the initialisation of a new state.
- */
+* Also clears any noise that was being added for the initialisation of a new state.
+*/
 void KFState::initFilterEpoch()
 {
 	stateTransitionMap.	clear();
@@ -80,7 +80,7 @@ void KFState::initFilterEpoch()
 }
 
 /** Finds the position in the KF state vector of particular states.
- */
+*/
 int KFState::getKFIndex(
 	KFKey		key)		///< [in]	Key to search for in state
 {
@@ -93,7 +93,7 @@ int KFState::getKFIndex(
 }
 
 /** Returns the value and variance of a state within the kalman filter object
- */
+*/
 bool KFState::getKFValue(
 	KFKey		key,			///< [in]	Key to search for in state
 	double&		value,			///< [out]	Output value
@@ -121,7 +121,7 @@ bool KFState::getKFValue(
 }
 
 /** Returns the standard deviation of a state within the kalman filter object
- */
+*/
 bool KFState::getKFSigma(
 	KFKey		key,		///< [in]	Key to search for in state
 	double&		sigma)		///< [out]	Output value
@@ -142,7 +142,7 @@ bool KFState::getKFSigma(
 }
 
 /** Sets the value of a state within the kalman filter object
- */
+*/
 bool KFState::setKFValue(
 	KFKey		key,		///< [in]	Key to search for in state
 	double		value)		///< [in]	Input value
@@ -165,7 +165,7 @@ bool KFState::setKFValue(
 }
 
 /** Sets the process noise of a state within the kalman filter object
- */
+*/
 bool KFState::setKFNoise(
 	KFKey		kfKey,		///< [in]	Key to search for in state
 	double		value)		///< [in]	Input value
@@ -176,7 +176,7 @@ bool KFState::setKFNoise(
 }
 
 /** Adds dynamics to a filter state by inserting off-diagonal, time dependent elements to transition matrix
- */
+*/
 void KFState::setKFTransRate(
 	KFKey			dest,	   		///< [in]	Key to search for in state to change in transition
 	KFKey			source,	   		///< [in]	Key to search for in state as source
@@ -189,7 +189,7 @@ void KFState::setKFTransRate(
 }
 
 /** Adds dynamics to a filter state by inserting off-diagonal, non-time dependent elements to transition matrix
- */
+*/
 void KFState::setKFTrans(
 	KFKey			dest,	   		///< [in]	Key to search for in state to change in transition
 	KFKey			source,	   		///< [in]	Key to search for in state as source
@@ -201,7 +201,7 @@ void KFState::setKFTrans(
 	stateTransitionMap[dest][source] = value;
 }
 /** Sets time constant Tau used in first-order Gauss-Markov state transition & process noise models
- */
+*/
 void KFState::setKFGaussMarkovTau(
 	KFKey			kfKey,	   		///< [in]	Key to search for in state
 	double			tau)   			///< [in]	Input value
@@ -210,7 +210,7 @@ void KFState::setKFGaussMarkovTau(
 }
 
 /** Remove a state from a kalman filter object.
- */
+*/
 void KFState::removeState(
 	KFKey			kfKey)				///< [in]	Key to search for in state
 {
@@ -223,7 +223,7 @@ void KFState::removeState(
 }
 
 /** Reinitialise a state within a kalman filter object.
- */
+*/
 void KFState::resetKFValue(
 	KFKey			kfKey,				///< [in]	Key to search for in state
 	InitialState	initialState)       ///< [in]	Initial values to reset the state with
@@ -274,7 +274,7 @@ void KFState::addKFState(
 }
 
 /** Limit state values according to configured parameters
- */
+*/
 void KFState::clampStateValues()
 {
 	VectorXd clampMaxVec = VectorXd::Ones(x.rows()) * std::numeric_limits<double>::max();
@@ -302,12 +302,12 @@ void KFState::clampStateValues()
 		clampMinVec(index) = clampMin;
 	}
 
- 	x = x.cwiseMax(clampMinVec).cwiseMin(clampMaxVec);
+	x = x.cwiseMax(clampMinVec).cwiseMin(clampMaxVec);
 }
 
 /** Add process noise and dynamics to filter object according to time gap.
- * This will also sort states according to their kfKey as a result of the way the state transition matrix is generated.
- */
+* This will also sort states according to their kfKey as a result of the way the state transition matrix is generated.
+*/
 void KFState::stateTransition(
 	Trace&		trace,		///< [out]	Trace file for output
 	double		tgap)		///< [in]	Time since last update for process noise and dynamics (s)
@@ -361,12 +361,12 @@ void KFState::stateTransition(
 	for (auto& [kfKey, tau] : gaussMarkovTauMap)
 	{
 		auto iter = newKFIndexMap.find(kfKey);
-        if (iter == newKFIndexMap.end())
-        {
-            std::cout << kfKey << " broke" << std::endl;        //todo aaron, this might have been unmeasured, need to add
-            continue;
-        }
-        int row    = iter->second;
+		if (iter == newKFIndexMap.end())
+		{
+			std::cout << kfKey << " broke" << std::endl;        //todo aaron, this might have been unmeasured, need to add
+			continue;
+		}
+		int row    = iter->second;
 
 		int index2	= getKFIndex(kfKey);
 		if	( (index2 < 0)
@@ -547,7 +547,7 @@ void KFState::stateTransition(
 }
 
 /** Compare variances of measurements and filtered states to detect unreasonable values
- */
+*/
 int KFState::postFitSigmaCheck(
 	Trace&		trace,      ///< Trace file to output to
 	KFMeas&		kfMeas,		///< Measurements, noise, and design matrix
@@ -599,7 +599,7 @@ int KFState::postFitSigmaCheck(
 }
 
 /** Compare variances of measurements and pre-filtered states to detect unreasonable values
- */
+*/
 int KFState::preFitSigmaCheck(
 	Trace&		trace,      ///< Trace to output to
 	KFMeas&		kfMeas)		///< Measurements, noise, and design matrix
@@ -640,11 +640,11 @@ int KFState::preFitSigmaCheck(
 /** Kalman filter.
 */
 int KFState::kFilter(
-	Trace&			trace,
-	KFMeas&			kfMeas,		///< [in]	Measurements, noise, and design matrices
-	VectorXd&		xp,   		///< [out]	Post-update state vector
-	MatrixXd&		Pp,   		///< [out]	Post-update covariance of states
-	VectorXd&		dx)			///< [out]	Post-update state innovation
+	Trace&			trace,		///< Trace to output to
+	KFMeas&			kfMeas,		///< Measurements, noise, and design matrices
+	VectorXd&		xp,   		///< Post-update state vector
+	MatrixXd&		Pp,   		///< Post-update covariance of states
+	VectorXd&		dx)			///< Post-update state innovation
 {
 	auto& H = kfMeas.A;
 	auto& R = kfMeas.R;
@@ -760,7 +760,7 @@ int KFState::kFilter(
 }
 
 /** Perform chi squared quality control.
- */
+*/
 bool KFState::chiQC(
 	Trace&		trace,      ///< Trace to output to
 	KFMeas&		kfMeas,		///< Measurements, noise, and design matrix
@@ -798,7 +798,7 @@ bool KFState::chiQC(
 }
 
 /** Combine a list of KFMeasEntrys into a single KFMeas object for used in the filter
- */
+*/
 KFMeas KFState::combineKFMeasList(
 	KFMeasEntryList&	kfEntryList)	///< [in]	List of input measurements as lists of entries
 {
@@ -842,9 +842,9 @@ KFMeas KFState::combineKFMeasList(
 }
 
 void KFState::doRejectCallbacks(
-	Trace&	trace,				///< [out]	Trace file for output
-	KFMeas&	kfMeas,
-	int		badIndex)
+	Trace&	trace,				///< Trace file for output
+	KFMeas&	kfMeas,				///< Measurements that were passed to the filter
+	int		badIndex)			///< Index in measurement list that was unsatisfactory
 {
 	for (auto& callback : rejectCallbacks)
 	{
@@ -882,7 +882,7 @@ bool ObsKey::operator <(const ObsKey& b) const
 }
 
 /** Kalman filter operation
- */
+*/
 int KFState::filterKalman(
 	Trace&			trace,				///< [out]	Trace file for output
 	KFMeas&			kfMeas,				///< [in]	Measurement object
@@ -962,7 +962,7 @@ int KFState::filterKalman(
 }
 
 /** Perform least squares using the measurements in the KFMeas object
- */
+*/
 int KFState::filterLeastSquares(
 	Trace&			trace,		///< [in]		Trace to output to
 	KFMeas&			kfMeas)		///< [in]		Measurements, noise, and design matrix
@@ -1030,12 +1030,12 @@ int KFState::filterLeastSquares(
 //todo aaron, remove tgap, add time to filter
 
 /** Least squares estimator for new kalman filter states.
- * If new states have been added that do not contain variance values, the filter will assume that these states values and covariances should be
- * estimated using least squares.
- *
- * This function will extract the minimum required states from the existing state vector,
- * and the minimum required measurements in order to perform least squares for the uninitialised states.
- */
+* If new states have been added that do not contain variance values, the filter will assume that these states values and covariances should be
+* estimated using least squares.
+*
+* This function will extract the minimum required states from the existing state vector,
+* and the minimum required measurements in order to perform least squares for the uninitialised states.
+*/
 void KFState::leastSquareInitStates(
 	Trace&			trace,				///< [in]		Trace file for output
 	KFMeas&			kfMeas,				///< [in]		Measurement object
@@ -1227,10 +1227,10 @@ void KFState::leastSquareInitStates(
 }
 
 /** Get a portion of the state vector by passing a list of keys
- */
+*/
 VectorXd KFState::getSubState(
 	list<KFKey>&	kfKeyList,	///< List of keys to return within substate
-	MatrixXd*		covarMat)
+	MatrixXd*		covarMat)	///< Optional pointer to a matrix for output of covariance submatrix
 
 {
 	vector<int> indices;
@@ -1254,7 +1254,7 @@ VectorXd KFState::getSubState(
 }
 
 /** Output keys and states in human readable format
- */
+*/
 void KFState::outputStates(
 			Trace&		trace)   	///< Trace to output to
 {
@@ -1365,10 +1365,10 @@ KFState mergeFilters(
 }
 
 /** Calculates prefit residual, returning results as a KFMeasEntryList
- * KFMeasEntryMap[ObsKey].value = prefit residual value
- * KFMeasEntryMap[ObsKey].noise = prefit residual uncertainty
- * KFMeasEntryMap[ObsKey].innov = kfMeas.V(i)
- */
+* KFMeasEntryMap[ObsKey].value = prefit residual value
+* KFMeasEntryMap[ObsKey].noise = prefit residual uncertainty
+* KFMeasEntryMap[ObsKey].innov = kfMeas.V(i)
+*/
 KFMeasEntryList KFState::calcPrefitResids(
 	Trace&			trace,				///< [out]	Trace file for output
 	KFMeas&			kfMeas)				///< [in]	Measurement object

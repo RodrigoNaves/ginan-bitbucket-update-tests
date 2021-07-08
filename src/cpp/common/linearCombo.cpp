@@ -8,7 +8,7 @@
 
 
 /** Create combinations between specific observation values
- */
+*/
 S_LC getLC(
 	double	L_A_m,	///< Phase measurement A (in meters)
 	double	L_B_m,	///< Phase measurement B (in meters)
@@ -92,7 +92,7 @@ S_LC getLC(
 }
 
 /** Get combinations from pre-computed values, or return an empty value
- */
+*/
 S_LC& getLC(
 	lc_t&		lcBase,	///< Linear combination base object
 	E_FType		fA,		///< Frequency type A
@@ -106,7 +106,7 @@ S_LC& getLC(
 }
 
 /** Get/calculate linear combination values for an observation
- */
+*/
 S_LC& getLC(
 	Obs&		obs,	///< Observation to compute values form
 	lc_t&		lcBase,	///< Linear combination base object
@@ -166,7 +166,7 @@ S_LC& getLC(
 }
 
 /** Prepare a base object for linear combinations using observation data
- */
+*/
 void lcPrepareBase(
 	Obs&	obs,		///< Observation data to use
 	lc_t&	lcBase)		///< Linear combination base object to prepare
@@ -185,7 +185,7 @@ void lcPrepareBase(
 }
 
 /** Function to prepare some predefined linear combinations from an observation
- */
+*/
 void obs2lc(
 	Trace&	trace,	///< Trace to output to
 	Obs&	obs,	///< Observation to prepare combinations for
@@ -231,16 +231,16 @@ void obs2lc(
 	tracepde(lv, trace, "%s if P -- if12=%14.4f if15=%14.4f if25=%14.4f\n", strprefix, lc12.IF_Code_m,	lc15.IF_Code_m,	lc25.IF_Code_m);
 	tracepde(lv, trace, "%s mp P -- mp1 =%14.4f mp2 =%14.4f mp5 =%14.4f\n", strprefix, lcBase.mp[F1],	lcBase.mp[F2],	lcBase.mp[F5]);
 
-    TestStack::testMat("lc12.GF_Phas_m",	lc12.GF_Phas_m);
-    TestStack::testMat("lc12.GF_Code_m",	lc12.GF_Code_m);
-    TestStack::testMat("lc12.MW_c",			lc12.MW_c);
-    TestStack::testMat("lc15.GF_Phas_m",	lc15.GF_Phas_m);
-    TestStack::testMat("lc15.GF_Code_m",	lc15.GF_Code_m);
-    TestStack::testMat("lc15.MW_c",			lc15.MW_c);
+	TestStack::testMat("lc12.GF_Phas_m",	lc12.GF_Phas_m);
+	TestStack::testMat("lc12.GF_Code_m",	lc12.GF_Code_m);
+	TestStack::testMat("lc12.MW_c",			lc12.MW_c);
+	TestStack::testMat("lc15.GF_Phas_m",	lc15.GF_Phas_m);
+	TestStack::testMat("lc15.GF_Code_m",	lc15.GF_Code_m);
+	TestStack::testMat("lc15.MW_c",			lc15.MW_c);
 }
 
 /** Function to prepare some predefined linear combinations from a list of observations
- */
+*/
 extern void obs2lcs(
 	Trace&		trace,		///< Trace to output to
 	ObsList&	obsList)	///< List of bservation to prepare combinations for

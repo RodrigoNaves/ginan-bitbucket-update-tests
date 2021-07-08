@@ -401,7 +401,7 @@ Eph* seleph(
 
 	auto& ephList = nav.ephMap[Sat];
 
- 	GTime latestToe = GTime::noTime();
+	GTime latestToe = GTime::noTime();
 	for (auto& eph : ephList)
 	{
 		if 	( iode >= 0
@@ -422,12 +422,12 @@ Eph* seleph(
 //			chosen	= &eph;
 //			tmin	= t;
 //		}
- 		if (eph.toe > latestToe)
- 		{
- 			/* latest ephem with toe within +-MAXDTOE of current epoch */
- 			chosen	= &eph;
- 			latestToe = eph.toe;
- 		}
+		if (eph.toe > latestToe)
+		{
+			/* latest ephem with toe within +-MAXDTOE of current epoch */
+			chosen	= &eph;
+			latestToe = eph.toe;
+		}
 	}
 
 	if	(  iode >= 0
@@ -601,7 +601,7 @@ int		iode)
 #if (0)
 /* satellite position and clock with sbas correction -------------------------*/
 int satpos_sbas(gtime_t time, gtime_t teph, SatSys Sat, const nav_t* nav,
-                double* rs, double* dtSat, double* var, int* svh)
+				double* rs, double* dtSat, double* var, int* svh)
 {
 
 	const sbssatp_t* sbs;
@@ -989,14 +989,14 @@ void satposs(
 		char id[5];
 		obs.Sat.getId(id);
 		tracepde(4, trace, "%s sat=%s rs=%13.3f %13.3f %13.3f dtSat=%12.3f var=%7.3f svh=%02X\n",
-		         obs.time.to_string(6).c_str(),
-		         id,
-		         obs.rSat[0],
-		         obs.rSat[1],
-		         obs.rSat[2],
-		         obs.dtSat[0] * 1E9,
-		         obs.var,
-		         obs.svh);
+				obs.time.to_string(6).c_str(),
+				id,
+				obs.rSat[0],
+				obs.rSat[1],
+				obs.rSat[2],
+				obs.dtSat[0] * 1E9,
+				obs.var,
+				obs.svh);
 
 		TestStack::testMat("obs.rSat", obs.rSat.data(), obs.rSat.rows());
 	}

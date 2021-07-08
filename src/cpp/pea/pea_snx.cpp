@@ -8,9 +8,9 @@
 #include "eigenIncluder.hpp"
 #include "acsConfig.hpp"
 #include "algebra.hpp"
-#include "gaTime.hpp"
-#include "newsnx.hpp"
 #include "station.hpp"
+#include "gTime.hpp"
+#include "snx.hpp"
 
 void sinexPostProcessing(
 	GTime&						tsync,

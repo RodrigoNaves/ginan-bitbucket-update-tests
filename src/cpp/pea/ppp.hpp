@@ -11,7 +11,7 @@ using std::map;
 
 #include "algebra.hpp"
 #include "satStat.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 #include "ppp.hpp"
 
 //forward declarations
@@ -21,39 +21,39 @@ struct gptgrid_t;
 
 
 /** Solution of user mode processing functinos
- */
+*/
 struct Solution
 {
 	/* solution type */
-    GTime				time;       							///< time (GPST)
+	GTime				time;       							///< time (GPST)
 	map<int, double>	dtRec_m; 								///< receiver clock bias to time systems (m)
 	map<int, double>	dtRec_m_ppp_old; 						///< previous receiver clock bias to time systems (m)
 	map<int, double>	deltaDt_net_old;						///< previous receiver clock bias to time systems (m)
 	map<int, double>	pppdtRec_m;								///< receiver clock bias to time systems (s)
-    int					stat;									///< solution status (SOLQ_???)
-    int					numSats;								///< number of valid satellites
+	int					stat;									///< solution status (SOLQ_???)
+	int					numSats;								///< number of valid satellites
 	KFState				sppState;								///< SPP filter object
 	Vector3d			sppRRec			= Vector3d::Zero();		///< Position vector from spp
 	Vector3d			pppRRec			= Vector3d::Zero();		///< Position vector from ppp
 };
 
 /**	Legacy processing options from rtklib
- */
+*/
 struct prcopt_t
 {
-    Vector3d	antdel		= Vector3d::Zero();		///< antenna delta {rov_e,rov_n,rov_u}
-    string		anttype; 							///< antenna type
-    double		odisp[2][6*11] = {};				///< ocean tide loading parameters {rov,base} */	//todo aaron, check orientation
+	Vector3d	antdel		= Vector3d::Zero();		///< antenna delta {rov_e,rov_n,rov_u}
+	string		anttype; 							///< antenna type
+	double		odisp[2][6*11] = {};				///< ocean tide loading parameters {rov,base} */	//todo aaron, check orientation
 };
 
 struct rtk_t
 {
 	KFState		pppState;					///< RTK control/result type
-    Solution	sol;						///< RTK solution
-    double		tt;							///< time difference between current and previous (s)
-    pcvacs_t*	pcvrec = nullptr;
+	Solution	sol;						///< RTK solution
+	double		tt;							///< time difference between current and previous (s)
+	pcvacs_t*	pcvrec = nullptr;
 	unordered_map<SatSys, SatStat> satStatMap;
-    prcopt_t	opt;						///< processing options
+	prcopt_t	opt;						///< processing options
 };
 
 
@@ -93,7 +93,7 @@ void pppomc(
 
 /* standard positioning ------------------------------------------------------*/
 void sppos(
-    Trace&		trace,
+	Trace&		trace,
 	ObsList&	obsList,
 	Solution&	sol);
 
@@ -106,7 +106,7 @@ void pppCorrections(
 	ObsList&	obsList,
 	Vector3d&	rRec,
 	rtk_t&		rtk,
-    Station&	rec);
+	Station&	rec);
 
 void corr_meas(
 	Trace&		trace,
@@ -117,7 +117,7 @@ void corr_meas(
 	double		dAntSat,
 	double		phw,
 	ClockJump&	cj,
-    Station&	rec);
+	Station&	rec);
 
 double sbstropcorr(
 	GTime			time,

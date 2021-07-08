@@ -36,11 +36,11 @@ double meobias[3][NELEV] =
 };
 
 /* linear interpolation function -----------------------------------------------
- * args :   double *bias        I       satellite bias table (freq dependent)
- *          const double el     I       satellite elevation (deg)
- *
- * return : satellite-induced code bias (m)
- *----------------------------------------------------------------------------*/
+* args :   double *bias        I       satellite bias table (freq dependent)
+*          const double el     I       satellite elevation (deg)
+*
+* return : satellite-induced code bias (m)
+*----------------------------------------------------------------------------*/
 double interp(double* bias, const double el)
 {
 	int j = 0;
@@ -62,12 +62,12 @@ double interp(double* bias, const double el)
 	return corr;
 }
 /* beidou satellite code induced bias correction -------------------------------
- * args :   const int prn       I       beidou satellite prn
- *          const double el     I       satellite elevation (deg)
- *          const int freq      I       frequency number
- *
- * return : satellite-induced code bias (m)
- *----------------------------------------------------------------------------*/
+* args :   const int prn       I       beidou satellite prn
+*          const double el     I       satellite elevation (deg)
+*          const int freq      I       frequency number
+*
+* return : satellite-induced code bias (m)
+*----------------------------------------------------------------------------*/
 double wancorr(const int prn, const double el, const int freq)
 {
 	int id = 0;

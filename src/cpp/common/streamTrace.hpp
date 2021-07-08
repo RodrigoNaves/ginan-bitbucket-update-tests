@@ -31,12 +31,12 @@ void tracepde(int level, Trace& stream, std::string const& fmt, Arguments&&... a
 	if (level > level_trace)
 		return;
 
-    stream << "*" << level << " ";
-    boost::format f(fmt);
-    int unroll[] {0, (f % std::forward<Arguments>(args), 0)...};
-    static_cast<void>(unroll);
+	stream << "*" << level << " ";
+	boost::format f(fmt);
+	int unroll[] {0, (f % std::forward<Arguments>(args), 0)...};
+	static_cast<void>(unroll);
 
-    stream << boost::str(f);
+	stream << boost::str(f);
 
 	stream.flush();
 }
@@ -47,11 +47,11 @@ void tracepdeex(int level, Trace& stream, std::string const& fmt, Arguments&&...
 	if (level > level_trace)
 		return;
 
-    boost::format f(fmt);
-    int unroll[] {0, (f % std::forward<Arguments>(args), 0)...};
-    static_cast<void>(unroll);
+	boost::format f(fmt);
+	int unroll[] {0, (f % std::forward<Arguments>(args), 0)...};
+	static_cast<void>(unroll);
 
-    stream << boost::str(f);
+	stream << boost::str(f);
 }
 
 
@@ -61,7 +61,7 @@ struct Obs;
 void tracepde(int level, FILE *fppde, const char *format,...);
 void tracepdeex(int level, FILE *fppde, const char *format, ...);
 void tracematpde(int level, FILE *fppde, const double *A, int n,
-                        int m, int p, int q);
+						int m, int p, int q);
 
 /* debug trace functions -----------------------------------------------------*/
 void tracelevel(int level);

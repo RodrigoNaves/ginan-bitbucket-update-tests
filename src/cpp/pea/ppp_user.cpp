@@ -31,7 +31,7 @@
 #define VAR_GLO_IFB 	SQR( 0.6)       // variance of glonass ifb
 
 /* write solution status for PPP
- */
+*/
 void pppoutstat(
 	Trace&		trace,
 	KFState&	kfState,
@@ -320,11 +320,11 @@ void udbias_ppp(
 
 /* phase and code residuals --------------------------------------------------*/
 int ppp_filter(
-    Trace&		trace,
+	Trace&		trace,
 	ObsList&	obsList,
 	Vector3d&	dr,
-    rtk_t&		rtk,
-    Station&	rec)
+	rtk_t&		rtk,
+	Station&	rec)
 {
 	TestStack ts(__FUNCTION__);
 
@@ -365,9 +365,9 @@ int ppp_filter(
 	double pos[3];
 	ecef2pos(x0.data(), pos);
 
-    // update receiver position with tide and antenna delta
+	// update receiver position with tide and antenna delta
 	Vector3d dr1;
-    enu2ecef(pos, rtk.opt.antdel.data(), dr1.data());
+	enu2ecef(pos, rtk.opt.antdel.data(), dr1.data());
 
 	//remove elements of receiver position that we dont want included in the state estimate
 	Vector3d rRec	= x0
@@ -854,7 +854,7 @@ int ppp_filter(
 
 			if	(   acsConfig.max_inno	> 0
 				&&( fabs(codeInnov)		> acsConfig.max_inno
-				  ||fabs(phasInnov)		> acsConfig.max_inno))
+				||fabs(phasInnov)		> acsConfig.max_inno))
 			{
 				tracepde(2, std::cout, "outlier rejected  sat=%s %d res=%9.4f %9.4f el=%4.1f\n", obs.Sat.id().c_str(), ft, codeInnov, phasInnov, satStat.el * R2D);
 				obs.excludeOutlier = true;

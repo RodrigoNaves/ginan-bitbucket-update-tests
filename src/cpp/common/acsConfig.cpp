@@ -30,7 +30,7 @@ extern	std::map		<string, bool>				streamDOAMap;
 extern	NtripBroadcaster outStreamManager;
 
 /** Set value according to variable map entry if found
- */
+*/
 template<typename TYPE>
 void trySetValFromVM(
 	boost::program_options::variables_map&	vm,		///< Variable map to search in
@@ -44,7 +44,7 @@ void trySetValFromVM(
 }
 
 /** Check that filename is valid and the file exists
- */
+*/
 bool checkValidFile(
 	string&	path,			///< Filename to check
 	string	description)	///< Description for error messages
@@ -74,7 +74,7 @@ bool checkValidFiles(
 }
 
 /** Remove any path from a fully qualified file
- */
+*/
 void removePath(
 	string &filepath)	// path_to_file
 {
@@ -88,7 +88,7 @@ void removePath(
 }
 
 /** Add a root to paths that are not already absolutely defined
- */
+*/
 void tryAddRootToPath(
 	string& root,		///< Root path
 	string& path)		///< Filename to prepend root path to
@@ -122,7 +122,7 @@ void tryAddRootToPath(
 }
 
 /** Add a root to paths that are not already absolutely defined
- */
+*/
 void tryAddRootToPath(
 	string&			root,		///< Root path
 	vector<string>& paths)		///< Filename to prepend root path to
@@ -134,7 +134,7 @@ void tryAddRootToPath(
 }
 
 /** Create a station object from a file
- */
+*/
 void ACSConfig::addStationFile(
 	string fileName,			///< Filename to create station from
 	string type)				///< Type of data in file
@@ -201,7 +201,7 @@ void ACSConfig::addStationFile(
 }
 
 /** Prepare the configuration of the program
- */
+*/
 bool configure(
 	int argc, 		///< Passthrough calling argument count
 	char **argv)	///< Passthrough calling argument list
@@ -347,30 +347,30 @@ bool configure(
 }
 
 /** Print out the configuration data that has been read in.
- */
+*/
 void ACSConfig::info(
 	Trace& ss)		///< Trace file to output to
 {
-    ss << "\n";
-    ss << "===============================\n";
-    ss << "Configuration...\n";
-    ss << "===============================\n";
+	ss << "\n";
+	ss << "===============================\n";
+	ss << "Configuration...\n";
+	ss << "===============================\n";
 	ss << "Inputs:\n";
-    ss << "\tnavfiles:  "; for (auto& a : navfiles) ss << a << " "; ss << "\n";
-    ss << "\tsnxfiles:  "; for (auto& a : snxfiles) ss << a << " "; ss << "\n";
-    ss << "\tatxfiles:  "; for (auto& a : atxfiles) ss << a << " "; ss << "\n";
-    ss << "\tdcbfiles:  "; for (auto& a : dcbfiles) ss << a << " "; ss << "\n";
-    ss << "\tbsxfiles:  "; for (auto& a : bsxfiles) ss << a << " "; ss << "\n";
-    ss << "\tionfiles:  "; for (auto& a : ionfiles) ss << a << " "; ss << "\n";
-    ss << "\tblqfiles:  "; for (auto& a : blqfiles) ss << a << " "; ss << "\n";
-    ss << "\terpfiles:  "; for (auto& a : erpfiles) ss << a << " "; ss << "\n";
-    ss << "\tsp3files:  "; for (auto& a : sp3files) ss << a << " "; ss << "\n";
+	ss << "\tnavfiles:  "; for (auto& a : navfiles) ss << a << " "; ss << "\n";
+	ss << "\tsnxfiles:  "; for (auto& a : snxfiles) ss << a << " "; ss << "\n";
+	ss << "\tatxfiles:  "; for (auto& a : atxfiles) ss << a << " "; ss << "\n";
+	ss << "\tdcbfiles:  "; for (auto& a : dcbfiles) ss << a << " "; ss << "\n";
+	ss << "\tbsxfiles:  "; for (auto& a : bsxfiles) ss << a << " "; ss << "\n";
+	ss << "\tionfiles:  "; for (auto& a : ionfiles) ss << a << " "; ss << "\n";
+	ss << "\tblqfiles:  "; for (auto& a : blqfiles) ss << a << " "; ss << "\n";
+	ss << "\terpfiles:  "; for (auto& a : erpfiles) ss << a << " "; ss << "\n";
+	ss << "\tsp3files:  "; for (auto& a : sp3files) ss << a << " "; ss << "\n";
 	ss << "\torbfiles:  "; for (auto& a : orbfiles) ss << a << " "; ss << "\n";
 	ss << "\tvmf3dir:   " << tropOpts.vmf3dir 			<< "\n";
 	ss << "\torography: " << tropOpts.orography 		<< "\n";
 	ss << "\tgrid:      " << tropOpts.gpt2grid 			<< "\n";
 	ss << "\ttestfiles: " << testOpts.filename			<< "\n";
-    ss << "\n";
+	ss << "\n";
 
 	ss << "Outputs:\n";
 	if (output_trace)		{	ss << "\tTrace level:        " << trace_level 				<< "\n"; }
@@ -381,49 +381,49 @@ void ACSConfig::info(
 	if (output_ionstec)		{	ss << "\tionstec_filename:   " << ionstec_filename 			<< "\n"; }
 	if (output_biasSINEX)	{	ss << "\tbiasSINEX_filename: " << biasSINEX_filename		<< "\n"; }
 
-    ss << "\n";
+	ss << "\n";
 
-    ss << "Process Modes:\n";
-    ss << "\tUser:                " << process_user 				<< "\n";
-    ss << "\tNetwork:             " << process_network 				<< "\n";
-    ss << "\tMinimum Constraints: " << process_minimum_constraints 	<< "\n";
-    ss << "\tInonsphereic:        " << process_ionosphere 			<< "\n";
-    ss << "\tRTS Smoothing:       " << process_rts 					<< "\n";
-    ss << "\tUnit tests:          " << process_tests				<< "\n";
-    ss << "\n";
+	ss << "Process Modes:\n";
+	ss << "\tUser:                " << process_user 				<< "\n";
+	ss << "\tNetwork:             " << process_network 				<< "\n";
+	ss << "\tMinimum Constraints: " << process_minimum_constraints 	<< "\n";
+	ss << "\tInonsphereic:        " << process_ionosphere 			<< "\n";
+	ss << "\tRTS Smoothing:       " << process_rts 					<< "\n";
+	ss << "\tUnit tests:          " << process_tests				<< "\n";
+	ss << "\n";
 
-    ss << "Systems:\n";
-    ss << "\tGPS:     " << process_sys[E_Sys::GPS] 		<< "\n";
-    ss << "\tGLONASS: " << process_sys[E_Sys::GLO] 		<< "\n";
-    ss << "\tGALILEO: " << process_sys[E_Sys::GAL] 		<< "\n";
-    ss << "\tBEIDOU:  " << process_sys[E_Sys::CMP] 		<< "\n";
-    ss << "\n";
+	ss << "Systems:\n";
+	ss << "\tGPS:     " << process_sys[E_Sys::GPS] 		<< "\n";
+	ss << "\tGLONASS: " << process_sys[E_Sys::GLO] 		<< "\n";
+	ss << "\tGALILEO: " << process_sys[E_Sys::GAL] 		<< "\n";
+	ss << "\tBEIDOU:  " << process_sys[E_Sys::CMP] 		<< "\n";
+	ss << "\n";
 
-    ss << "Elevation_mask: " << elevation_mask * R2D 	<< "\n";
-    ss << "\n";
+	ss << "Elevation_mask: " << elevation_mask * R2D 	<< "\n";
+	ss << "\n";
 
-    ss << "Epochs:\n";
+	ss << "Epochs:\n";
 	if (epoch_interval	> 0)					{	ss << "\tepoch_interval: " << epoch_interval	<< "\n";    }
 	if (max_epochs		> 0)					{	ss << "\tmax_epochs:     " << max_epochs		<< "\n";    }
-    if (!start_epoch	.is_not_a_date_time())	{	ss << "\tepoch start:    " << start_epoch		<< "\n";    }
-    if (!end_epoch		.is_not_a_date_time())	{	ss << "\tepoch end:      " << end_epoch			<< "\n";    }
+	if (!start_epoch	.is_not_a_date_time())	{	ss << "\tepoch start:    " << start_epoch		<< "\n";    }
+	if (!end_epoch		.is_not_a_date_time())	{	ss << "\tepoch end:      " << end_epoch			<< "\n";    }
 
-    ss << "\n";
-    ss << "Stations:\n";
-    for (auto& filename : station_files)
+	ss << "\n";
+	ss << "Stations:\n";
+	for (auto& filename : station_files)
 	{
-         ss << "\t" << root_stations_dir << filename << "\n";
+		ss << "\t" << root_stations_dir << filename << "\n";
 	}
 
-    ss << "\n";
-    ss << "===============================\n";
-    ss << "...End Configuration\n";
-    ss << "===============================\n";
-    ss << "\n";
+	ss << "\n";
+	ss << "===============================\n";
+	ss << "...End Configuration\n";
+	ss << "===============================\n";
+	ss << "\n";
 }
 
 /** Find a yaml node object using a list of strings
- */
+*/
 YAML::Node stringsToYamlObject(
 	YAML::Node		yamlBase, 			///< Yaml node to search within
 	vector<string>	yamlNodeDescriptor)	///< List of strings of keys to trace hierarchy
@@ -446,7 +446,7 @@ YAML::Node stringsToYamlObject(
 }
 
 /** Set an output from yaml object if found
- */
+*/
 template<typename TYPE>
 bool trySetFromYaml(
 	TYPE&			output,				///< Variable to output to
@@ -466,7 +466,7 @@ bool trySetFromYaml(
 }
 
 /** Set an output from command line options if found
- */
+*/
 template<typename TYPE>
 bool trySetFromOpts(
 	TYPE&									output,			///< Variable to output to
@@ -487,7 +487,7 @@ bool trySetFromOpts(
 }
 
 /** Set an output from any config source if found
- */
+*/
 template<typename TYPE>
 bool trySetFromAny(
 	TYPE&									output,				///< Variable to output to
@@ -502,7 +502,7 @@ bool trySetFromAny(
 }
 
 /** Set an enum from yaml, decoding strings to ints
- */
+*/
 template <typename ENUM>
 void trySetEnumOpt(
 	int&			out,							///< Variable to output to
@@ -520,7 +520,7 @@ void trySetEnumOpt(
 }
 
 /** Set the variables associated with kalman filter states from yaml
- */
+*/
 void trySetKalmanFromYaml(
 	KalmanModel&	output,	///< Variable to output to
 	YAML::Node&		yaml,	///< Yaml node to search within
@@ -557,7 +557,7 @@ void trySetKalmanFromYaml(
 }
 
 /** Set satellite options from yaml
- */
+*/
 void getFromYaml(
 	SatelliteOptions&	satOpts,			///< Satellite options variable to output to
 	YAML::Node&			yamlBase,			///< Yaml node to search within
@@ -577,7 +577,7 @@ void getFromYaml(
 }
 
 /** Set receiver options from yaml
- */
+*/
 void getFromYaml(
 	ReceiverOptions& 	recOpts, 			///< Receiver options variable to output to
 	YAML::Node&			yamlBase,			///< Yaml node to search within
@@ -604,7 +604,7 @@ void getFromYaml(
 }
 
 /** Set satellite options for a specific satellite using a hierarchy of sources
- */
+*/
 SatelliteOptions& ACSConfig::getSatOpts(
 	SatSys& Sat)	///< Satellite to search for options for
 {
@@ -660,7 +660,7 @@ SatelliteOptions& ACSConfig::getSatOpts(
 }
 	//todo aaron these are just asking for it to crash in parallel
 /** Set receiver options for a specific receiver using a hierarchy of sources
- */
+*/
 ReceiverOptions& ACSConfig::getRecOpts(
 	string id)		///< Receiver to search for options for
 {
@@ -689,7 +689,7 @@ ReceiverOptions& ACSConfig::getRecOpts(
 }
 
 /** Set minimum constraint options for a specific receiver using a hierarchy of sources
- */
+*/
 MinimumStationOptions& ACSConfig::getMinConOpts(
 	string id)			///< Receiver to search for options for
 {
@@ -718,7 +718,7 @@ MinimumStationOptions& ACSConfig::getMinConOpts(
 }
 
 /** Set and scale a variable according to yaml options
- */
+*/
 template<typename ENUM>
 void trySetScaledFromYaml(
 	double&			output,							///< Variable to output to
@@ -739,7 +739,7 @@ void trySetScaledFromYaml(
 }
 
 /** search for and replace section of string
- */
+*/
 void replaceString(
 	string&	str,			///< String to search within
 	string	subStr, 		///< String to replace
@@ -757,8 +757,8 @@ void replaceString(
 }
 
 /** Replace macros for times with numeric values.
- * Available replacements are <DDD> <D> <WWWW> <YYYY> <YY> <MM> <DD> <HH>
- */
+* Available replacements are "<DDD> <D> <WWWW> <YYYY> <YY> <MM> <DD> <HH>"
+*/
 void replaceTimes(
 	string&						str,		///< String to replace macros within
 	boost::posix_time::ptime	time_time)	///< Time to use for replacements
@@ -910,8 +910,8 @@ bool ACSConfig::parse()
 }
 
 /** Parse options to set acsConfig values.
- * Command line options will override any values set in config files, which will themselves override any program default values.
- */
+* Command line options will override any values set in config files, which will themselves override any program default values.
+*/
 bool ACSConfig::parse(
 	string									filename,		///< Path to yaml based config file
 	boost::program_options::variables_map&	newCommandOpts)	///< Variable map object of command line options
@@ -938,18 +938,18 @@ bool ACSConfig::parse(
 	satOptsMap.clear();
 	recOptsMap.clear();
 	
-    try
-    {
-        yaml = YAML::LoadFile(filename);
-    }
-    catch (const YAML::BadFile &e)
+	try
 	{
-        BOOST_LOG_TRIVIAL(error) << "Failed to parse configuration file " << filename;
-        BOOST_LOG_TRIVIAL(error) << e.msg;
-        return false;
-    }
+		yaml = YAML::LoadFile(filename);
+	}
+	catch (const YAML::BadFile &e)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Failed to parse configuration file " << filename;
+		BOOST_LOG_TRIVIAL(error) << e.msg;
+		return false;
+	}
 
-    // General Files
+	// General Files
 	auto input_files = stringsToYamlObject(yaml, {"input_files"});
 	{
 		trySetFromAny(root_input_dir,	commandOpts, input_files, {"root_input_directory"	});
@@ -990,8 +990,8 @@ bool ACSConfig::parse(
 		globber(clkfiles);
 	}
 
-    vector<string> rnxfiles;
-    vector<string> rtcmfiles;
+	vector<string> rnxfiles;
+	vector<string> rtcmfiles;
 	auto station_data = stringsToYamlObject(yaml, {"station_data"});
 	{
 		trySetFromAny(root_stations_dir,	commandOpts, station_data,	{"root_stations_directory"	});
@@ -1409,14 +1409,14 @@ bool ACSConfig::parse(
 	}
 
 
-    trySetFromYaml(acsConfig.caster_test,	yaml,{"station_data", "caster_test"});
-    trySetFromYaml(acsConfig.print_stream_statistics,	yaml,{"station_data", "print_stats"});
+	trySetFromYaml(acsConfig.caster_test,	yaml,{"station_data", "caster_test"});
+	trySetFromYaml(acsConfig.print_stream_statistics,	yaml,{"station_data", "print_stats"});
 
 
 	string streamRoot = "";
 	trySetFromYaml(streamRoot,		yaml,	{"station_data", "stream_root"	});
-    if( acsConfig.caster_test )
-        acsConfig.caster_stream_root = streamRoot;
+	if( acsConfig.caster_test )
+		acsConfig.caster_stream_root = streamRoot;
 
 	auto obsStreamNode = stringsToYamlObject(yaml, {"station_data","obs_streams"});
 	auto navStreamNode = stringsToYamlObject(yaml, {"station_data","nav_streams"});
@@ -1439,7 +1439,7 @@ bool ACSConfig::parse(
 			while (fullUrl.back() == '/')
 				fullUrl.pop_back();				// in case of terminating '/'
 			std::size_t slashPos = fullUrl.find_last_of("/");	// find first 4 characters after last '/'
-    		string id = fullUrl.substr(slashPos + 1, 4);		// e.g. http://user:pass@auscors.ga.gov.au:2101/BCEP00BKG0 --> BCEP
+			string id = fullUrl.substr(slashPos + 1, 4);		// e.g. http://user:pass@auscors.ga.gov.au:2101/BCEP00BKG0 --> BCEP
 
 			ntripStreams[id] = fullUrl;
 		}
@@ -1487,40 +1487,40 @@ bool ACSConfig::parse(
 	string ouputStreamRoot = "";
 	trySetFromYaml(ouputStreamRoot,	yaml,{"output_streams", "stream_root"});
 
-    auto outStreamNode = stringsToYamlObject(yaml, {"output_streams","stream_label"});
-  	
+	auto outStreamNode = stringsToYamlObject(yaml, {"output_streams","stream_label"});
+	
 	for (auto outLabelYaml : outStreamNode)
-    {
-        string outLabel = outLabelYaml.as<string>();
-        auto outStreamsYaml = stringsToYamlObject(yaml, {"output_streams",outLabel});
-        
-        bool addOutStream = false;
-        string fullUrl = "";
-        trySetFromYaml(fullUrl,outStreamsYaml,{"streams"});
-        tryAddRootToPath(ouputStreamRoot, fullUrl);
-        auto messageNodes = stringsToYamlObject(outStreamsYaml, {"messages"});
-        auto ntripOutStream_ptr = std::make_shared<NtripBroadcaster::NtripUploadClient>(fullUrl);
-        NtripBroadcaster::NtripUploadClient& outStreamOb = *ntripOutStream_ptr.get();
-        for (auto outMessage : messageNodes)
-        { 
-            string messStr = outMessage.as<string>();
-            try 
-            {
-                int messNum = (int)(std::stod(messStr));
-                RtcmMessageType mess = RtcmMessageType::_from_integral(messNum);
-                outStreamOb.rtcmMessagesTypes.push_back(mess);
-            }
-            catch (std::exception& e)
-            {
-                BOOST_LOG_TRIVIAL(error) << "Error defining output stream message for label : " << outLabel;
-                exit(1);                
-            }
-            addOutStream = true;    
-        }
-        if( addOutStream )
-            outStreamManager.ntripUploadStreams.insert({outLabel, std::move(ntripOutStream_ptr)});
-    }
-    
+	{
+		string outLabel = outLabelYaml.as<string>();
+		auto outStreamsYaml = stringsToYamlObject(yaml, {"output_streams",outLabel});
+		
+		bool addOutStream = false;
+		string fullUrl = "";
+		trySetFromYaml(fullUrl,outStreamsYaml,{"streams"});
+		tryAddRootToPath(ouputStreamRoot, fullUrl);
+		auto messageNodes = stringsToYamlObject(outStreamsYaml, {"messages"});
+		auto ntripOutStream_ptr = std::make_shared<NtripBroadcaster::NtripUploadClient>(fullUrl);
+		NtripBroadcaster::NtripUploadClient& outStreamOb = *ntripOutStream_ptr.get();
+		for (auto outMessage : messageNodes)
+		{ 
+			string messStr = outMessage.as<string>();
+			try 
+			{
+				int messNum = (int)(std::stod(messStr));
+				RtcmMessageType mess = RtcmMessageType::_from_integral(messNum);
+				outStreamOb.rtcmMessagesTypes.push_back(mess);
+			}
+			catch (std::exception& e)
+			{
+				BOOST_LOG_TRIVIAL(error) << "Error defining output stream message for label : " << outLabel;
+				exit(1);                
+			}
+			addOutStream = true;    
+		}
+		if( addOutStream )
+			outStreamManager.ntripUploadStreams.insert({outLabel, std::move(ntripOutStream_ptr)});
+	}
+	
 
 #	ifndef ENABLE_MONGODB
 	if	( output_mongo_measurements
@@ -1542,5 +1542,5 @@ bool ACSConfig::parse(
 	}
 #	endif
 
-    return true;
+	return true;
 }

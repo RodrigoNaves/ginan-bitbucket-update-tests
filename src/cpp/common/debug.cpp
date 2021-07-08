@@ -44,7 +44,7 @@ void artificialSlip(
 			&&  lcBase.L_m[ft] != 0
 			&&  lcBase.time.time % 300 == 0
 			&&( lcBase.Sat == SatSys(E_Sys::GPS, 10)
-			  ||lcBase.Sat == SatSys(E_Sys::GPS, 14)))
+			||lcBase.Sat == SatSys(E_Sys::GPS, 14)))
 		{
 			tracepde(lv, trace, "arti %s\n", strprefix);
 
@@ -140,7 +140,7 @@ void minimumTest(
 			0,			0,			1;
 
 			Vector3d p = a;
- 			p *= 1.123;
+			p *= 1.123;
 			p += Vector3d{1,2.6,3};
 	// 		p += Vector3d{0,0,1};
 			p = rot * p;
@@ -198,32 +198,32 @@ void minimumTest(
 
 template<class M>
 csvToMatrix<M>::csvToMatrix(){
-    //cout<<"CsvToMatrix imported Correctly"<<endl;
+	//cout<<"CsvToMatrix imported Correctly"<<endl;
 }
 
 template<class M>
 
 M  csvToMatrix<M>::load_csv(const string path) {
 
-    //cout<<"**********************************************"<<endl;
-    //cout<<"Reading the data only from current active sheet "<<endl;
-    //cout<<"Please Make sure the correct sheet is selected  "<<endl;
-    //cout<<"**********************************************"<<endl;
+	//cout<<"**********************************************"<<endl;
+	//cout<<"Reading the data only from current active sheet "<<endl;
+	//cout<<"Please Make sure the correct sheet is selected  "<<endl;
+	//cout<<"**********************************************"<<endl;
 
-    std::ifstream indata;
-    indata.open(path);
-    std::string line;
-    std::vector<double> values;
-    unsigned int rows = 0;
-    while (std::getline(indata, line)) {
-        std::stringstream lineStream(line);
-        std::string cell;
-        while (std::getline(lineStream, cell, ',')) {
-            values.push_back(std::stod(cell));
-        }
-        ++rows;
-    }
-    return Map<const Matrix<typename M::Scalar, M::RowsAtCompileTime, M::ColsAtCompileTime, RowMajor>>(values.data(), rows, values.size()/rows);
+	std::ifstream indata;
+	indata.open(path);
+	std::string line;
+	std::vector<double> values;
+	unsigned int rows = 0;
+	while (std::getline(indata, line)) {
+		std::stringstream lineStream(line);
+		std::string cell;
+		while (std::getline(lineStream, cell, ',')) {
+			values.push_back(std::stod(cell));
+		}
+		++rows;
+	}
+	return Map<const Matrix<typename M::Scalar, M::RowsAtCompileTime, M::ColsAtCompileTime, RowMajor>>(values.data(), rows, values.size()/rows);
 }
 
 #include <iostream>
@@ -237,28 +237,28 @@ using namespace std;
 
 
 /*
-    ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    | * State vectors  dim(x) = n =  1*3                                                                                                                                                                                                                                                                            |
-    |* x1 = bias                                                                                                                                                                                                                                                                                                                           |
-    | * x2 = d(bias)/dt                                                                                                                                                                                                                                                                                                              |
-    | * x3 = dx2/dt                                                                                                                                                                                                                                                                                                                    |
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	| * State vectors  dim(x) = n =  1*3                                                                                                                                                                                                                                                                            |
+	|* x1 = bias                                                                                                                                                                                                                                                                                                                           |
+	| * x2 = d(bias)/dt                                                                                                                                                                                                                                                                                                              |
+	| * x3 = dx2/dt                                                                                                                                                                                                                                                                                                                    |
 
-    |Control variable u_{k} = 0 ;                                                                                                                                                                                                                                                                                         |
-    |Measurement is scalar , by the definition of current problem, so measurement noise R is also scalar . Assigning some random value to noise R,                                         |
-    |* Observerd variable z is just bias .So  z will be a scalar .                                                                                                                                                                                                                              |
-    |* dim(z) = m = 1                                                                                                                                                                                                                                                                                                                |
-    |*Time steps del(T)  = 0.1                                                                                                                                                                                                                                                                                              |
-    |                                                                                                                                                                                                                                                                                                                                                 |
-    | * Matrices :                                                                                                                                                                                                                                                                                                                        |
-    |*  F : Make up for F .                                                                                                                                                                                                                                                                                                        |
-    |* B : Take B = 0                                                                                                                                                                                                                                                                                                                  |
-    |* P  : Defines confidence in the "prediction" of state variables , by virtue of covariance between different variables . Take its values  to be anything , KF f                    |
-    |* will adjust its values.                                                                                                                                                                                                                                                                                                  |
-    |* H is the helper matrix to get the dimensions right. In this case dim(H) = 1*3                                                                                                                                                                                |
-    |* S_{K} will be calculated                                                                                                                                                                                                                                                                                             |
-    |* Q_{K}  : Process Noise Matrix is assumed to be 0.                                                                                                                                                                                                                                        |
-     ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- * */
+	|Control variable u_{k} = 0 ;                                                                                                                                                                                                                                                                                         |
+	|Measurement is scalar , by the definition of current problem, so measurement noise R is also scalar . Assigning some random value to noise R,                                         |
+	|* Observerd variable z is just bias .So  z will be a scalar .                                                                                                                                                                                                                              |
+	|* dim(z) = m = 1                                                                                                                                                                                                                                                                                                                |
+	|*Time steps del(T)  = 0.1                                                                                                                                                                                                                                                                                              |
+	|                                                                                                                                                                                                                                                                                                                                                 |
+	| * Matrices :                                                                                                                                                                                                                                                                                                                        |
+	|*  F : Make up for F .                                                                                                                                                                                                                                                                                                        |
+	|* B : Take B = 0                                                                                                                                                                                                                                                                                                                  |
+	|* P  : Defines confidence in the "prediction" of state variables , by virtue of covariance between different variables . Take its values  to be anything , KF f                    |
+	|* will adjust its values.                                                                                                                                                                                                                                                                                                  |
+	|* H is the helper matrix to get the dimensions right. In this case dim(H) = 1*3                                                                                                                                                                                |
+	|* S_{K} will be calculated                                                                                                                                                                                                                                                                                             |
+	|* Q_{K}  : Process Noise Matrix is assumed to be 0.                                                                                                                                                                                                                                        |
+	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+* */
 
 int isgmain()
 {
@@ -323,8 +323,8 @@ int isgmain()
 	else if (num_params == 2) G << 1.0 / 2.0*pow(delta_t, 2), delta_t, 0;
 	else if (num_params == 3) G << 1.0 / 6.0*pow(delta_t, 3), 1.0 / 2.0*pow(delta_t, 2), delta_t;
 	else {
-	    cout << "Error: Unexpected value in num_params: " << num_params << endl;
-	    return 0;
+		cout << "Error: Unexpected value in num_params: " << num_params << endl;
+		return 0;
 	}
 	Q_base = G * G.transpose();
 	*/

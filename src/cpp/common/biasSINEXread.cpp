@@ -504,14 +504,14 @@ bool getDSBBias(
 }
 	
 /** Search for hardware biases in phase and code
- */
+*/
 void inpt_hard_bias(
-	Trace& 			trace,
-	Obs& 			obs, 
-	E_ObsCode 		obsCode,
+	Trace& 			trace,		///< Trace to output to
+	Obs& 			obs, 		///< Observation to find biases for
+	E_ObsCode 		obsCode,	///< Specific code of observation to find biases for
 	double* 		bias,		///< hardware bias
 	double* 		var,		///< hardware bias variance
-	bias_io_opt 	opt)
+	bias_io_opt 	opt)		///< Specific biases to find
 {
 	const int lv = 3;
 	

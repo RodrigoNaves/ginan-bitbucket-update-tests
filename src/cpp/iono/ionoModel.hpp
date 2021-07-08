@@ -7,7 +7,7 @@
 #include "navigation.hpp"
 #include "biasSINEX.hpp"
 #include "station.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 
 #define MAX_LAYER_NUM 4
 #define MAX_DCB_COD 1

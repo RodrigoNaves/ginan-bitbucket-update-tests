@@ -113,7 +113,7 @@ int resomc(
 		if	( acsConfig.raim
 			&&epoch > 1					//todo aaron, moved this here, because combined satstats?
 			&&( satStat.sigStatMap[F1].slip.any	!= 0
-			  ||satStat.sigStatMap[frq2].slip.any	!= 0))
+			||satStat.sigStatMap[frq2].slip.any	!= 0))
 		{
 			/* remove satellites with cycle slips */
 			obs.excludeSlip = true;			//todo aaron probably not doing somethin it should because it just excluded it rather than completing the msision.
@@ -156,46 +156,46 @@ int resomc(
 		satStat.mapWetGrads[1]	= sin(satStat.az) / mg; /* E grad */
 
 		/* receiver pco correction to the coordinates */
-        map<int, double> dAntRec;
-        for (auto& [ft, sig] : obs.Sigs)
-        {
-            rr2[ft] = rRec;
+		map<int, double> dAntRec;
+		for (auto& [ft, sig] : obs.Sigs)
+		{
+			rr2[ft] = rRec;
 
-            if (rtk.pcvrec)
-            {
-                Vector3d pco_r;
-                recpco(rtk.pcvrec, ft, pco_r);
-                                                //check map, continue if null
-                Vector3d dr2;
-                enu2ecef(pos, pco_r.data(), dr2.data());  /* convert enu to xyz */
+			if (rtk.pcvrec)
+			{
+				Vector3d pco_r;
+				recpco(rtk.pcvrec, ft, pco_r);
+												//check map, continue if null
+				Vector3d dr2;
+				enu2ecef(pos, pco_r.data(), dr2.data());  /* convert enu to xyz */
 
-                if (ft <= F2)
-                {
-                    tracepde(lv, trace, " %.6f %s  rec pco%d (enu)       = %14.4f %14.4f %14.4f\n", mjd, id, ft, pco_r[0],    pco_r[1],    pco_r[2]);
-                    tracepde(lv, trace, " %.6f %s  rec pco%d             = %14.4f %14.4f %14.4f\n", mjd, id, ft, dr2[0],    dr2[1],        dr2[2]);
-                    if (ft == F1)
-                    {
-                        TestStack::testMat("rec pco1 (enu)",     pco_r,    1e-3);
-                        TestStack::testMat("rec pco1",            dr2,    1e-3);
-                    }
-                    else
-                    {
-                        TestStack::testMat("rec pco2 (enu)",     pco_r,    1e-3);
-                        TestStack::testMat("rec pco2",            dr2,    1e-3);
-                    }
-                }
+				if (ft <= F2)
+				{
+					tracepde(lv, trace, " %.6f %s  rec pco%d (enu)       = %14.4f %14.4f %14.4f\n", mjd, id, ft, pco_r[0],    pco_r[1],    pco_r[2]);
+					tracepde(lv, trace, " %.6f %s  rec pco%d             = %14.4f %14.4f %14.4f\n", mjd, id, ft, dr2[0],    dr2[1],        dr2[2]);
+					if (ft == F1)
+					{
+						TestStack::testMat("rec pco1 (enu)",     pco_r,    1e-3);
+						TestStack::testMat("rec pco1",            dr2,    1e-3);
+					}
+					else
+					{
+						TestStack::testMat("rec pco2 (enu)",     pco_r,    1e-3);
+						TestStack::testMat("rec pco2",            dr2,    1e-3);
+					}
+				}
 
-                /* get rec position and geometric distance for each frequency */
-                rr2[ft] += dr2;
+				/* get rec position and geometric distance for each frequency */
+				rr2[ft] += dr2;
 
-                /* calculate pcv */
-                double azDeg = satStat.az * R2D;
-                double elDeg = satStat.el * R2D;
-                recpcv(rtk.pcvrec, ft, elDeg, azDeg, dAntRec[ft]);
-            }
+				/* calculate pcv */
+				double azDeg = satStat.az * R2D;
+				double elDeg = satStat.el * R2D;
+				recpcv(rtk.pcvrec, ft, elDeg, azDeg, dAntRec[ft]);
+			}
 
-            r2[ft] = geodist(obs.rSat, rr2[ft], e);
-        }
+			r2[ft] = geodist(obs.rSat, rr2[ft], e);
+		}
 
 // 		if (acsConfig.antexacs == 0)
 // 		{
@@ -236,10 +236,10 @@ int resomc(
 			tracepde(lv, trace, " %.6f %s  recpos+tide          = %14.4f %14.4f %14.4f\n",  mjd, id, rRec[0], rRec[1], rRec[2]);
 			tracepde(lv, trace, " %.6f %s  satpos+pco           = %14.4f %14.4f %14.4f\n",	mjd, id, obs.rSat[0], obs.rSat[1], obs.rSat[2]);
 			tracepde(lv, trace, " %.6f %s  dist                 = %14.4f\n",				mjd, id, r);
-											 TestStack::testMat("tide", 		dTide,		1e-3);
-											 TestStack::testMat("recpos+tide",	rRec,		1e-3);
-											 TestStack::testMat("satpos+pco",	obs.rSat,	1e-3);
-											 TestStack::testMat("dist", 		r,			1e-3);
+											TestStack::testMat("tide", 		dTide,		1e-3);
+											TestStack::testMat("recpos+tide",	rRec,		1e-3);
+											TestStack::testMat("satpos+pco",	obs.rSat,	1e-3);
+											TestStack::testMat("dist", 		r,			1e-3);
 		}
 		else
 		{
@@ -251,14 +251,14 @@ int resomc(
 			tracepde(lv, trace, " %.6f %s  satpos+pco           = %14.4f %14.4f %14.4f\n", 	mjd, id, obs.rSat[0], obs.rSat[1], obs.rSat[2]);
 			tracepde(lv, trace, " %.6f %s  dist1                = %14.4f\n",	         	mjd, id, r2[F1]);
 			tracepde(lv, trace, " %.6f %s  dist2                = %14.4f\n",	         	mjd, id, r2[F2]);
-											 TestStack::testMat("tide",					dTide,			1e-3);
-											 TestStack::testMat("delta xyz",			dr1,			1e-3);
-											 TestStack::testMat("enu",					opt.antdel,		1e-3);
-											 TestStack::testMat("recpos+tide+enu+pco1", rr2[F1], 		1e-3);
-											 TestStack::testMat("recpos+tide+enu+pco2", rr2[F2], 		1e-3);
-											 TestStack::testMat("satpos+pco",			obs.rSat,		1e-3);
-											 TestStack::testMat("dist1,",				r2[F1], 		1e-3);
-											 TestStack::testMat("dist2",				r2[F2], 		1e-3);
+											TestStack::testMat("tide",					dTide,			1e-3);
+											TestStack::testMat("delta xyz",			dr1,			1e-3);
+											TestStack::testMat("enu",					opt.antdel,		1e-3);
+											TestStack::testMat("recpos+tide+enu+pco1", rr2[F1], 		1e-3);
+											TestStack::testMat("recpos+tide+enu+pco2", rr2[F2], 		1e-3);
+											TestStack::testMat("satpos+pco",			obs.rSat,		1e-3);
+											TestStack::testMat("dist1,",				r2[F1], 		1e-3);
+											TestStack::testMat("dist2",				r2[F2], 		1e-3);
 		}
 
 		tracepde(lv, trace, " %.6f %s  satpcv               = %14.4f %14.4f\n",	        mjd, id, dAntSat[F1], dAntSat[F2]);

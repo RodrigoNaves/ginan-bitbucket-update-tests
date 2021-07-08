@@ -4,8 +4,7 @@
 #include <memory>
 
 #include "constants.h"
-#include "gaTime.hpp"
-#include "newsnx.hpp"
+#include "gTime.hpp"
 #include "snx.hpp"
 #include "ppp.hpp"
 #include "vmf3.h"
@@ -47,13 +46,12 @@ struct StationLogs
 };
 
 /** Object to maintain receiver station data
- */
+*/
 struct Station : IonoStation, StationLogs
 {
 	RinexStation		rnxStation;
 	rtk_t 				rtk;						///< Legacy rtk filter status
-	newsnx_stn_snx_t 	snx;						///< Antenna information
-// 	snx_t 				snx;						///< Antenna information
+	Sinex_stn_snx_t		snx;						///< Antenna information
 	vmf3_t				vmf3	= {.m = 1};
 
 	ObsList				obsList;					///< Observations available for this station at this epoch
@@ -62,7 +60,7 @@ struct Station : IonoStation, StationLogs
 	double				mjd0[3]			= {}; 		// mjd time for vmf3
 	ClockJump			cj				= {};
 
- 	string				traceFilename;
+	string				traceFilename;
 	
 	
 	bool		primaryApriori = false;
@@ -75,7 +73,7 @@ using StationList = list<Station*>;			///< List of station pointers
 
 struct Network
 {
- 	string traceFilename;
+	string traceFilename;
 	string clockFilename;
 	string rtsClockFilename;
 	string id				= "NET";

@@ -5,14 +5,14 @@
 #include "rinex.hpp"
 
 /** Interface for rinex streams
- */
+*/
 struct RinexStream : ObsStream, NavStream
 {
-    char							ctype;
-    double							version;
-    E_Sys							nav_system;
-    int 							time_system;
-    map<E_Sys, vector<CodeType>>	sysCodeTypes;
+	char							ctype;
+	double							version;
+	E_Sys							nav_system;
+	int 							time_system;
+	map<E_Sys, vector<CodeType>>	sysCodeTypes;
 	ObsList							tempObsList;
 
 	RinexStream()
@@ -61,9 +61,9 @@ struct RinexStream : ObsStream, NavStream
 			BOOST_LOG_TRIVIAL(error)
 			<< "ERROR: Failed to read header from RINEX file ";
 
-            return EXIT_FAILURE;
-        }
-        return EXIT_SUCCESS;
+			return EXIT_FAILURE;
+		}
+		return EXIT_SUCCESS;
 	}
 };
 

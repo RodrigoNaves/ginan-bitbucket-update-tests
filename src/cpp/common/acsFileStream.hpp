@@ -4,7 +4,7 @@
 
 
 /** Interface to be used for file streams
- */
+*/
 struct ACSFileStream
 {
 

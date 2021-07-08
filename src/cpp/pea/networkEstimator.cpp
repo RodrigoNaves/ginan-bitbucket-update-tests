@@ -21,11 +21,11 @@
 
 
 /** Remove ambiguity states from filter when they are not measured for an epoch.
- * This effectively reinitialises them on the following epoch as a new state, and can be used for simple
- * resolution of cycle-slips
- */
+* This effectively reinitialises them on the following epoch as a new state, and can be used for simple
+* resolution of cycle-slips
+*/
 void removeUnmeasuredAmbiguities(
-	Trace&				trace,
+	Trace&				trace,				///< Trace to output to
 	KFState&			kfState, 			///< Filter to remove states from
 	map<KFKey, bool>	measuredStates)		///< Map of measured states in this epoch to compare against.
 {
@@ -88,9 +88,9 @@ Matrix3d stationEopPartials(
 }
 
 /** Check and correct clock jitter/wraparound
- */
+*/
 void correctRecClocks(
-	Trace&		trace,
+	Trace&		trace,		///< Trace to output to
 	KFState&	kfState,	///< Filter to correct clock estimates in
 	Station*	refRec)		///< Reference clock to use as basis for adjusting others
 {
@@ -104,7 +104,7 @@ void correctRecClocks(
 		}
 
 		auto& rec		= *key.station_ptr;
- 		auto& recOpts	= acsConfig.getRecOpts(key.str);
+		auto& recOpts	= acsConfig.getRecOpts(key.str);
 
 		double wraparound_distance	= CLIGHT * 1e-3;
 		double wraparound_tolerance	= CLIGHT * acsConfig.clock_wrap_threshold;
@@ -129,7 +129,7 @@ void correctRecClocks(
 		}
 		else if	( (rec.rtk.sol.deltaDt_net_old[0] == 0)
 				||( abs(deltaDelta) > wraparound_distance - wraparound_tolerance
-				  &&abs(deltaDelta) < wraparound_distance + wraparound_tolerance))
+				&&abs(deltaDelta) < wraparound_distance + wraparound_tolerance))
 		{
 			//get, modify and set the old bias in the state
 			double oldBias = 0;
@@ -145,7 +145,7 @@ void correctRecClocks(
 }
 
 /** Estimates parameters for a network of stations simultaneously
- */
+*/
 void networkEstimator(
 	Trace&			trace,			///< Trace to output to
 	StationList&	stations,       ///< List of stations containing observations for this epoch
@@ -230,7 +230,7 @@ void networkEstimator(
 
 		if	(    refRec					== nullptr
 			&&( acsConfig.pivot_station	== rec.id
-			  ||acsConfig.pivot_station	== "<AUTO>"))
+			||acsConfig.pivot_station	== "<AUTO>"))
 		{
 			//use this receiver as the reference receiver for clock offsets
 			refRec = &rec;
@@ -478,7 +478,7 @@ void networkEstimator(
 		++nav.satNavMap[obs.Sat].ssrOut.numObs;
 	}
 
- 	removeUnmeasuredAmbiguities(trace, kfState, measuredStates);
+	removeUnmeasuredAmbiguities(trace, kfState, measuredStates);
 
 	//add process noise to existing states as per their initialisations.
 	kfState.stateTransition(trace, tgap);
@@ -506,7 +506,7 @@ void networkEstimator(
 		kfState.lsqRequired = false;
 		trace << std::endl << " -------INITIALISING NETWORK USING LEAST SQUARES--------" << std::endl;
 
- 		kfState.leastSquareInitStates(trace, combinedMeas);
+		kfState.leastSquareInitStates(trace, combinedMeas);
 	}
 
 	if (acsConfig.netwOpts.filter_mode == E_FilterMode::LSQ)

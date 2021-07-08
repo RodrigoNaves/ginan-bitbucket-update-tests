@@ -62,7 +62,7 @@ using std::vector;
 
 
 /** exclude meas of eclipsing satellite (block IIA)
- */
+*/
 void testeclipse(
 	ObsList&	obsList)
 {
@@ -106,7 +106,7 @@ void testeclipse(
 }
 
 /** Calculate nominal yaw-angle
- */
+*/
 double yaw_nominal(
 	double	beta,
 	double	mu)
@@ -119,9 +119,9 @@ double yaw_nominal(
 }
 
 /** Satellite attitude model
- */
+*/
 int sat_yaw(
-	GTime		time,
+	GTime		time,		///< Time of calculated yaw
 	Vector3d&	rSat,		///< Satellite position (ECEF)
 	Vector3d&	vSat,		///< Satellite velocity (ECEF)
 	Vector3d&	exs,		///< Output unit vector XS
@@ -167,7 +167,7 @@ int sat_yaw(
 }
 
 /** phase windup model
- */
+*/
 int model_phw(
 	GTime		time,	///< Time
 	Obs&		obs,	///< Observation detailing the satellite to apply model to
@@ -230,7 +230,7 @@ int model_phw(
 }
 
 /** get meterological parameters
- */
+*/
 void getmet(
 	double	lat,
 	double*	met)
@@ -320,17 +320,17 @@ double sbstropcorr(
 }
 
 /** Antenna corrected measurement
- */
+*/
 void corr_meas(
 	Trace&		trace,		///< Trace file to output to
 	Obs&		obs,		///< Observation to correct measurements of
 	E_FType		ft,			///< Frequency type to correct
 	double		el,			///< Satellite elevation
-	double		dAntRec,
-	double		dAntSat,
+	double		dAntRec,	///< Delta for antenna offset of receiver
+	double		dAntSat,	///< Delta for antenna offset of satellite
 	double		phw,		///< Phase wind up
 	ClockJump&	cj,			///< Clock jump
-	Station&	rec)
+	Station&	rec)		///< Receiver
 {
 	TestStack ts(__FUNCTION__);
 
@@ -547,7 +547,7 @@ void pppCorrections(
 	ObsList&	obsList,
 	Vector3d&	rRec,
 	rtk_t&		rtk,
-    Station&	rec)
+	Station&	rec)
 {
 	TestStack ts(__FUNCTION__);
 

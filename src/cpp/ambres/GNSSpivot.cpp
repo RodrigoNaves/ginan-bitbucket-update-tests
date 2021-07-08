@@ -669,21 +669,21 @@ SatSys connect_sta(Trace& trace, string base, string sta, double* maxel, double*
 
 
 /************************************************************************************************************************************************
- * reconnect_pivot : Try to reconnect the satellites and stations in miscon_sat and miscon_sta to the pivot 									*
- * 		- Try to connect each member of miscon_sat:																								*
- *			- If a state 7 connection was found,   set this as the new pivot connection	( connect_sat )											*
- *			- If a state 2-3 connection was found, reset the NL ambiguity																		*
- *				- Ambiguity is ROUND( Raw - stabias )																							*
- *				- Satellite bias is Raw - ambiguity -stabias																					*
- *				- Add all stations behind sat to the miscon_sta;																				*
- *		- Try to connect each member of miscon_sta:																								*
- *			- If a state 7 connection was found,   set this as the new pivot connection  														*
- *			- If a state 2-3 connection was found, reset the NL ambiguity																		*
- *				- Ambiguity is ROUND( Raw - satbias )																							*
- *				- Station bias is Raw - ambiguity -satbias																						*
- *				- Add all satellites behind sta to the miscon_sat																				*
- * Stop when no new satellite/station can be connected, return the number of satellites/stations in miscon_sat and miscon_sta
- ************************************************************************************************************************************************/
+* reconnect_pivot : Try to reconnect the satellites and stations in miscon_sat and miscon_sta to the pivot 									*
+* 		- Try to connect each member of miscon_sat:																								*
+*			- If a state 7 connection was found,   set this as the new pivot connection	( connect_sat )											*
+*			- If a state 2-3 connection was found, reset the NL ambiguity																		*
+*				- Ambiguity is ROUND( Raw - stabias )																							*
+*				- Satellite bias is Raw - ambiguity -stabias																					*
+*				- Add all stations behind sat to the miscon_sta;																				*
+*		- Try to connect each member of miscon_sta:																								*
+*			- If a state 7 connection was found,   set this as the new pivot connection  														*
+*			- If a state 2-3 connection was found, reset the NL ambiguity																		*
+*				- Ambiguity is ROUND( Raw - satbias )																							*
+*				- Station bias is Raw - ambiguity -satbias																						*
+*				- Add all satellites behind sta to the miscon_sat																				*
+* Stop when no new satellite/station can be connected, return the number of satellites/stations in miscon_sat and miscon_sta
+************************************************************************************************************************************************/
 int reconnect_pivot(Trace& trace, E_Sys sys, bool wlonly)
 {
 	int nnew = 0;
@@ -795,17 +795,17 @@ int reconnect_pivot(Trace& trace, E_Sys sys, bool wlonly)
 
 
 /************************************************************************************************************************************************
- * rese_net_NL : Resets the narrowlane ambiguities for a particular system, insat.sys, starting from the station sta 							*
- *				 If "sta" is not "ARrefsta" the satellite insat should be the link between "sta" and the rest of the pivot						*
- * 		- Station bias is 0 for "ARrefsta"																										*
- *		- Sta-insat ambiguity is ROUND( Raw - satbias ) 																						*
- *		- Station bias is Raw - ambiguity -satbias																								*
- *		- For all satellites "sat" behind "sta":																								*
- *			- Sat-sta ambiguity is ROUND( Raw - stabias )																						*
- *			- Satellite bias is Raw - ambiguity -stabias																						*
- *			- For all stations "sta2" behind "sat":																								*
- *				- Call rese_net_NL with "sta2" and "sat" as inputs																				*
- ************************************************************************************************************************************************/
+* rese_net_NL : Resets the narrowlane ambiguities for a particular system, insat.sys, starting from the station sta 							*
+*				 If "sta" is not "ARrefsta" the satellite insat should be the link between "sta" and the rest of the pivot						*
+* 		- Station bias is 0 for "ARrefsta"																										*
+*		- Sta-insat ambiguity is ROUND( Raw - satbias ) 																						*
+*		- Station bias is Raw - ambiguity -satbias																								*
+*		- For all satellites "sat" behind "sta":																								*
+*			- Sat-sta ambiguity is ROUND( Raw - stabias )																						*
+*			- Satellite bias is Raw - ambiguity -stabias																						*
+*			- For all stations "sta2" behind "sat":																								*
+*				- Call rese_net_NL with "sta2" and "sat" as inputs																				*
+************************************************************************************************************************************************/
 int rese_net_NL(Trace& trace, string rec, SatSys insat)
 {
 
@@ -1099,17 +1099,17 @@ void init_net_pivot ( Trace& trace, double arelev, string defref )
 
 
 /************************************************************************************************************************************************
- * Updates the network pivot:																													*
- *		- Resets satellites/stations with npivot=0 or reset=true ( reset_sta, reset_sat )														*
- *		- Checks the current state of network pivot ( check_station )																			*
- *		- if miscon_sat or miscon_sta is set, try to reconnect the pivot ( reconnect_pivot ) +													*
- *		- if pivot cannot be fully restored:																									*
- *			- fully disconnect a station, add satellites behind the station to miscon_sat, repeat from +										*
- *			- if there are no satellites could be added, fully disconnect a satellite, add stations behind it to  miscon_sta, repeat from +		*
- *			- if no new satellite or station could be added break																				*
- *		- reset satellites in miscon_sat and stations in miscon_sta ( reset_sta, reset_sat )													*
- *		- remove satellite/stations that could not be reset from the pivot/solution ( set .reset = true )										*
- ************************************************************************************************************************************************/
+* Updates the network pivot:																													*
+*		- Resets satellites/stations with npivot=0 or reset=true ( reset_sta, reset_sat )														*
+*		- Checks the current state of network pivot ( check_station )																			*
+*		- if miscon_sat or miscon_sta is set, try to reconnect the pivot ( reconnect_pivot ) +													*
+*		- if pivot cannot be fully restored:																									*
+*			- fully disconnect a station, add satellites behind the station to miscon_sat, repeat from +										*
+*			- if there are no satellites could be added, fully disconnect a satellite, add stations behind it to  miscon_sta, repeat from +		*
+*			- if no new satellite or station could be added break																				*
+*		- reset satellites in miscon_sat and stations in miscon_sta ( reset_sta, reset_sat )													*
+*		- remove satellite/stations that could not be reset from the pivot/solution ( set .reset = true )										*
+************************************************************************************************************************************************/
 void updt_net_pivot ( Trace& trace, bool wlonly )
 {
 

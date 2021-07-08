@@ -17,9 +17,9 @@
 #define             VERSION             3.00
 
 /** Output receiver clocks
- */
+*/
 void outputReceiverClocks(
-	string&		filename,
+	string&		filename,	///< Path of file to output to
 	KFState&	kfState,	///< Kalman filter to pull clocks from
 	double*		epoch)		///< Epoch time
 {
@@ -51,13 +51,13 @@ void outputReceiverClocks(
 		}
 	}
 	clockFile.flush();
-    return;
+	return;
 }
 
 /** Output satellite clocks
- */
+*/
 void outputSatelliteClocks(
-	string&		filename,
+	string&		filename,	///< Path of file to output to
 	KFState&	kfState,	///< Kalman filter to pull clocks from
 	double*		epoch)		///< Epoch time
 {
@@ -81,7 +81,7 @@ void outputSatelliteClocks(
 					(int)epoch[2],
 					(int)epoch[3],
 					(int)epoch[4],
-						 epoch[5],
+						epoch[5],
 					2,
 					clk/CLIGHT,
 					sigma);
@@ -95,13 +95,13 @@ void outputSatelliteClocks(
 		}
 	}
 	clockFile.flush();
-    return;
+	return;
 }
 
 /** Output clock file header if necessary
- */
+*/
 void outputClockfileHeader(
-	string&		filename,
+	string&		filename,	///< Path of tile to output to
 	KFState&	kfState,	///< Kalman filter to pull clocks from
 	double*		epoch)		///< Epoch time
 {
@@ -113,7 +113,7 @@ void outputClockfileHeader(
 		return;
 	}
 
-    /* determine satellite system type */
+	/* determine satellite system type */
 	char syschar		= 0;
 	int firstBiasGroup	= 0;
 	int num_sats		= 0;
@@ -163,26 +163,26 @@ void outputClockfileHeader(
 	}
 
 
-    tracepdeex(0, clockFile, "%9.2f           C                   %c                   %s\n", VERSION, syschar,	"RINEX VERSION / TYPE");
-    tracepdeex(0, clockFile, "%-20s%-20s%4d%02d%02d %02d%02d%02d %4s%s\n", acsConfig.analysis_program.c_str(),acsConfig.analysis_agency.c_str(),(int)epoch[0],(int)epoch[1],(int)epoch[2],(int)epoch[3],(int)epoch[4],(int)epoch[5],"LCL","PGM / RUN BY / DATE");
-    tracepdeex(0, clockFile, "%-60s%s\n","", 																	"SYS / # / OBS TYPES");
-    tracepdeex(0, clockFile, "%-60s%s\n","",																	"TIME SYSTEM ID");
-    tracepdeex(0, clockFile, "%6d    %2s    %2s%-42s%s\n",            2,"AS","AR","",							"# / TYPES OF DATA");
-    tracepdeex(0, clockFile, "%-60s%s\n","",																	"STATION NAME / NUM");
-    tracepdeex(0, clockFile, "%-60s%s\n","",																	"STATION CLK REF");
-    tracepdeex(0, clockFile, "%-3s  %-55s%s\n", acsConfig.analysis_agency.c_str(), acsConfig.analysis_center.c_str(),			"ANALYSIS CENTER");
-    tracepdeex(0, clockFile, "%6d%54s%s\n",1,"",																"# OF CLK REF");
-    tracepdeex(0, clockFile, "%-4s %-20s%35s%s\n", "", refKey.str.substr(0, 4).c_str(),"",						"ANALYSIS CLK REF");
-    tracepdeex(0, clockFile, "%6d    %-50s%s\n", num_recs,"IGS14",												"# OF SOLN STA / TRF");
-    // MM This line causes the clock combination software to crash to removing
-    //tracepdeex(0, clockFile, "%-60s%s\n",acsConfig.rinex_comment,												"COMMENT");
+	tracepdeex(0, clockFile, "%9.2f           C                   %c                   %s\n", VERSION, syschar,	"RINEX VERSION / TYPE");
+	tracepdeex(0, clockFile, "%-20s%-20s%4d%02d%02d %02d%02d%02d %4s%s\n", acsConfig.analysis_program.c_str(),acsConfig.analysis_agency.c_str(),(int)epoch[0],(int)epoch[1],(int)epoch[2],(int)epoch[3],(int)epoch[4],(int)epoch[5],"LCL","PGM / RUN BY / DATE");
+	tracepdeex(0, clockFile, "%-60s%s\n","", 																	"SYS / # / OBS TYPES");
+	tracepdeex(0, clockFile, "%-60s%s\n","",																	"TIME SYSTEM ID");
+	tracepdeex(0, clockFile, "%6d    %2s    %2s%-42s%s\n",            2,"AS","AR","",							"# / TYPES OF DATA");
+	tracepdeex(0, clockFile, "%-60s%s\n","",																	"STATION NAME / NUM");
+	tracepdeex(0, clockFile, "%-60s%s\n","",																	"STATION CLK REF");
+	tracepdeex(0, clockFile, "%-3s  %-55s%s\n", acsConfig.analysis_agency.c_str(), acsConfig.analysis_center.c_str(),			"ANALYSIS CENTER");
+	tracepdeex(0, clockFile, "%6d%54s%s\n",1,"",																"# OF CLK REF");
+	tracepdeex(0, clockFile, "%-4s %-20s%35s%s\n", "", refKey.str.substr(0, 4).c_str(),"",						"ANALYSIS CLK REF");
+	tracepdeex(0, clockFile, "%6d    %-50s%s\n", num_recs,"IGS14",												"# OF SOLN STA / TRF");
+	// MM This line causes the clock combination software to crash to removing
+	//tracepdeex(0, clockFile, "%-60s%s\n",acsConfig.rinex_comment,												"COMMENT");
 
-    /* output receiver prn and coordinates */
+	/* output receiver prn and coordinates */
 	for (auto& [kfKey, index] : kfState.kfIndexMap)
 	{
 		if	(   kfKey.num	!= firstBiasGroup
 			||( kfKey.type != KF::REC_SYS_BIAS
-			  &&kfKey.type != KF::REF_SYS_BIAS))
+			&&kfKey.type != KF::REF_SYS_BIAS))
 		{
 			continue;
 		}
@@ -199,9 +199,9 @@ void outputClockfileHeader(
 		}
 	}
 
-    /* output satellite PRN*/
+	/* output satellite PRN*/
 	int k = 0;
-    tracepdeex(0, clockFile, "%6d%54s%s\n",num_sats,"","# OF SOLN SATS");
+	tracepdeex(0, clockFile, "%6d%54s%s\n",num_sats,"","# OF SOLN SATS");
 	if (acsConfig.process_sys[E_Sys::GPS])	for (int prn = 1; prn <= NSATGPS; prn++)	{k++;	SatSys s(E_Sys::GPS, prn);	tracepdeex(0, clockFile, "%3s ",	s.id().c_str());	if (k % 15 == 0) tracepdeex(0, clockFile, "%s\n","PRN LIST");}
 	if (acsConfig.process_sys[E_Sys::GLO])	for (int prn = 1; prn <= NSATGLO; prn++)	{k++;	SatSys s(E_Sys::GLO, prn);	tracepdeex(0, clockFile, "%3s ",	s.id().c_str());	if (k % 15 == 0) tracepdeex(0, clockFile, "%s\n","PRN LIST");}
 	if (acsConfig.process_sys[E_Sys::GAL])	for (int prn = 1; prn <= NSATGAL; prn++)	{k++;	SatSys s(E_Sys::GAL, prn);	tracepdeex(0, clockFile, "%3s ",	s.id().c_str());	if (k % 15 == 0) tracepdeex(0, clockFile, "%s\n","PRN LIST");}
@@ -209,7 +209,7 @@ void outputClockfileHeader(
 	/*finish the line*/						while (k % 15 != 0)						{k++;								tracepdeex(0, clockFile, "    ");						if (k % 15 == 0) tracepdeex(0, clockFile, "%s\n","PRN LIST");}
 
 
-    tracepdeex(0, clockFile, "%-60s%s\n","","END OF HEADER");
+	tracepdeex(0, clockFile, "%-60s%s\n","","END OF HEADER");
 
-    return;
+	return;
 }

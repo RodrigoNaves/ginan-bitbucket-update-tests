@@ -8,7 +8,7 @@
 using std::ostream;
 
 #include "constants.h"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 
 ostream& operator <<(ostream& stream, const GTime& time)
 {

@@ -22,7 +22,7 @@ using std::map;
 
 
 /** Object to contain sets of tests to perform during runtime
- */
+*/
 struct TestStack
 {
 	static list<string>								TestStackList;

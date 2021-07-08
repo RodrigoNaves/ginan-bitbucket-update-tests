@@ -21,7 +21,7 @@ using std::map;
 #include <boost/serialization/string.hpp>
 
 /** Returns the type of object that is located at the specified position in a file
- */
+*/
 E_SerialObject getFilterTypeFromFile(
 	long int& startPos,	///< Position of object
 	string filename)	///< Path to archive file
@@ -37,8 +37,8 @@ E_SerialObject getFilterTypeFromFile(
 
 	long int itemDelta;
 
-    fileStream.seekg (0, fileStream.end);
-    long int fileSize = fileStream.tellg();
+	fileStream.seekg (0, fileStream.end);
+	long int fileSize = fileStream.tellg();
 
 	if (startPos < 0)	{	fileStream.seekg(			-sizeof(itemDelta),	fileStream.end);	}
 	else				{	fileStream.seekg(startPos	-sizeof(itemDelta),	fileStream.beg);	}
@@ -64,7 +64,7 @@ E_SerialObject getFilterTypeFromFile(
 }
 
 /** Initialises the outputs for input/output of filter states during (re)processing
- */
+*/
 void initFilterTrace(
 	KFState&	kfState,		///< Filter object to apply to
 	string		traceFilename,	///< Filename to store/read data from

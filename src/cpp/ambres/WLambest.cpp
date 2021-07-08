@@ -15,10 +15,10 @@ void ResetDisconnectedStates( Trace& trace, KFState& kfState)
 		KFKey key = it->first;
 
 		if	((key.type == KF::AMBIGUITY) &&
-		        (StatAmbMap_list[key.Sat.sys][key.str].reset  ||
-		         satpiv[key.Sat].reset      ||
-		         (key.num == E_AmbTyp::WL12 && StatAmbMap_list[key.Sat.sys][key.str].SignList[key.Sat].flt.WL12var < 0) ||
-		         (key.num == E_AmbTyp::WL23 && StatAmbMap_list[key.Sat.sys][key.str].SignList[key.Sat].flt.WL23var < 0)))
+				(StatAmbMap_list[key.Sat.sys][key.str].reset  ||
+				satpiv[key.Sat].reset      ||
+				(key.num == E_AmbTyp::WL12 && StatAmbMap_list[key.Sat.sys][key.str].SignList[key.Sat].flt.WL12var < 0) ||
+				(key.num == E_AmbTyp::WL23 && StatAmbMap_list[key.Sat.sys][key.str].SignList[key.Sat].flt.WL23var < 0)))
 		{
 			tracepdeex(wltrclvl, trace, "\n#WLR Resetting ambiguity between %s - %s", key.str.c_str(), key.Sat.id().c_str());
 			kfState.procNoiseMap.		erase(key);
@@ -74,7 +74,7 @@ void WLambRes(Trace& trace, KFState& KFstate, ARState& ambState, bool wlonly)
 			if ( StatAmbMap_list[kfKey.Sat.sys][kfKey.str].SignList.find(kfKey.Sat) == StatAmbMap_list[kfKey.Sat.sys][kfKey.str].SignList.end()) continue;
 
 			if ( StatAmbMap_list[kfKey.Sat.sys][kfKey.str].SignList[kfKey.Sat].elev < ambState.arelev ||
-			        (StatAmbMap_list[kfKey.Sat.sys][kfKey.str].SignList[kfKey.Sat].nepc < 4           && !wlonly) )
+					(StatAmbMap_list[kfKey.Sat.sys][kfKey.str].SignList[kfKey.Sat].nepc < 4           && !wlonly) )
 			{
 				StatAmbMap_list[kfKey.Sat.sys][kfKey.str].SignList[kfKey.Sat].state = 0;
 				continue;

@@ -12,7 +12,7 @@ using std::string;
 #include "navigation.hpp"
 #include "station.hpp"
 #include "common.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 #include "rinex.hpp"
 
 /* constants/macros ----------------------------------------------------------*/

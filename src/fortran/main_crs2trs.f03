@@ -117,7 +117,7 @@ CALL iau_CAL2JD ( IY, IM, ID, DJM0, mjd, J_flag )
 ! ----------------------------------------------------------------------
 
 ! ----------------------------------------------------------------------
-! "Time Systems" transformation											 
+! Time Systems transformation											 
 ! ----------------------------------------------------------------------
       IF (time_in == TT_time) THEN
 	     CALL time_TT (mjd , mjd_TT, mjd_GPS, mjd_TAI, mjd_UTC)
@@ -204,4 +204,3 @@ Call writearray (R_Matrix, filename)
 
 
 End Program
-

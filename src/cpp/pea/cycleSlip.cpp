@@ -30,20 +30,20 @@ typedef std::chrono::steady_clock Clock; 		///< For measuring program runtime du
 
 
 /** \file
- * This software performs cycle slip detection and repair, given prefit residual data.
- *
- * The basic workflow for performing this analysis is:
- * create CSAnalyser objects
- * in epoch 1, initialise internal param's + call init()
- * every epoch, call cycleSlipDetectRepair()
- */
+* This software performs cycle slip detection and repair, given prefit residual data.
+*
+* The basic workflow for performing this analysis is:
+* create CSAnalyser objects
+* in epoch 1, initialise internal param's + call init()
+* every epoch, call cycleSlipDetectRepair()
+*/
 
 
 // External functions
 
 
 /** All-in-one function for cycle slip detection + repair
- */
+*/
 bool	cycleSlipDetectRepair(
 	CSAnalyserSingle&		csAnalyserL1,	///< Object containing cycle-slip-related data for L1 frequency
 	CSAnalyserSingle&		csAnalyserL2,	///< Object containing cycle-slip-related data for L2 frequency
@@ -99,7 +99,7 @@ bool	cycleSlipDetectRepair(
 
 
 /** Prints a KFMeasList to file
- */
+*/
 void	printToFile(
 	const KFMeasEntryList& kfMeasEntryList,		///< KFMeasEntryList to print
 	string					filename,			///< File to print to
@@ -119,7 +119,7 @@ void	printToFile(
 // CSAnalyserBase functions
 
 /** Resets debug files
- */
+*/
 void	CSAnalyserBase::resetDebug()
 {
 	std::ofstream out;
@@ -134,7 +134,7 @@ void	CSAnalyserBase::resetDebug()
 
 
 /** Clean prefit resid data
- */
+*/
 void	CSAnalyserBase::cleanData(
 	const ObsValMap&		prefit,		///< [in]	Prefit residuals for each channel
 	int						epochNum)	///< [in]	Epoch number, starting from 1
@@ -217,7 +217,7 @@ void	CSAnalyserBase::cleanData(
 
 
 /** Repair internal timeseries' data to account for slip repair + ambiguity reinitialisation
- */
+*/
 void	CSAnalyserBase::repairInternalTS()
 {
 	list<ObsKey> slipObsKeys = getSlipSolObsKeys();
@@ -285,7 +285,7 @@ void	CSAnalyserSingle::init()
 
 
 /** Adjust incoming prefit data by subtracting the accumulated deteted slips on this channel, and adding back the Lc ambiguity (previously subtracted in the prefit calculation)
- */
+*/
 void	CSAnalyserSingle::adjustAmb(
 	ObsValMap&				prefit,
 	KFState&				kfState,
@@ -308,7 +308,7 @@ void	CSAnalyserSingle::adjustAmb(
 
 
 /** Detect outliers in cleaned prefit data
- */
+*/
 void	CSAnalyserSingle::detectOutliers(
 	int 					epochNum)	///< [in]	Epoch number, starting from 1
 {
@@ -351,7 +351,7 @@ void	CSAnalyserSingle::detectOutliers(
 
 
 /** Classify previously detected potential slips as either slips or outliers
- */
+*/
 void	CSAnalyserSingle::classifySlips(
 	int 					epochNum)	///< [in]	Epoch number, starting from 1
 {
@@ -432,7 +432,7 @@ void	CSAnalyserSingle::classifySlips(
 
 
 /** Applies external integer solution validation to solutions. Paired with validateSingleSols()
- */
+*/
 void	CSAnalyserSingle::applyExternalSlipValidation(
 	const ObsBoolMap&		validMap)	///< External integer solution validation, produced by validateSingleSols()
 {
@@ -448,7 +448,7 @@ void	CSAnalyserSingle::applyExternalSlipValidation(
 
 
 /** Gets list of keys from slipIntSols map
- */
+*/
 list<ObsKey>	CSAnalyserSingle::getSlipSolObsKeys()
 {
 	list<ObsKey> slipObsKeys;
@@ -458,7 +458,7 @@ list<ObsKey>	CSAnalyserSingle::getSlipSolObsKeys()
 
 
 /** Calculates ambiguity correction from slipIntSols map
- */
+*/
 double	CSAnalyserSingle::getAmbCorrection(
 	const ObsKey&			obsKey)
 {
@@ -467,7 +467,7 @@ double	CSAnalyserSingle::getAmbCorrection(
 
 
 /** Update deweightings + clear logs to be ready for the next epoch
- */
+*/
 void	CSAnalyserSingle::incrementTime()
 {
 	// Decrement deweight duration of all entries in deweightLog, remove entries with zero duration remaining
@@ -525,7 +525,7 @@ void	CSAnalyserCombo::init()
 
 
 /** Validate single frequency (e.g. L1 & L2) integer solutions by comparing against the combination (e.g. Lc) to see if a corresponding jump can be found
- */
+*/
 ObsBoolMap	CSAnalyserCombo::validateSingleSols(
 	ObsIntMap&				slipIntSols1In,
 	ObsIntMap&				slipIntSols2In)
@@ -573,7 +573,7 @@ ObsBoolMap	CSAnalyserCombo::validateSingleSols(
 
 
 /** Combine single freq (e.g. L1/L2) integer solutions, ambiguities to reinitialise & channels to deweight into the combination (e.g. Lc) equivalents
- */
+*/
 void	CSAnalyserCombo::combineSingleSols(
 	const ObsIntMap&		slipIntSols1In,
 	const ObsIntMap&		slipIntSols2In,
@@ -597,7 +597,7 @@ void	CSAnalyserCombo::combineSingleSols(
 
 
 /** Gets list of keys from slipIntSols1 & slipIntSols2 maps
- */
+*/
 list<ObsKey>	CSAnalyserCombo::getSlipSolObsKeys()
 {
 	return getUniqueKeys(slipIntSols1, slipIntSols2);
@@ -605,7 +605,7 @@ list<ObsKey>	CSAnalyserCombo::getSlipSolObsKeys()
 
 
 /** Calculates ambiguity correction from slipIntSols1 & slipIntSols2 maps
- */
+*/
 double	CSAnalyserCombo::getAmbCorrection(
 	const ObsKey&			obsKey)
 {
@@ -614,8 +614,8 @@ double	CSAnalyserCombo::getAmbCorrection(
 
 
 /** Apply ambiguity adjustment / reinitialisation & channel deweighting to the Kalman filter & measurement weightings
- * Returns true if state vector is adjusted - if so, KFState.stateTransition() needs to be rerun to apply changes made to state vector
- */
+* Returns true if state vector is adjusted - if so, KFState.stateTransition() needs to be rerun to apply changes made to state vector
+*/
 bool	CSAnalyserCombo::applyAdjustmentsToKF(
 	KFState&				kfState,			///< [in/out]	Kalman filter object containing the network state parameters
 	KFMeasEntryList&		kfMeasEntryList,	///< [in/out]	List of input measurements as lists of entries
@@ -693,7 +693,7 @@ bool	CSAnalyserCombo::applyAdjustmentsToKF(
 
 
 /** Prepare internal data for the following epoch
- */
+*/
 void	CSAnalyserCombo::incrementTime()
 {
 	slipIntSols1.clear();
@@ -707,7 +707,7 @@ void	CSAnalyserCombo::incrementTime()
 // Statistical functions
 
 /** Calculates mean of sample
- */
+*/
 double	calcMean(
 	const vector<double>&	sample)	///< Sample to take mean of
 {
@@ -726,7 +726,7 @@ double	calcMean(
 
 
 /** Calculates the median for the given vector
- */
+*/
 double	calcMed(
 	vector<double>			vec)
 {
@@ -753,8 +753,8 @@ double	calcMed(
 
 
 /** Calculates the interquartile mean for the given vector
- *  https://en.wikipedia.org/wiki/Interquartile_mean
- */
+*  https://en.wikipedia.org/wiki/Interquartile_mean
+*/
 double	calcIqm(
 	vector<double>		vec)
 {
@@ -791,7 +791,7 @@ double	calcIqm(
 
 
 /** Calculates standard deviation of sample
- */
+*/
 double	calcStdDev(
 	const vector<double>&	sample)	///< Sample to take std dev of
 {
@@ -812,7 +812,7 @@ double	calcStdDev(
 
 
 /** Calculate left-tailed p-value of z using a normal distribution N(mean,stdDev)
- */
+*/
 double	calcLPVal(
 	double					z,
 	double					mean,
@@ -824,7 +824,7 @@ double	calcLPVal(
 
 
 /** Calculate right-tailed p-value of z using a normal distribution N(mean,stdDev)
- */
+*/
 double	calcRPVal(
 	double					z,
 	double					mean,
@@ -836,8 +836,8 @@ double	calcRPVal(
 
 
 /** Determines if it is plausible for z to be greater than the mean, using the right-tailed hypothesis test
- * Returns true if z is likely to be greater than the mean; else false.
- */
+* Returns true if z is likely to be greater than the mean; else false.
+*/
 bool	rightTailedTest(
 	double					z,
 	double					mean,
@@ -851,10 +851,10 @@ bool	rightTailedTest(
 
 
 /** Perform two-tailed hypothesis test of z using a normal distribution N(mean,stdDev)
- * H0: z == mean
- * Ha: z is significantly != mean
- * Returns true if there is enough support for Ha, i.e. if z is significantly != mean
- */
+* H0: z == mean
+* Ha: z is significantly != mean
+* Returns true if there is enough support for Ha, i.e. if z is significantly != mean
+*/
 bool	twoSidedHypothesisTest(
 	double					z,
 	double					mean,
@@ -868,7 +868,7 @@ bool	twoSidedHypothesisTest(
 
 
 /** Determines if current value is an outlier compared to baseline values, using a normal p-value test
- */
+*/
 bool	calcIfOutlier(
 	double					curr,
 	const vector<double>&	baseline,
@@ -882,12 +882,12 @@ bool	calcIfOutlier(
 
 
 /**
- * Perform Student's t-test (equal variances).
- * H0 - the two samples have the same mean, any difference is due to chance.
- * Ha - the two samples have different means.
- * Returns true if Ha is supported (i.e. means are different); false if H0 is not rejected (i.e. means are equal)
- * Ref: http://www.itl.nist.gov/div898/handbook/eda/section3/eda353.htm
- */
+* Perform Student's t-test (equal variances).
+* H0 - the two samples have the same mean, any difference is due to chance.
+* Ha - the two samples have different means.
+* Returns true if Ha is supported (i.e. means are different); false if H0 is not rejected (i.e. means are equal)
+* Ref: http://www.itl.nist.gov/div898/handbook/eda/section3/eda353.htm
+*/
 bool	performStudentsTTest(
 	const vector<double>&	sample1,	///< Sample 1
 	const vector<double>&	sample2,	///< Sample 2
@@ -910,7 +910,7 @@ bool	performStudentsTTest(
 
 
 /** Given some measurement of unknown value with given mean and stdDev, calculate how likely the true value == candidate, vs. all other alternative values
- */
+*/
 double	calcCandidateSuccessVsAlternatives(
 	double					mean,
 	double					stdDev,
@@ -929,7 +929,7 @@ double	calcCandidateSuccessVsAlternatives(
 
 
 /** Validate int solution by considering the factor (unrounded solution) and its stdDev
- */
+*/
 bool	CSAnalyserSingle::validateIntSolution(
 	double					factor,
 	double					stdDev,
@@ -970,8 +970,8 @@ bool	CSAnalyserSingle::validateIntSolution(
 // GNSS-related functions
 
 /** Calculate the ionosphere-free combination Lc.
- * Ref: https://gssc.esa.int/navipedia/index.php/Combination_of_GNSS_Measurements
- */
+* Ref: https://gssc.esa.int/navipedia/index.php/Combination_of_GNSS_Measurements
+*/
 double	calcLc(
 	double					val1,	///< L1 range value (m)
 	double					freq1,	///< L1 freq (Hz)
@@ -985,8 +985,8 @@ double	calcLc(
 
 
 /** Derivative of ObsKey::operator ==(), except it compares satellite strings to compare satellites.
- * Used in insertArtificialSlip() for debugging only.
- */
+* Used in insertArtificialSlip() for debugging only.
+*/
 bool	obsKeysAreEqual (const ObsKey& obsKey1, const ObsKey& obsKey2)
 {
 	if (obsKey1.str.compare(obsKey2.str)	!= 0)					return false;
@@ -997,7 +997,7 @@ bool	obsKeysAreEqual (const ObsKey& obsKey1, const ObsKey& obsKey2)
 
 
 /** Insert an artificial cycle slip at a given epoch in a given channel
- */
+*/
 void	insertArtificialSlip(
 	const ObsKey&			obsKeyToInsertSlip,
 	double					slipSize,
@@ -1023,7 +1023,7 @@ void	insertArtificialSlip(
 
 
 /** Returns the interquartile mean of all channels for each station.
- */
+*/
 ObsValMap	calcStationCommonModes(
 	const ObsValMap&		chVals,				///< Values for each channel
 	string					commonModeMethod)	///< Method for calculating common mode
@@ -1064,8 +1064,8 @@ ObsValMap	calcStationCommonModes(
 // Other helper functions
 
 /** Convert a KFMeasEntryList values to an ObsValMap.
- * KFMeasEntryList.noise/innov's are discarded.
- */
+* KFMeasEntryList.noise/innov's are discarded.
+*/
 ObsValMap	kfMeasEntryListToObsValMap(
 	const KFMeasEntryList&	kfMeasEntryList)
 {
@@ -1079,7 +1079,7 @@ ObsValMap	kfMeasEntryListToObsValMap(
 
 
 /** Preps a ObsVecMap with empty vectors for later use. Also clears vectors not in use.
- */
+*/
 void	initClearTimeseries(
 	const ObsValMap&		currEntries,	///< Data from the current epoch
 	ObsVecMap&				timeseriesMap)		///< Timeseries of previous epochs' data
@@ -1106,7 +1106,7 @@ void	initClearTimeseries(
 
 
 /** Preps a ObsIntMap with zeros for later use. Also zeroes entries not in use.
- */
+*/
 void	initZeroObsIntMap(
 	const ObsValMap&		currEntries,	///< Data from the current epoch
 	ObsIntMap&				obsIntMap)			///< ObsIntMap to initialise/zero
@@ -1132,9 +1132,9 @@ void	initZeroObsIntMap(
 
 
 /** Returns subvector made up of the last n points.
- * Returns empty vector if n <= 0.
- * Returns original vector if n >= original vector size.
- */
+* Returns empty vector if n <= 0.
+* Returns original vector if n >= original vector size.
+*/
 vector<double>	subVecLastN(
 	vector<double>			vec,
 	int						n)
@@ -1156,9 +1156,9 @@ vector<double>	subVecLastN(
 
 
 /** Returns subvector that excludes the last n points
- * Returns original vector if n <= 0.
- * Returns empty vector if n >= original vector size.
- */
+* Returns original vector if n <= 0.
+* Returns empty vector if n >= original vector size.
+*/
 vector<double>	subVecExclLastN(
 	vector<double>			vec,
 	int						n)
@@ -1182,7 +1182,7 @@ vector<double>	subVecExclLastN(
 
 
 /** Prints an ObsValMap to file
- */
+*/
 void	printToFile(
 	const ObsValMap&		obsValMap,	///< ObsValMap to print
 	string					filename,		///< File to print to
@@ -1199,7 +1199,7 @@ void	printToFile(
 
 
 /** Get unique ObsKey's from two given maps
- */
+*/
 list<ObsKey>	getUniqueKeys(
 	const ObsIntMap&		obsIntMap1,
 	const ObsIntMap&		obsIntMap2)

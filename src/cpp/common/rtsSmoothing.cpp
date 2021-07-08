@@ -183,7 +183,7 @@ KFState RTS_Process(KFState& kfState, bool write)
 			std::fstream	inputStream(inputFile,	std::ifstream::binary | std::ifstream::in);
 
 			inputStream.seekg(0,	inputStream.end);
-		        long int lengthPos = inputStream.tellg();
+				long int lengthPos = inputStream.tellg();
 
 			vector<char>	fileContents(lengthPos - startPos);
 
@@ -208,10 +208,10 @@ KFState RTS_Process(KFState& kfState, bool write)
 }
 
 /** Output filter states from a reversed binary trace file
- */
+*/
 void RTS_Output(
-	KFState&	kfState,			///< [in/out]	State to get filter traces from
-	string		clockFilename)
+	KFState&	kfState,			///< State to get filter traces from
+	string		clockFilename)		///< Filename to output clocks to once smoothed
 {
 	std::ofstream ofs(kfState.rts_filename + SMOOTHED_SUFFIX,	std::ofstream::out | std::ofstream::app);
 

@@ -523,8 +523,3 @@ int GNSS_AR(Trace& trace, ARState* ambc)
 
 	return 0;
 }
-
-
-
-
-

@@ -4,8 +4,8 @@
 #define __ENUMS_H__
 
 #define BETTER_ENUMS_DEFAULT_CONSTRUCTOR(Enum) \
-  public:                                      \
-    Enum() = default;
+public:                                      \
+	Enum() = default;
 
 #include "enum.h"	//BETTER_ENUM
 
@@ -59,7 +59,7 @@ BETTER_ENUM(E_Sys,			short int,
 			LEO,
 			IRN,
 			NUM_SYS
-   		)
+		)
 
 BETTER_ENUM(BiasGroup,		short int,
 			GPS,
@@ -321,46 +321,46 @@ BETTER_ENUM(E_AmbTyp,	short int,
 			UCL3)
 
 BETTER_ENUM(RtcmMessageType, uint16_t,
-        NONE 				= 0,
-        MSM4_GPS 			= 1074,
-        MSM4_GLONASS 		= 1084,
-        MSM4_GALILEO 		= 1094,
-        MSM4_QZSS 			= 1114,
-        MSM4_BEIDOU 		= 1124,
-        MSM5_GPS 			= 1075,
-        MSM5_GLONASS 		= 1085,
-        MSM5_GALILEO 		= 1095,
-        MSM5_QZSS 			= 1115,
-        MSM5_BEIDOU 		= 1125,
-        MSM6_GPS 			= 1076,
-        MSM6_GLONASS 		= 1086,
-        MSM6_GALILEO 		= 1096,
-        MSM6_QZSS 			= 1116,
-        MSM6_BEIDOU 		= 1126,
-        MSM7_GPS 			= 1077,
-        MSM7_GLONASS 		= 1087,
-        MSM7_GALILEO 		= 1097,
-        MSM7_QZSS 			= 1117,
-        MSM7_BEIDOU 		= 1127,
-        GPS_EPHEMERIS		= 1019,
+		NONE 				= 0,
+		MSM4_GPS 			= 1074,
+		MSM4_GLONASS 		= 1084,
+		MSM4_GALILEO 		= 1094,
+		MSM4_QZSS 			= 1114,
+		MSM4_BEIDOU 		= 1124,
+		MSM5_GPS 			= 1075,
+		MSM5_GLONASS 		= 1085,
+		MSM5_GALILEO 		= 1095,
+		MSM5_QZSS 			= 1115,
+		MSM5_BEIDOU 		= 1125,
+		MSM6_GPS 			= 1076,
+		MSM6_GLONASS 		= 1086,
+		MSM6_GALILEO 		= 1096,
+		MSM6_QZSS 			= 1116,
+		MSM6_BEIDOU 		= 1126,
+		MSM7_GPS 			= 1077,
+		MSM7_GLONASS 		= 1087,
+		MSM7_GALILEO 		= 1097,
+		MSM7_QZSS 			= 1117,
+		MSM7_BEIDOU 		= 1127,
+		GPS_EPHEMERIS		= 1019,
 		GPS_SSR_ORB_CORR	= 1057,
 		GPS_SSR_CLK_CORR	= 1058,
 		GPS_SSR_COMB_CORR	= 1060,
 		GPS_SSR_URA			= 1061,
 		GPS_SSR_CODE_BIAS	= 1059,
 		GPS_SSR_PHASE_BIAS	= 1265,
-        GAL_FNAV_EPHEMERIS	= 1045,
-        GAL_INAV_EPHEMERIS	= 1046,
+		GAL_FNAV_EPHEMERIS	= 1045,
+		GAL_INAV_EPHEMERIS	= 1046,
 		GAL_SSR_ORB_CORR	= 1240,
 		GAL_SSR_CLK_CORR	= 1241,
 		GAL_SSR_COMB_CORR	= 1243,
 		GAL_SSR_CODE_BIAS	= 1242,
 		GAL_SSR_PHASE_BIAS	= 1267
-        
-        //RECEIVER_AND_ANTENNA_DESC = 1033,
-        //BDS_EPHEMERIS = 1042,
-        //GPS_NETWORK_RTK_RESIDUAL = 1030,
-        //GLONASS_AUX_OPERATION_INFO = 1230
+		
+		//RECEIVER_AND_ANTENNA_DESC = 1033,
+		//BDS_EPHEMERIS = 1042,
+		//GPS_NETWORK_RTK_RESIDUAL = 1030,
+		//GLONASS_AUX_OPERATION_INFO = 1230
 )
 
 

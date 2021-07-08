@@ -33,7 +33,7 @@ using std::map;
 #include "constants.h"
 #include "station.hpp"
 #include "algebra.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 #include "common.hpp"
 #include "tides.hpp"
 #include "enums.h"

@@ -65,7 +65,7 @@ void minimum(
 			kfStateStations.getKFValue(kfKey, filterPos(i));
 		}
 
- 		Vector3d aprioriPos = rec.snx.pos;
+		Vector3d aprioriPos = rec.snx.pos;
 
 		//filter states are corrections only, need to add to apriori to get vector arms for cross products etc.
 		Vector3d statePos = aprioriPos + filterPos;

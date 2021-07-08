@@ -22,7 +22,7 @@ using std::map;
 #include "enum.h"
 
 /** Types of objects that are stored in kalman filter binary archives
- */
+*/
 BETTER_ENUM(E_SerialObject,		int,
 			NONE,
 			FILTER_MINUS,
@@ -52,15 +52,15 @@ typedef map<KFKey, double>				StateAdjustObject;
 
 namespace boost::serialization
 {
-    template<class ARCHIVE>    void serialize(ARCHIVE& ar, int&					integer)    {ar & integer;    	}
-    template<class ARCHIVE>    void serialize(ARCHIVE& ar, long int&			integer)    {ar & integer;    	}
-    template<class ARCHIVE>    void serialize(ARCHIVE& ar, short int&			integer)    {ar & integer;    	}
-    template<class ARCHIVE>    void serialize(ARCHIVE& ar, size_t&				size_type)	{ar & size_type; 	}
-    template<class ARCHIVE>    void serialize(ARCHIVE& ar, map<int, double>&	Map)		{ar & Map;			}
+	template<class ARCHIVE>    void serialize(ARCHIVE& ar, int&					integer)    {ar & integer;    	}
+	template<class ARCHIVE>    void serialize(ARCHIVE& ar, long int&			integer)    {ar & integer;    	}
+	template<class ARCHIVE>    void serialize(ARCHIVE& ar, short int&			integer)    {ar & integer;    	}
+	template<class ARCHIVE>    void serialize(ARCHIVE& ar, size_t&				size_type)	{ar & size_type; 	}
+	template<class ARCHIVE>    void serialize(ARCHIVE& ar, map<int, double>&	Map)		{ar & Map;			}
 
-    template<class ARCHIVE>
-    void serialize(ARCHIVE& ar, VectorXd& vec)
-    {
+	template<class ARCHIVE>
+	void serialize(ARCHIVE& ar, VectorXd& vec)
+	{
 		int rows = vec.rows();
 		ar & rows;
 
@@ -70,11 +70,11 @@ namespace boost::serialization
 		{
 			ar & vec(row);
 		}
-    }
+	}
 
-    template<class ARCHIVE>
-    void serialize(ARCHIVE& ar, MatrixXd& mat)
-    {
+	template<class ARCHIVE>
+	void serialize(ARCHIVE& ar, MatrixXd& mat)
+	{
 		int rows = mat.rows();
 		int cols = mat.cols();
 
@@ -88,40 +88,40 @@ namespace boost::serialization
 		{
 			ar & mat(row, col);
 		}
-    }
+	}
 
-    template<class ARCHIVE>
-    void serialize(ARCHIVE& ar, GTime& time)
-    {
+	template<class ARCHIVE>
+	void serialize(ARCHIVE& ar, GTime& time)
+	{
 		long int time_int = time.time;
 		ar & time_int;
 		time.time = time_int;
-    }
+	}
 
-    template<class ARCHIVE>
-    void serialize(ARCHIVE& ar, E_Sys& sys)
-    {
+	template<class ARCHIVE>
+	void serialize(ARCHIVE& ar, E_Sys& sys)
+	{
 		short int sys_int = sys;
 		ar & sys_int;
 		sys = E_Sys::_from_integral(sys_int);
-    }
+	}
 
 
-    template<class ARCHIVE>
-    void serialize(ARCHIVE& ar, SatSys& Sat)
-    {
+	template<class ARCHIVE>
+	void serialize(ARCHIVE& ar, SatSys& Sat)
+	{
 		serialize(ar, Sat.sys);
 		ar & Sat.prn;
-    }
+	}
 
-    template<class ARCHIVE>
-    void serialize(ARCHIVE& ar, KFKey& kfKey)
-    {
+	template<class ARCHIVE>
+	void serialize(ARCHIVE& ar, KFKey& kfKey)
+	{
 		ar & kfKey.type;
 		ar & kfKey.num;
 		ar & kfKey.str;
 		serialize(ar, kfKey.Sat);
-    }
+	}
 
 //     template<class ARCHIVE, class TYPE1, class TYPE2>
 //     void serialize(ARCHIVE& ar, pair<TYPE1, TYPE2>& pair_)
@@ -130,9 +130,9 @@ namespace boost::serialization
 // 		serialize(ar, pair_.second);
 // 	}
 
-    template<class ARCHIVE, class TYPE>
-    void serialize(ARCHIVE& ar, map<KFKey, TYPE>& mapItem)
-    {
+	template<class ARCHIVE, class TYPE>
+	void serialize(ARCHIVE& ar, map<KFKey, TYPE>& mapItem)
+	{
 		int num = mapItem.size();
 		ar & num;
 
@@ -160,18 +160,18 @@ namespace boost::serialization
 				ar & mapItem[kfKey];
 			}
 		}
-    }
+	}
 
-    template<class ARCHIVE, class A, class B>
-    void serialize(ARCHIVE& ar, pair<A,B>& pair_)
-    {
+	template<class ARCHIVE, class A, class B>
+	void serialize(ARCHIVE& ar, pair<A,B>& pair_)
+	{
 		serialize(ar, pair_.first);
 		serialize(ar, pair_.second);
-    }
+	}
 
-    template<class ARCHIVE, class KEY, class TYPE>
-    void serialize(ARCHIVE& ar, map<KEY, TYPE>& mapItem)
-    {
+	template<class ARCHIVE, class KEY, class TYPE>
+	void serialize(ARCHIVE& ar, map<KEY, TYPE>& mapItem)
+	{
 		int num = mapItem.size();
 		ar & num;
 
@@ -199,30 +199,30 @@ namespace boost::serialization
 				ar & mapItem[kfKey];
 			}
 		}
-    }
+	}
 
-    template<class ARCHIVE>
-    void serialize(ARCHIVE& ar, TransitionMatrixObject& object)
-    {
+	template<class ARCHIVE>
+	void serialize(ARCHIVE& ar, TransitionMatrixObject& object)
+	{
 		ar & object.forwardTransitionMap;
 		ar & object.rows;
 		ar & object.cols;
-    }
+	}
 
-    template<class ARCHIVE>
-    void serialize(ARCHIVE& ar, string& object)
-    {
+	template<class ARCHIVE>
+	void serialize(ARCHIVE& ar, string& object)
+	{
 		ar & object;
-    }
+	}
 
-    template<class ARCHIVE>
-    void serialize(ARCHIVE& ar, KFState& kfState)
-    {
+	template<class ARCHIVE>
+	void serialize(ARCHIVE& ar, KFState& kfState)
+	{
 		serialize(ar, kfState.kfIndexMap);
 		serialize(ar, kfState.time);
 		serialize(ar, kfState.x);
 		serialize(ar, kfState.P);
-    }
+	}
 }
 
 using boost::serialization::serialize;
@@ -230,7 +230,7 @@ using boost::archive::binary_oarchive;
 using boost::archive::binary_iarchive;
 
 /** Output filter state to a file for later reading
- */
+*/
 template<class TYPE>
 void spitFilterToFile(
 	TYPE&			object,		///< Object to output
@@ -259,7 +259,7 @@ void spitFilterToFile(
 }
 
 /* Retrieve an object from an archive
- */
+*/
 template<class TYPE>
 bool getFilterObjectFromFile(
 	E_SerialObject	expectedType,	///< The expected type of object, (determine using getFilterTypeFromFile() first)

@@ -24,9 +24,9 @@ using std::string;
 
 
 /* split a string data into data -----------------------------------------------
- * args     :       char *p        			I       string pointer
- *        			double *data            O       stored data
- * ---------------------------------------------------------------------------*/
+* args     :       char *p        			I       string pointer
+*        			double *data            O       stored data
+* ---------------------------------------------------------------------------*/
 void strspt(char* p, double* data)
 {
 	int j = 0;
@@ -44,11 +44,11 @@ void strspt(char* p, double* data)
 }
 
 /* read orbit file header ------------------------------------------------------
- * args     :       FILE *fp                I       orbit file pointer
- *                  orbpod_t *orbpod        O       orbit info
- *
- * return   :       1-successful, 0-failure
- * ---------------------------------------------------------------------------*/
+* args     :       FILE *fp                I       orbit file pointer
+*                  orbpod_t *orbpod        O       orbit info
+*
+* return   :       1-successful, 0-failure
+* ---------------------------------------------------------------------------*/
 int readorbit_h(FILE* fp, orbpod_t& orbpod)
 {
 	char buff[5120], *p = NULL;
@@ -81,12 +81,12 @@ int readorbit_h(FILE* fp, orbpod_t& orbpod)
 				if (calculatedEpochs != orbpod.numEpochs)
 				{
 					fprintf(stdout,
-					        "Warning: epoch number %d doesn't match ne=%d, ts=%lf, te=%lf and tint=%d",
-					        calculatedEpochs,
-					        orbpod.numEpochs,
-					        orbpod.startEpoch[0],
-					        orbpod.endEpoch[0],
-					        orbpod.nint);
+							"Warning: epoch number %d doesn't match ne=%d, ts=%lf, te=%lf and tint=%d",
+							calculatedEpochs,
+							orbpod.numEpochs,
+							orbpod.startEpoch[0],
+							orbpod.endEpoch[0],
+							orbpod.nint);
 				}
 			}
 		}
@@ -100,9 +100,9 @@ int readorbit_h(FILE* fp, orbpod_t& orbpod)
 }
 
 /* read orbit file body --------------------------------------------------------
- * args     :       FILE *fp                I       orbit file pointer
- *                  orbpod_t *orbpod        O       orbit info
- * ---------------------------------------------------------------------------*/
+* args     :       FILE *fp                I       orbit file pointer
+*                  orbpod_t *orbpod        O       orbit info
+* ---------------------------------------------------------------------------*/
 void readorbit_b(FILE* fp, orbpod_t& orbpod)
 {
 	char 	buff[5120];
@@ -256,11 +256,11 @@ void readorbit_b(FILE* fp, orbpod_t& orbpod)
 }
 
 /* read orbit file -------------------------------------------------------------
- * args     :       const char *file              I       orbit file path
- *                  orbpod_t *orbpod        O       orbit info
- *
- * return   :       1-successful, 0-failure
- * ---------------------------------------------------------------------------*/
+* args     :       const char *file              I       orbit file path
+*                  orbpod_t *orbpod        O       orbit info
+*
+* return   :       1-successful, 0-failure
+* ---------------------------------------------------------------------------*/
 int readorbit(
 	string file,
 	orbpod_t&	orbpod)
@@ -285,11 +285,11 @@ int readorbit(
 }
 
 /* output orbit header file -----------------------------------------------------
- * args     :       char *file              I       orbit file path
- *                  orbpod_t *orbpod        I       orbit info
- *                  double *xp              I       estimated orbit for output
- *                  int n                   I       number of orbital unknowns
- * ----------------------------------------------------------------------------*/
+* args     :       char *file              I       orbit file path
+*                  orbpod_t *orbpod        I       orbit info
+*                  double *xp              I       estimated orbit for output
+*                  int n                   I       number of orbital unknowns
+* ----------------------------------------------------------------------------*/
 void outputOrbit(
 	KFState&	kfState)
 {
@@ -431,30 +431,30 @@ int orbPartials(
 
 	if (obs.satOrb_ptr == nullptr)
 	{
-        tracepde(1, trace, "no orbit %s sat=%2d\n",			time.to_string(0).c_str(), obs.Sat);
+		tracepde(1, trace, "no orbit %s sat=%2d\n",			time.to_string(0).c_str(), obs.Sat);
 		return 0;
 	}
 
 	SatOrbit&	satOrbit = *obs.satOrb_ptr;
 	auto&		orbitList = satOrbit.orbitInfoList;
-    if	( timediff(time, orbitList.begin()	->first)	< -MAXDTE
+	if	( timediff(time, orbitList.begin()	->first)	< -MAXDTE
 		||timediff(time, orbitList.rbegin()	->first)	> +MAXDTE)
 	{
-        tracepde(1, trace, "no orbit %s sat=%2d\n",			time.to_string(0).c_str(), obs.Sat);
-        return 0;
-    }
+		tracepde(1, trace, "no orbit %s sat=%2d\n",			time.to_string(0).c_str(), obs.Sat);
+		return 0;
+	}
 
-    if	(orbitList.size() < INTERPCOUNT)
+	if	(orbitList.size() < INTERPCOUNT)
 	{
-        tracepde(1, trace, "not enough orbits %s sat=%2d\n",	time.to_string(0).c_str(), obs.Sat);
-        return 0;
-    }
+		tracepde(1, trace, "not enough orbits %s sat=%2d\n",	time.to_string(0).c_str(), obs.Sat);
+		return 0;
+	}
 
 	interpPartials.resize(satOrbit.numUnknowns, 3);
 
 	//prepare max, min, and start iterators, all some distance from the ends of the list (map)
-    auto min_it		= orbitList.begin();						std::advance(min_it,	+INTERPLEN);
-    auto max_it		= orbitList.end();							std::advance(max_it,	-INTERPLEN - 1);
+	auto min_it		= orbitList.begin();						std::advance(min_it,	+INTERPLEN);
+	auto max_it		= orbitList.end();							std::advance(max_it,	-INTERPLEN - 1);
 	auto start_it	= orbitList.lower_bound(time);
 
 	if (start_it->first < min_it->first)	start_it = min_it;
@@ -479,8 +479,8 @@ int orbPartials(
 			p[i] = orbit.partials(row, col);
 		}
 
-        interpPartials(row, col) = interppol(t, p, INTERPCOUNT);
+		interpPartials(row, col) = interppol(t, p, INTERPCOUNT);
 	}
 
-    return 1;
+	return 1;
 }

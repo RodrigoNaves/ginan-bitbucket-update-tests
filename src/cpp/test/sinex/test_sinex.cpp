@@ -1,5 +1,5 @@
 #include "minunit.hpp"
-#include "../common/newsnx.hpp"
+#include "../common/snx.hpp"
 #include "navigation.hpp"
 
 #include <iostream>
@@ -16,7 +16,7 @@ MU_TEST(test_read_sinex_1)
 {
 	// const char snxfile[] = "/data/acs/pea/proc/exs/products/igs19P2062.snx";
 	printf("\nTesting readsnx() for the station ALIC from file %s:\t", snxfile.c_str());
-	newsnx_stn_snx_t station;
+	snx_stn_snx_t station;
 	int result = 0;
 
 	if (access(snxfile.c_str(), F_OK) == 0)
@@ -141,7 +141,7 @@ MU_TEST(test_get_snx_siteid)
 	//char sta[] = "ALIC"; //ALIC  A 50137M001
 	//int index = 0;
 	printf("\nTesting snxGetSites() from site id block in file %s:\t", snxfile.c_str());
-	newsnx_stn_snx_t station;
+	snx_stn_snx_t station;
 	int result = 0;
 	int yds[3];
 
@@ -197,7 +197,7 @@ MU_TEST(test_read_sinex_all)
 	// const char snxfile[] = "/data/acs/pea/proc/exs/products/AUS20127.SNX";
 
 	printf("\nTesting sinex merge with file %s", snxfile.c_str());
-	newsnx_stn_snx_t station;
+	snx_stn_snx_t station;
 	int result = 0;
 	int yds[3];
 	int yds2[3];

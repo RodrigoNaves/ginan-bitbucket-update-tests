@@ -63,10 +63,10 @@ static double ion_coef(int ind, Obs& obs, bool slant)
 /* Ionosphere measurments from stations should be loaded using 'update_station_measr'    */
 /*****************************************************************************************/
 void update_ionosph_model(
-	Trace&			trace,
-	StationList&	stations,       ///< []
-	GTime 		iontime,
-	double			tgap)        	///< []
+	Trace&			trace,			///< Trace to output to
+	StationList&	stations,       ///< List of pointers to stations to use
+	GTime 			iontime,		///< Time of this epoch
+	double			tgap)        	///< Time elapsed since last update
 {
 	TestStack ts(__FUNCTION__);
 	

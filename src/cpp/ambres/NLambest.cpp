@@ -136,7 +136,7 @@ int NLambEstm( Trace& trace, KFState& kfState, ARState& ambState)
 		}
 
 		tracepdeex(nltrclvl, trace, "#ARES_NLR, meas, %10d, %s, %s, %d, %12.4f, %12.4f, %12.4f, %12.4f\n", epoc, kfKey.str, kfKey.Sat.id().c_str(), sigamb.pivot ? 1 : 0,
-		           sigamb.raw.NL12, satpiv[kfKey.Sat].WLinIF * sigamb.fix.WL12, satpiv[kfKey.Sat].NLwav * sigamb.fix.NL12, NLmeas(i));
+				sigamb.raw.NL12, satpiv[kfKey.Sat].WLinIF * sigamb.fix.WL12, satpiv[kfKey.Sat].NLwav * sigamb.fix.NL12, NLmeas(i));
 		i++;
 	}
 

@@ -9,7 +9,7 @@ using std::map;
 #include "station.hpp"
 
 /** Output statistics from each station.
- * Including observation counts, slips, beginning and ending epochs*/
+* Including observation counts, slips, beginning and ending epochs*/
 void outputSummaries(
 	map<string, Station>& stationMap)	///< Map of stations used throughout the program.
 {

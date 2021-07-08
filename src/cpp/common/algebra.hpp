@@ -20,17 +20,17 @@ using std::map;
 
 #include "streamTrace.hpp"
 #include "satSys.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 
 
 //forward declaration
 struct Station;
 
 /** Keys used to interface with Kalman filter objects.
- * These have parameters to separate states of different 'type', for different 'Sat's, with different receiver id 'str's and may have a different 'num' (eg xyz->0,1,2)
- *
- * Keys should be used rather than indices for accessing kalman filter state parameters.
- */
+* These have parameters to separate states of different 'type', for different 'Sat's, with different receiver id 'str's and may have a different 'num' (eg xyz->0,1,2)
+*
+* Keys should be used rather than indices for accessing kalman filter state parameters.
+*/
 struct KFKey
 {
 	short int	type	= 0;			///< Key type (From enum)
@@ -42,7 +42,7 @@ struct KFKey
 	bool operator ==	(const KFKey& b) const;
 	bool operator <		(const KFKey& b) const;
 
-    friend ostream& operator<<(ostream& os, const KFKey& kfKey)
+	friend ostream& operator<<(ostream& os, const KFKey& kfKey)
 	{
 		os << KF::_from_integral(kfKey.type)._to_string() << ' ' << kfKey.Sat.id() << '\t' << kfKey.str << '\t' << kfKey.num;
 		return os;
@@ -56,7 +56,7 @@ struct ObsKey
 	string	 	type	= "";			///< Substring (eg LC12-P)
 	int 		num		= 0;
 
-    friend ostream& operator<<(ostream& os, const ObsKey& obsKey)
+	friend ostream& operator<<(ostream& os, const ObsKey& obsKey)
 	{
 		os << obsKey.Sat.id() << '\t' << obsKey.str << '\t' << obsKey.type;
 		return os;
@@ -111,8 +111,8 @@ namespace std
 }
 
 /** Minimum viable kfState element object.
- * Used in binary io to save space, and where other functions are not required.
- */
+* Used in binary io to save space, and where other functions are not required.
+*/
 struct SubState
 {
 	KFKey				kfKey;		///< Key for this state
@@ -120,7 +120,7 @@ struct SubState
 };
 
 /** Object to hold measurements, design matrices, and residuals for multiple observations
- */
+*/
 struct KFMeas
 {
 	GTime		time = GTime::noTime();		///< Epoch these measurements were recorded
@@ -154,7 +154,7 @@ struct KFMeas
 };
 
 /** Object to hold the values used to initialise new states when adding to the kalman filter object
- */
+*/
 struct InitialState
 {
 	double	x	= 0;											///< State value
@@ -184,11 +184,11 @@ typedef bool (*AcceptCallback)(Trace& trace, KFState& kfState, KFMeas& meas, int
 
 
 /** Kalman filter object.
- *
- * Contains most persistant parameters and values of state. Includes state vector, covariance, and process noise.
- *
- * This object performs all operations on the kalman filter to ensure that edge cases are included and state kept in a valid configuration.
- */
+*
+* Contains most persistant parameters and values of state. Includes state vector, covariance, and process noise.
+*
+* This object performs all operations on the kalman filter to ensure that edge cases are included and state kept in a valid configuration.
+*/
 struct KFState
 {
 	bool		lsqRequired		= false;				///< Uninitialised parameters require least squares calculation
@@ -350,9 +350,9 @@ struct KFState
 };
 
 /** Object to hold an individual measurement.
- * Includes the measurement itself, (or its innovation) and design matrix entries
- * Adding design matrix entries for states that do not yet exist will create and add new states to the measurement's kalman filter object.
- */
+* Includes the measurement itself, (or its innovation) and design matrix entries
+* Adding design matrix entries for states that do not yet exist will create and add new states to the measurement's kalman filter object.
+*/
 struct KFMeasEntry
 {
 	KFState* kfState_ptr;			///< Pointer to filter object that measurements are referencing
@@ -371,7 +371,7 @@ struct KFMeasEntry
 		KFState*	kfState_ptr = nullptr,
 		ObsKey		obsKey		= {})
 	: kfState_ptr	(kfState_ptr),
-	  obsKey		(obsKey)
+	obsKey		(obsKey)
 	{
 
 	}
@@ -421,7 +421,7 @@ struct KFMeasEntry
 	}
 
 	/** Adds the actual measurement value for this measurement
-	 */
+	*/
 	void setValue(
 		double value)		///< [in]	Actual measurement entry value
 	{
@@ -429,7 +429,7 @@ struct KFMeasEntry
 	}
 
 	/** Adds the innovation value for this measurement
-	 */
+	*/
 	void setInnov(
 		double value)		///< [in]	Innovation entry value
 	{
@@ -445,11 +445,11 @@ KFMeas combineKFMeasList(
 	KFState&			kfState);
 
 extern int filter_(const double *x, const double *P, const double *H,
-                   const double *v, const double *R, int n, int m,
-                   double *xp, double *Pp);
+				const double *v, const double *R, int n, int m,
+				double *xp, double *Pp);
 
 extern int filter(double *x, double *P, const double *H, const double *v,
-                  const double *R, int n, int m);
+				const double *R, int n, int m);
 
 /* matrix and vector functions -----------------------------------------------*/
 extern double *mat  (int n, int m);
@@ -461,12 +461,12 @@ extern double dot (const double *a, const double *b, int n);
 extern double norm(const double *a, int n);
 extern void matcpy(double *A, const double *B, int n, int m);
 extern void matmul(const char *tr, int n, int k, int m, double alpha,
-                   const double *A, const double *B, double beta, double *C);
+				const double *A, const double *B, double beta, double *C);
 extern int  matinv(double *A, int n);
 extern int  solve (const char *tr, const double *A, const double *Y, int n,
-                   int m, double *X);
+				int m, double *X);
 extern int  lsq   (const double *A, const double *y, int n, int m, double *x,
-                   double *Q);
+				double *Q);
 
 
 

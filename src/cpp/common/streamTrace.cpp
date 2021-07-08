@@ -16,7 +16,7 @@
 #include "observations.hpp"
 #include "navigation.hpp"
 #include "constants.h"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 #include "common.hpp"
 
 boost::iostreams::stream< boost::iostreams::null_sink > nullStream( ( boost::iostreams::null_sink() ) );
@@ -96,9 +96,9 @@ void tracematpde(
 [[deprecated]]
 void fatalerr(const char *format, ...)
 {
-    va_list ap;
-    va_start(ap,format); vfprintf(stderr,format,ap); va_end(ap);
-    exit(-9);
+	va_list ap;
+	va_start(ap,format); vfprintf(stderr,format,ap); va_end(ap);
+	exit(-9);
 }
 
 /* print matrix ----------------------------------------------------------------
@@ -113,12 +113,12 @@ void fatalerr(const char *format, ...)
 [[deprecated]]
 void matfprint(const double A[], int n, int m, int p, int q, FILE *fp)
 {
-    int i,j;
+	int i,j;
 
-    for (i=0;i<n;i++) {
-        for (j=0;j<m;j++) fprintf(fp," %*.*f",p,q,A[i+j*n]);
-        fprintf(fp,"\n");
-    }
+	for (i=0;i<n;i++) {
+		for (j=0;j<m;j++) fprintf(fp," %*.*f",p,q,A[i+j*n]);
+		fprintf(fp,"\n");
+	}
 }
 
 /* debug trace functions -----------------------------------------------------*/
@@ -127,33 +127,33 @@ int level_trace = 0;       /* level of trace */
 
 void tracelevel(int level)
 {
-    level_trace = level;
+	level_trace = level;
 }
 
 void tracepde(int level, FILE *fppde, const char *format, ...)
 {
-    va_list ap;
+	va_list ap;
 
-    if (!fppde||level>level_trace) return;
-    /* traceswap(); */
-    fprintf(fppde,"*%d ",level);
-    va_start(ap,format); vfprintf(fppde,format,ap); va_end(ap);
-    fflush(fppde);
+	if (!fppde||level>level_trace) return;
+	/* traceswap(); */
+	fprintf(fppde,"*%d ",level);
+	va_start(ap,format); vfprintf(fppde,format,ap); va_end(ap);
+	fflush(fppde);
 }
 
 void tracepdeex(int level, FILE *fppde, const char *format, ...)
 {
-    va_list ap;
+	va_list ap;
 
-    if (!fppde||level>level_trace) return;
-    /* traceswap(); */
-    va_start(ap,format); vfprintf(fppde,format,ap); va_end(ap);
-    fflush(fppde);
+	if (!fppde||level>level_trace) return;
+	/* traceswap(); */
+	va_start(ap,format); vfprintf(fppde,format,ap); va_end(ap);
+	fflush(fppde);
 }
 
 [[deprecated]]
 void tracematpde(int level, FILE *fppde, const double *A, int n, int m, int p, int q)
 {
-    if (!fppde||level>level_trace) return;
-    matfprint(A,n,m,p,q,fppde); fflush(fppde);
+	if (!fppde||level>level_trace) return;
+	matfprint(A,n,m,p,q,fppde); fflush(fppde);
 }

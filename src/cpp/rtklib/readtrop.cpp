@@ -5,9 +5,9 @@
 #include "acsQC.hpp"
 
 /* initialize troposphere sturct -----------------------------------------------
- * args     :       mgex_trop *mtrop	I/O     tropsphere sturct
- * return   :       0 fail, 1 success
- * ---------------------------------------------------------------------------*/
+* args     :       mgex_trop *mtrop	I/O     tropsphere sturct
+* return   :       0 fail, 1 success
+* ---------------------------------------------------------------------------*/
 extern int inittrop(mgex_trop* mtrop)
 {
 	int i;
@@ -29,7 +29,7 @@ extern int inittrop(mgex_trop* mtrop)
 	}
 
 	if (!(mtrop->tsol =
-	            (mgex_tropsol*)malloc(sizeof(mgex_tropsol) * MAXIGSSTA * NTROP)))
+				(mgex_tropsol*)malloc(sizeof(mgex_tropsol) * MAXIGSSTA * NTROP)))
 	{
 		return 0;
 	}
@@ -38,9 +38,9 @@ extern int inittrop(mgex_trop* mtrop)
 }
 
 /* free troposphere sturct -----------------------------------------------------
- * args     :       mgex_trop *mtrop	I/O     tropsphere sturct
- * return   :       none
- * ---------------------------------------------------------------------------*/
+* args     :       mgex_trop *mtrop	I/O     tropsphere sturct
+* return   :       none
+* ---------------------------------------------------------------------------*/
 extern void freetrop(mgex_trop* mtrop)
 {
 	free(mtrop->tsol);
@@ -48,11 +48,11 @@ extern void freetrop(mgex_trop* mtrop)
 
 #if (0)
 /* convert year, doy, sec to gps time ------------------------------------------
- * args     :       int year	    I     year
- *                  int doy         I	  day of year
- *                  int sod         I 	  second of day
- * return   :       gtime_t 	    O	  gps time
- * ---------------------------------------------------------------------------*/
+* args     :       int year	    I     year
+*                  int doy         I	  day of year
+*                  int sod         I 	  second of day
+* return   :       gtime_t 	    O	  gps time
+* ---------------------------------------------------------------------------*/
 gtime_t doy2time(int year, int doy, int sod)
 {
 	const int dy[] = {1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335};
@@ -87,10 +87,10 @@ gtime_t doy2time(int year, int doy, int sod)
 
 #endif
 /* read tropsphere -------------------------------------------------------------
- * args     :       FILE *fp	    	I/O     data source file
- *                  mgex_trop *mtrop	I/O     tropsphere sturct
- * return   :       0 fail, 1 success
- * ---------------------------------------------------------------------------*/
+* args     :       FILE *fp	    	I/O     data source file
+*                  mgex_trop *mtrop	I/O     tropsphere sturct
+* return   :       0 fail, 1 success
+* ---------------------------------------------------------------------------*/
 extern int readtrop(FILE* fp, mgex_trop* mtrop)
 {
 	char buff[2048], *p, *q, t1[4], t2[22], t3[12], t4[2];
@@ -250,7 +250,7 @@ extern int readtrop(FILE* fp, mgex_trop* mtrop)
 			if (ci >= MAXIGSSTA)
 			{
 				fprintf(stdout,
-				        "*** Overflow,increase MAXIGSSTA number ***\n");
+						"*** Overflow,increase MAXIGSSTA number ***\n");
 				return 0;
 			}
 		}
@@ -294,7 +294,7 @@ extern int readtrop(FILE* fp, mgex_trop* mtrop)
 			if (si >= MAXIGSSTA * NTROP)
 			{
 				fprintf(stdout,
-				        "*** Overflow,increase MAXIGSSTA number ***\n");
+						"*** Overflow,increase MAXIGSSTA number ***\n");
 				return 0;
 			}
 		}

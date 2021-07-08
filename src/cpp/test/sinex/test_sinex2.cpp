@@ -1,4 +1,4 @@
-#include "../common/newsnx.hpp"
+#include "../common/snx.hpp"
 #include <iostream>
 #include <unistd.h>
 
@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	int yds[3];
 	int len;
 	string filepath, line, junk;
-	newsnx_stn_snx_t station;
+	snx_stn_snx_t station;
 
 	cout << "welcome to test_sinex2. Please choose from the menu below:" << endl;
 
@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
 				{
 					cout << "Solution estimates: " << endl;
 
-					for (list<newsnx_stn_soln_t>::iterator it = station.estimates.begin(); it != station.estimates.end(); it++)
+					for (list<snx_stn_soln_t>::iterator it = station.estimates.begin(); it != station.estimates.end(); it++)
 					{
 						cout << "type : " << it->type << ", unit : " << it->unit << ", value : " << it->pos << ", stddev : " << it->pstd << endl;
 					}

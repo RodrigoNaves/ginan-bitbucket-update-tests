@@ -14,7 +14,7 @@
 #ifndef TROP_H
 #define TROP_H
 
-#include "gaTime.hpp"
+#include "gTime.hpp"
 
 #include <string>
 
@@ -28,19 +28,19 @@ using std::string;
 struct gptgrid_t
 {
 	/* gpt grid file contents */
-    double lat	[NGPT];           /* lat grid (degree) */
-    double lon	[NGPT];           /* lon grid (degree) */
-    double pres	[NGPT][5];       /* pressure     a0 A1 B1 A2 B2 (pascal) */
-    double temp	[NGPT][5];       /* temperature  a0 A1 B1 A2 B2 (kelvin) */
-    double humid[NGPT][5];      /* humidity     a0 A1 B1 A2 B2 (kg/kg) */
-    double tlaps[NGPT][5];      /* elapse rate  a0 A1 B1 A2 B2 (kelvin/m) */
-    double undu	[NGPT];          /* geoid undulation (m) */
-    double hgt	[NGPT];           /* orthometric height (m) */
-    double ah	[NGPT][5];         /* hydrostatic mapping function coefficient
-                                                a0 A1 B1 A2 B2 */
-    double aw	[NGPT][5];         /* wet mapping function coefficient
-                                                a0 A1 B1 A2 B2 */
-    int ind;                     /* indicator, 0-fail, 1-success */
+	double lat	[NGPT];           /* lat grid (degree) */
+	double lon	[NGPT];           /* lon grid (degree) */
+	double pres	[NGPT][5];       /* pressure     a0 A1 B1 A2 B2 (pascal) */
+	double temp	[NGPT][5];       /* temperature  a0 A1 B1 A2 B2 (kelvin) */
+	double humid[NGPT][5];      /* humidity     a0 A1 B1 A2 B2 (kg/kg) */
+	double tlaps[NGPT][5];      /* elapse rate  a0 A1 B1 A2 B2 (kelvin/m) */
+	double undu	[NGPT];          /* geoid undulation (m) */
+	double hgt	[NGPT];           /* orthometric height (m) */
+	double ah	[NGPT][5];         /* hydrostatic mapping function coefficient
+												a0 A1 B1 A2 B2 */
+	double aw	[NGPT][5];         /* wet mapping function coefficient
+												a0 A1 B1 A2 B2 */
+	int ind;                     /* indicator, 0-fail, 1-success */
 };
 
 

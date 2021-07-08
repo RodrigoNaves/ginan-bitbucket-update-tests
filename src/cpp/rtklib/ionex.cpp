@@ -157,7 +157,7 @@ double readionexh(FILE* fp, double* lats, double* lons, double* hgts, double& rb
 			nexp = str2num(buff, 0, 6);
 		}
 		else if (strstr(label, "START OF AUX DATA") == label &&
-		         strstr(buff, "DIFFERENTIAL CODE BIASES"))
+				strstr(buff, "DIFFERENTIAL CODE BIASES"))
 		{
 			readionexdcb(fp, navi);
 		}

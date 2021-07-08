@@ -12,14 +12,14 @@ using std::map;
 #include "enums.h"
 
 /** Object holding satellite id, and providing related functions
- */
+*/
 struct SatSys
 {
 	E_Sys		sys;		///< Satellite system
 	short int	prn;		///< PRN for this satellite
 
 	/** Constructor using satellite system and prn
-	 */
+	*/
 	SatSys(E_Sys _sys = E_Sys::NONE, int _prn = 0)
 	: sys(_sys)
 	, prn(_prn)
@@ -35,9 +35,9 @@ struct SatSys
 
 
 	/** Returns the bias group associated with this satellite.
-	 * Receivers may combine multiple satellite systems on a single internal clock, each wih their own bias.
-	 * The biases defined by this function are the basis for the different clocks calculated in this software
-	 */
+	* Receivers may combine multiple satellite systems on a single internal clock, each wih their own bias.
+	* The biases defined by this function are the basis for the different clocks calculated in this software
+	*/
 	short int biasGroup()
 	{
 		switch (sys)
@@ -51,7 +51,7 @@ struct SatSys
 
 #define SBAS_CHAR 's'
 	/** Returns the character used as a prefix for this system.
-	 */
+	*/
 	char sysChar()	const
 	{
 		switch (sys)
@@ -69,7 +69,7 @@ struct SatSys
 	}
 
 	/** Sets a 4 character c_string of this satellite's id.
-	 */
+	*/
 	void getId(char* str) const
 	{
 		char sys_c = sysChar();
@@ -78,7 +78,7 @@ struct SatSys
 	}
 
 	/** Returns a unique id for this satellite (for use in hashes)
-	 */
+	*/
 	operator int() const
 	{
 		int intval	= (sys			<< 16)
@@ -129,7 +129,7 @@ struct SatSys
 	}
 
 	/** Constructs a SatSys object from it's hash uid
-	 */
+	*/
 	SatSys(int intval)
 	{
 		sys = E_Sys::_from_integral((intval >> 16)	& 0xFF);
@@ -137,7 +137,7 @@ struct SatSys
 	}
 
 	/** Returns a std::string of this satellite's id
-	 */
+	*/
 	string id() const
 	{
 		char cstring[5];
@@ -150,14 +150,14 @@ struct SatSys
 	}
 
 	/** Returns a string of this satellite's id
-	 */
+	*/
 	operator string() const
 	{
 		return id();
 	}
 
 	/** Constructs a SatSys object from a c_string id
-	 */
+	*/
 	SatSys(const char *id)
 	{
 		char code;
@@ -194,16 +194,16 @@ struct SatSys
 	}
 
 	/* Returns a string of this satellite's system id
-	 */
+	*/
 	string sysName() const
 	{
 		return sys._to_string();
 	}
 
 
-    template<class ARCHIVE>
-    void serialize(ARCHIVE& ar, const unsigned int& version)
-    {
+	template<class ARCHIVE>
+	void serialize(ARCHIVE& ar, const unsigned int& version)
+	{
 		int sysInt = sys;
 		ar & sysInt;
 		ar & prn;
@@ -212,7 +212,7 @@ struct SatSys
 			sys = E_Sys::_from_integral(sysInt);
 		}
 		catch (...) {}
-    }
+	}
 };
 
 namespace std

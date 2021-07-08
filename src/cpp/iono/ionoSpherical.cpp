@@ -33,13 +33,13 @@ double shar_valid = 10.0;
 /*-----------------------------------------------------
 configure_iono_model_sphhar() configures the spherical harmonics model.
 Specifically it initializes:
- shar_valid				time validity of a rotation matrix (the rotation matrix will chace the sun position)
- Sph_Basis_list			List of ionosphere basis
- time:  		I 		time of observations (to update the rotation matrix)
- IPP: 			I 		Ionospheric piercing point to be updated
- Since the spherical harmonic model has global validity, the check always return 1
+shar_valid				time validity of a rotation matrix (the rotation matrix will chace the sun position)
+Sph_Basis_list			List of ionosphere basis
+time:  		I 		time of observations (to update the rotation matrix)
+IPP: 			I 		Ionospheric piercing point to be updated
+Since the spherical harmonic model has global validity, the check always return 1
 -----------------------------------------------------
- Author: Ken Harima @ RMIT 29 July 2020
+Author: Ken Harima @ RMIT 29 July 2020
 -----------------------------------------------------*/
 int configure_iono_model_sphhar()
 {
@@ -189,11 +189,11 @@ int configure_iono_model_sphhar()
 
 /*-----------------------------------------------------
 Ipp_check_sphhar (time,IPP) rotates the Ionosphere piercing point
- time:  		I 		time of observations (to update the rotation matrix)
- IPP: 			I 		Ionospheric piercing point to be updated
- Since the spherical harmonic model has global validity, the check always return 1
+time:  		I 		time of observations (to update the rotation matrix)
+IPP: 			I 		Ionospheric piercing point to be updated
+Since the spherical harmonic model has global validity, the check always return 1
 -----------------------------------------------------
- Author: Ken Harima @ RMIT 29 July 2020
+Author: Ken Harima @ RMIT 29 July 2020
 -----------------------------------------------------*/
 extern int Ipp_check_sphhar(GTime time, double* Ion_pp)
 {
@@ -201,7 +201,7 @@ extern int Ipp_check_sphhar(GTime time, double* Ion_pp)
 	if ( time.time == 0 ) return 0;
 
 	if (	shar_time.time == 0 ||
-	        fabs(timediff(time, shar_time)) > shar_valid )
+			fabs(timediff(time, shar_time)) > shar_valid )
 	{
 
 		double erpv[5] = {0}, rsun[3] = {0}, rmon[3] = {0}, gmst, sunpos[3] = {0};
@@ -224,9 +224,9 @@ extern int Ipp_check_sphhar(GTime time, double* Ion_pp)
 		{
 			fprintf(fp_iondebug, "SPH_ROTMX %s\n", time.to_string(6).c_str());
 			fprintf(fp_iondebug, "SPH_ROTMX %.5e,%.5e,%.5e; %.5e,%.5e,%.5e; %.5e,%.5e,%.5e\n",
-			        shar_rotmtx[0], shar_rotmtx[1], shar_rotmtx[2],
-			        shar_rotmtx[3], shar_rotmtx[4], shar_rotmtx[5],
-			        shar_rotmtx[6], shar_rotmtx[7], shar_rotmtx[8]);
+					shar_rotmtx[0], shar_rotmtx[1], shar_rotmtx[2],
+					shar_rotmtx[3], shar_rotmtx[4], shar_rotmtx[5],
+					shar_rotmtx[6], shar_rotmtx[7], shar_rotmtx[8]);
 		}
 	}
 
@@ -245,11 +245,11 @@ extern int Ipp_check_sphhar(GTime time, double* Ion_pp)
 
 /*-----------------------------------------------------
 P=leg(basis,lat) Returns the legendre polynimial evaluated at lat
- The basis contein the legendre polynomial at basis.legpoly
- latitude: argument (rad)
- Truncation is set up by the resolution parameter eps0
+The basis contein the legendre polynomial at basis.legpoly
+latitude: argument (rad)
+Truncation is set up by the resolution parameter eps0
 -----------------------------------------------------
- Author: Ken Harima @ RMIT 20 May 2020
+Author: Ken Harima @ RMIT 20 May 2020
 -----------------------------------------------------*/
 double legendre_poly(Sph_Basis& basis, double lat)
 {
@@ -307,11 +307,11 @@ ion_vtec_sphcap: Estimate Ionosphere VTEC using Spherical Cap Harmonic models
 returns: VETC at piercing point
 ----------------------------------------------------------------------------*/
 double ion_vtec_sphhar(
-    GTime time,
-    double* Ion_pp,
-    int layer,
-    double& vari,
-    KFState& kfState)
+	GTime time,
+	double* Ion_pp,
+	int layer,
+	double& vari,
+	KFState& kfState)
 {
 	double ionpp_cpy[3];
 	int ix, m;
@@ -347,7 +347,7 @@ double ion_vtec_sphhar(
 		if (fp_iondebug)
 		{
 			fprintf(fp_iondebug, "VTEC_COEF  %9.5f %10.5f  %9.5f %10.5f  %3d  %9.5f %10.5f %12.5f\n",
-			        Ion_pp[0]*R2D, Ion_pp[1]*R2D, ionpp_cpy[0]*R2D, ionpp_cpy[1]*R2D, ind, coef, staval, iono);
+					Ion_pp[0]*R2D, Ion_pp[1]*R2D, ionpp_cpy[0]*R2D, ionpp_cpy[1]*R2D, ind, coef, staval, iono);
 		}
 
 		iono += 	coef * staval;

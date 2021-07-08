@@ -3,18 +3,18 @@ cmake_policy(SET CMP0063 NEW)
 
 project(ginan)
 macro(print_all_variables)
-    message(STATUS "print_all_variables------------------------------------------{")
-    get_cmake_property(_variableNames VARIABLES)
-    foreach (_variableName ${_variableNames})
-        message(STATUS "${_variableName}=${${_variableName}}")
-    endforeach()
-    message(STATUS "print_all_variables------------------------------------------}")
+	message(STATUS "print_all_variables------------------------------------------{")
+	get_cmake_property(_variableNames VARIABLES)
+	foreach (_variableName ${_variableNames})
+		message(STATUS "${_variableName}=${${_variableName}}")
+	endforeach()
+	message(STATUS "print_all_variables------------------------------------------}")
 endmacro()
 
 enable_language(Fortran)
 message("Fortran default extensions = ${CMake_Fortran_SOURCE_FILE_EXTENSIONS}")
 if ( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
-     message("found DARWIN")
+	message("found DARWIN")
 endif ()
 
 set (CMAKE_Fortran_SOURCE_FILE_EXTENSIONS "f03;F90;f90;for;f;F")
@@ -25,15 +25,15 @@ set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../../bin")
 #have to modify cmake configure file directly
 file(GLOB_RECURSE sources fortran/*.f90 fortran/*.F90 fortran/*.f03 fortran/*.f fortran/*.for fortran/*.F)
 foreach (file ${sources})
-    if ( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
-	  execute_process(COMMAND /usr/bin/basename    ${file} OUTPUT_VARIABLE fortranfile)
-          #message("found DARWIN")
-    else()
-          execute_process(COMMAND /usr/bin/basename -z ${file} OUTPUT_VARIABLE fortranfile)
-    endif()
-    set_source_files_properties(fortran/${fortranfile} PROPERTIES LANGUAGE Fortran)
-    #set_source_files_properties(fortran/${fortranfile} PROPERTIES COMPILE_FLAGS "-O3 -frecursive")
-    #message("set fortran/${fortranfile} to fortran compile")
+	if ( ${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
+	execute_process(COMMAND /usr/bin/basename    ${file} OUTPUT_VARIABLE fortranfile)
+		#message("found DARWIN")
+	else()
+		execute_process(COMMAND /usr/bin/basename -z ${file} OUTPUT_VARIABLE fortranfile)
+	endif()
+	set_source_files_properties(fortran/${fortranfile} PROPERTIES LANGUAGE Fortran)
+	#set_source_files_properties(fortran/${fortranfile} PROPERTIES COMPILE_FLAGS "-O3 -frecursive")
+	#message("set fortran/${fortranfile} to fortran compile")
 endforeach (file ${sources})
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -63,7 +63,7 @@ endif()
 #set debug if nothing else is set.
 set(default_build_type "Debug")
 if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE ${default_build_type})
+	set(CMAKE_BUILD_TYPE ${default_build_type})
 endif()
 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
@@ -88,53 +88,53 @@ include_directories(${EIGEN3_INCLUDE_DIRS})
 find_package(OpenMP)
 
 if(ENABLE_MONGODB)
-    find_package(libmongocxx REQUIRED)
-    find_package(libbsoncxx REQUIRED)
+	find_package(libmongocxx REQUIRED)
+	find_package(libbsoncxx REQUIRED)
 endif()
 
 set(OPENBLAS_USE_STATIC_LIBS ON)
 set (BLA_VENDOR OpenBLAS)
 find_package(BLAS)
 if(BLAS_FOUND)
-  set(LAPACK_LIBRARIES "")
-  message(STATUS "Found Vendor specific OpenBLAS")
+set(LAPACK_LIBRARIES "")
+message(STATUS "Found Vendor specific OpenBLAS")
 else()
-  set (BLA_VENDOR "")
-  find_package(LAPACK required)
-  find_package(BLAS required)  
-  message(STATUS "Found LAPACK and BLAS")
+set (BLA_VENDOR "")
+find_package(LAPACK required)
+find_package(BLAS required)  
+message(STATUS "Found LAPACK and BLAS")
 endif()
 
 IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../.git)
-    FIND_PACKAGE(Git)
-    IF(GIT_FOUND)
-        EXECUTE_PROCESS(
-	    COMMAND ${GIT_EXECUTABLE} describe --tags --always
-	    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.."
-	    OUTPUT_VARIABLE "GINAN_COMMIT_VERSION"
-            OUTPUT_STRIP_TRAILING_WHITESPACE)
+	FIND_PACKAGE(Git)
+	IF(GIT_FOUND)
+		EXECUTE_PROCESS(
+		COMMAND ${GIT_EXECUTABLE} describe --tags --always
+		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.."
+		OUTPUT_VARIABLE "GINAN_COMMIT_VERSION"
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 	EXECUTE_PROCESS(
-            COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.."
-	    OUTPUT_VARIABLE "GINAN_BRANCH_NAME"
-            OUTPUT_STRIP_TRAILING_WHITESPACE)
+			COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
+			WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.."
+		OUTPUT_VARIABLE "GINAN_BRANCH_NAME"
+			OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-        EXECUTE_PROCESS(
-            COMMAND ${GIT_EXECUTABLE} log -1 --format=%cd --date=local
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.."
-	    OUTPUT_VARIABLE "GINAN_COMMIT_DATE"
-	    OUTPUT_STRIP_TRAILING_WHITESPACE)
+		EXECUTE_PROCESS(
+			COMMAND ${GIT_EXECUTABLE} log -1 --format=%cd --date=local
+			WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/.."
+		OUTPUT_VARIABLE "GINAN_COMMIT_DATE"
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-    MESSAGE( STATUS "Git version: ${GINAN_COMMIT_VERSION}")
-    MESSAGE( STATUS "Git branch: ${GINAN_BRANCH_NAME}")
-    ELSE(GIT_FOUND)
-	 SET(GINAN_COMMIT_VERSION 0)
-	 SET(GINAN_BRANCH_NAME "unknown branch")
-	 MESSAGE( STATUS "Git not found: ${GINAN_COMMIT_VERSION}" )
-     ENDIF(GIT_FOUND)
+	MESSAGE( STATUS "Git version: ${GINAN_COMMIT_VERSION}")
+	MESSAGE( STATUS "Git branch: ${GINAN_BRANCH_NAME}")
+	ELSE(GIT_FOUND)
+	SET(GINAN_COMMIT_VERSION 0)
+	SET(GINAN_BRANCH_NAME "unknown branch")
+	MESSAGE( STATUS "Git not found: ${GINAN_COMMIT_VERSION}" )
+	ENDIF(GIT_FOUND)
 ELSE()
-    MESSAGE( STATUS "Git not found in ${CMAKE_CURRENT_SOURCE_DIR}/..")
+	MESSAGE( STATUS "Git not found in ${CMAKE_CURRENT_SOURCE_DIR}/..")
 ENDIF()
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/cpp/pea/peaCommitVersion.h.in ${CMAKE_CURRENT_SOURCE_DIR}/cpp/pea/peaCommitVersion.h @ONLY)
@@ -506,136 +506,136 @@ fortran/test_yaml.F90
 )
 
 add_executable(pea
-        cpp/3rdparty/enum.h
-        cpp/common/acsConfig.hpp
-        cpp/common/acsConfig.cpp
-        cpp/common/acsQC.hpp
-        cpp/common/acsQC.cpp
-        cpp/common/acsFileStream.hpp
-        cpp/common/acsNtripStream.cpp
-        cpp/common/acsNtripStream.hpp
-        cpp/common/acsRinexStream.hpp
-        cpp/common/acsRtcmStream.hpp
-        cpp/common/acsStream.cpp
-        cpp/common/acsStream.hpp
-        cpp/common/algebra.cpp
-        cpp/common/algebra_old.cpp
-        cpp/common/algebra.hpp
-        cpp/common/algebraTrace.cpp
-        cpp/common/algebraTrace.hpp
-        cpp/common/antenna.hpp
-        cpp/common/antenna.cpp
-        cpp/common/biasSINEX.hpp
-        cpp/common/biasSINEXread.cpp
-        cpp/common/biasSINEXwrite.cpp
-        cpp/common/constants.h
-        cpp/common/constants.cpp
-        cpp/common/corrections.cpp
-        cpp/common/debug.cpp
-        cpp/common/debug.hpp
-        cpp/common/eigenIncluder.hpp
-        cpp/common/newsnx.hpp
-        cpp/common/newsnx.cpp
-        cpp/common/enums.h
-        cpp/common/gaTime.cpp
-        cpp/common/gaTime.hpp
-        cpp/common/navigation.hpp
-        cpp/common/orbits.cpp
-        cpp/common/orbits.hpp
-        cpp/common/observations.hpp
-        cpp/common/linearCombo.cpp
-        cpp/common/linearCombo.hpp
-        cpp/common/mongo.cpp
-        cpp/common/mongo.hpp
-        cpp/common/rtsSmoothing.cpp
-        cpp/common/satStat.hpp
-        cpp/common/summary.hpp
-        cpp/common/satSys.cpp
-        cpp/common/satSys.hpp
-        cpp/common/sp3.cpp
-        cpp/common/station.hpp
-        cpp/common/streamTrace.cpp
-        cpp/common/streamTrace.hpp
-        cpp/common/testUtils.cpp
-        cpp/common/testUtils.hpp
-        cpp/common/writeClock.cpp
-        cpp/common/writeClock.hpp
-	cpp/common/acsNtripBroadcast.cpp
-	cpp/common/acsNtripBroadcast.hpp
-	cpp/common/acsNtripServer.cpp
-	cpp/common/acsNtripServer.hpp
-	cpp/common/ntripCasterService.cpp
-	cpp/common/ntripCasterService.hpp
-	cpp/common/ntripSocket.cpp
-	cpp/common/ntripSocket.hpp
-	cpp/common/ntripTrace.cpp
-	cpp/common/ntripTrace.hpp
-	cpp/common/ntripSourceTable.cpp
-	cpp/common/ntripSourceTable.hpp
-	cpp/common/rtcmEncoder.cpp
-	cpp/common/rtcmEncoder.hpp
+		cpp/3rdparty/enum.h
+		cpp/common/acsConfig.hpp
+		cpp/common/acsConfig.cpp
+		cpp/common/acsQC.hpp
+		cpp/common/acsQC.cpp
+		cpp/common/acsFileStream.hpp
+		cpp/common/acsNtripStream.cpp
+		cpp/common/acsNtripStream.hpp
+		cpp/common/acsRinexStream.hpp
+		cpp/common/acsRtcmStream.hpp
+		cpp/common/acsStream.cpp
+		cpp/common/acsStream.hpp
+		cpp/common/algebra.cpp
+		cpp/common/algebra_old.cpp
+		cpp/common/algebra.hpp
+		cpp/common/algebraTrace.cpp
+		cpp/common/algebraTrace.hpp
+		cpp/common/antenna.hpp
+		cpp/common/antenna.cpp
+		cpp/common/biasSINEX.hpp
+		cpp/common/biasSINEXread.cpp
+		cpp/common/biasSINEXwrite.cpp
+		cpp/common/constants.h
+		cpp/common/constants.cpp
+		cpp/common/corrections.cpp
+		cpp/common/debug.cpp
+		cpp/common/debug.hpp
+		cpp/common/eigenIncluder.hpp
+		cpp/common/enums.h
+		cpp/common/gTime.cpp
+		cpp/common/gTime.hpp
+		cpp/common/navigation.hpp
+		cpp/common/orbits.cpp
+		cpp/common/orbits.hpp
+		cpp/common/observations.hpp
+		cpp/common/linearCombo.cpp
+		cpp/common/linearCombo.hpp
+		cpp/common/mongo.cpp
+		cpp/common/mongo.hpp
+		cpp/common/rtsSmoothing.cpp
+		cpp/common/satStat.hpp
+		cpp/common/summary.hpp
+		cpp/common/satSys.cpp
+		cpp/common/satSys.hpp
+		cpp/common/snx.hpp
+		cpp/common/snx.cpp
+		cpp/common/sp3.cpp
+		cpp/common/station.hpp
+		cpp/common/streamTrace.cpp
+		cpp/common/streamTrace.hpp
+		cpp/common/testUtils.cpp
+		cpp/common/testUtils.hpp
+		cpp/common/writeClock.cpp
+		cpp/common/writeClock.hpp
+		cpp/common/acsNtripBroadcast.cpp
+		cpp/common/acsNtripBroadcast.hpp
+		cpp/common/acsNtripServer.cpp
+		cpp/common/acsNtripServer.hpp
+		cpp/common/ntripCasterService.cpp
+		cpp/common/ntripCasterService.hpp
+		cpp/common/ntripSocket.cpp
+		cpp/common/ntripSocket.hpp
+		cpp/common/ntripTrace.cpp
+		cpp/common/ntripTrace.hpp
+		cpp/common/ntripSourceTable.cpp
+		cpp/common/ntripSourceTable.hpp
+		cpp/common/rtcmEncoder.cpp
+		cpp/common/rtcmEncoder.hpp
 
-        cpp/iono/ionoMeas.cpp
-        cpp/iono/ionoModel.cpp
-        cpp/iono/ionoModel.hpp
-        cpp/iono/ionoSpherical.cpp
-        cpp/iono/ionoSphericalCaps.cpp
-        cpp/iono/ionoBSplines.cpp
-        cpp/iono/ionexWrite.cpp
+		cpp/iono/ionoMeas.cpp
+		cpp/iono/ionoModel.cpp
+		cpp/iono/ionoModel.hpp
+		cpp/iono/ionoSpherical.cpp
+		cpp/iono/ionoSphericalCaps.cpp
+		cpp/iono/ionoBSplines.cpp
+		cpp/iono/ionexWrite.cpp
 
-        cpp/ambres/GNSSambres.hpp
-        cpp/ambres/GNSSambres.cpp
-        cpp/ambres/GNSSpivot.cpp
-        cpp/ambres/WLambest.cpp
-        cpp/ambres/NLambest.cpp
-        cpp/ambres/ARmain.cpp
-        cpp/ambres/ARoutput.cpp
-        
-        cpp/pea/cycleSlip.cpp
-        cpp/pea/cycleSlip.hpp
-        cpp/pea/main.cpp
-        cpp/pea/minimumConstraints.cpp
-        cpp/pea/minimumConstraints.hpp
-        cpp/pea/networkEstimator.cpp
-        cpp/pea/networkEstimator.hpp
-        cpp/pea/pea_snx.cpp
-        cpp/pea/ppp.cpp
-        cpp/pea/ppp_user.cpp
-        cpp/pea/ppp_network.cpp
-        cpp/pea/ppp.hpp
-        cpp/pea/spp.cpp
+		cpp/ambres/GNSSambres.hpp
+		cpp/ambres/GNSSambres.cpp
+		cpp/ambres/GNSSpivot.cpp
+		cpp/ambres/WLambest.cpp
+		cpp/ambres/NLambest.cpp
+		cpp/ambres/ARmain.cpp
+		cpp/ambres/ARoutput.cpp
+		
+		cpp/pea/cycleSlip.cpp
+		cpp/pea/cycleSlip.hpp
+		cpp/pea/main.cpp
+		cpp/pea/minimumConstraints.cpp
+		cpp/pea/minimumConstraints.hpp
+		cpp/pea/networkEstimator.cpp
+		cpp/pea/networkEstimator.hpp
+		cpp/pea/pea_snx.cpp
+		cpp/pea/ppp.cpp
+		cpp/pea/ppp_user.cpp
+		cpp/pea/ppp_network.cpp
+		cpp/pea/ppp.hpp
+		cpp/pea/spp.cpp
 
-        cpp/rtklib/ionex.cpp
-        cpp/rtklib/lambda.cpp
-        cpp/rtklib/lambda.h
-        cpp/rtklib/ephemeris.cpp
-        cpp/rtklib/preceph.cpp
-        cpp/rtklib/readtrop.cpp
-        cpp/rtklib/rinex.cpp
-        cpp/rtklib/rinex.hpp
-        cpp/rtklib/rtkcmn.cpp
-        cpp/rtklib/tides.cpp
-        cpp/rtklib/tides.hpp
-        cpp/rtklib/trop.h
-        cpp/rtklib/trop.cpp
-        cpp/rtklib/vmf3.h
-        cpp/rtklib/vmf3.cpp
-        cpp/rtklib/wancorr.cpp
-        cpp/rtklib/wancorr.h
-        )
+		cpp/rtklib/ionex.cpp
+		cpp/rtklib/lambda.cpp
+		cpp/rtklib/lambda.h
+		cpp/rtklib/ephemeris.cpp
+		cpp/rtklib/preceph.cpp
+		cpp/rtklib/readtrop.cpp
+		cpp/rtklib/rinex.cpp
+		cpp/rtklib/rinex.hpp
+		cpp/rtklib/rtkcmn.cpp
+		cpp/rtklib/tides.cpp
+		cpp/rtklib/tides.hpp
+		cpp/rtklib/trop.h
+		cpp/rtklib/trop.cpp
+		cpp/rtklib/vmf3.h
+		cpp/rtklib/vmf3.cpp
+		cpp/rtklib/wancorr.cpp
+		cpp/rtklib/wancorr.h
+		)
 
 target_include_directories(pea PUBLIC
-        cpp/pea
-        cpp/common
-        cpp/3rdparty
-        cpp/iono
-        cpp/ambres
-        cpp/rtklib
-        ${EIGEN3_INCLUDE_DIRS}
-        ${LAPACK_INCLUDE_DIRS}
-        ${OPENBLAS_INCLUDE_DIRS}
-        ${YAML_INCLUDE_DIRS}
-        ${Boost_INCLUDE_DIRS}
+		cpp/pea
+		cpp/common
+		cpp/3rdparty
+		cpp/iono
+		cpp/ambres
+		cpp/rtklib
+		${EIGEN3_INCLUDE_DIRS}
+		${LAPACK_INCLUDE_DIRS}
+		${OPENBLAS_INCLUDE_DIRS}
+		${YAML_INCLUDE_DIRS}
+		${Boost_INCLUDE_DIRS}
 		${LIBMONGOCXX_INCLUDE_DIR}
 		${LIBBSONCXX_INCLUDE_DIR}
 		"/usr/local/include/mongocxx/v_noabi"
@@ -643,16 +643,16 @@ target_include_directories(pea PUBLIC
 		"/usr/local/include/libmongoc-1.0"
 		"/usr/local/include/libbson-1.0"
 		"/usr/local/lib"
-        )
+		)
 
 if(OpenMP_CXX_FOUND)
-    target_link_libraries(pea PUBLIC OpenMP::OpenMP_CXX)
+	target_link_libraries(pea PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
 target_compile_definitions(pea PRIVATE
 							EIGEN_USE_BLAS=1
 							DEBUGLOM
-						  )
+						)
 
 #==================================================
 # Ocean tide loading
@@ -665,90 +665,90 @@ find_package (NetCDF REQUIRED)
 # find_package(netCDFCxx REQUIRED)
 
 add_library(otl
-        STATIC
-        cpp/loading/loading.cpp
-        cpp/loading/tide.cpp
-        cpp/loading/utils.cpp
-        cpp/loading/load_functions.cpp
-        cpp/loading/loadgrid.cpp
-        )
+		STATIC
+		cpp/loading/loading.cpp
+		cpp/loading/tide.cpp
+		cpp/loading/utils.cpp
+		cpp/loading/load_functions.cpp
+		cpp/loading/loadgrid.cpp
+		)
 
 add_executable(make_otl_blq
-        cpp/loading/make_otl_blq.cpp
-        )
+		cpp/loading/make_otl_blq.cpp
+		)
 
 
 add_executable(interpolate_loading
-        cpp/loading/interpolate_loading.cpp
-        )
+		cpp/loading/interpolate_loading.cpp
+		)
 
 target_include_directories(otl PUBLIC
-        cpp/loading
-        ${YAML_INCLUDE_DIRS}
-        ${Boost_INCLUDE_DIRS}
-        ${NETCDF_INCLUDES}
-        ${NETCDF_INCLUDES_CXX}
-        )
+		cpp/loading
+		${YAML_INCLUDE_DIRS}
+		${Boost_INCLUDE_DIRS}
+		${NETCDF_INCLUDES}
+		${NETCDF_INCLUDES_CXX}
+		)
 
 target_include_directories(make_otl_blq PUBLIC
-        cpp/loading
-        ${YAML_INCLUDE_DIRS}
-        ${Boost_INCLUDE_DIRS}
-        ${NETCDF_INCLUDES}
-        ${NETCDF_INCLUDES_CXX}
-        )
+		cpp/loading
+		${YAML_INCLUDE_DIRS}
+		${Boost_INCLUDE_DIRS}
+		${NETCDF_INCLUDES}
+		${NETCDF_INCLUDES_CXX}
+		)
 
 target_include_directories(interpolate_loading PUBLIC
-        cpp/loading
-        ${YAML_INCLUDE_DIRS}
-        ${Boost_INCLUDE_DIRS}
-        ${NETCDF_INCLUDES}
-        ${NETCDF_INCLUDES_CXX}
-        )
+		cpp/loading
+		${YAML_INCLUDE_DIRS}
+		${Boost_INCLUDE_DIRS}
+		${NETCDF_INCLUDES}
+		${NETCDF_INCLUDES_CXX}
+		)
 
 
 target_link_libraries(make_otl_blq PUBLIC
-        otl
-        ${NETCDF_LIBRARIES_CXX}
-        ${NETCDF_LIBRARIES}
-        Boost::timer
-        Boost::program_options
-        Boost::log
-        Boost::log_setup
-        ${YAML_CPP_LIBRARIES}
-        ${YAML_CPP_LIB}
-        )
+		otl
+		${NETCDF_LIBRARIES_CXX}
+		${NETCDF_LIBRARIES}
+		Boost::timer
+		Boost::program_options
+		Boost::log
+		Boost::log_setup
+		${YAML_CPP_LIBRARIES}
+		${YAML_CPP_LIB}
+		)
 
 target_link_libraries(interpolate_loading PUBLIC
-        otl
-        ${NETCDF_LIBRARIES_CXX}
-        ${NETCDF_LIBRARIES}
-        Boost::timer
-        Boost::program_options
-        Boost::log
-        Boost::log_setup
-        ${YAML_CPP_LIBRARIES}
-        ${YAML_CPP_LIB}
-        )
+		otl
+		${NETCDF_LIBRARIES_CXX}
+		${NETCDF_LIBRARIES}
+		Boost::timer
+		Boost::program_options
+		Boost::log
+		Boost::log_setup
+		${YAML_CPP_LIBRARIES}
+		${YAML_CPP_LIB}
+		)
 
 
 if(OpenMP_CXX_FOUND)
-    target_link_libraries(make_otl_blq PUBLIC OpenMP::OpenMP_CXX)
-    target_link_libraries(interpolate_loading PUBLIC OpenMP::OpenMP_CXX)
+	target_link_libraries(make_otl_blq PUBLIC OpenMP::OpenMP_CXX)
+	target_link_libraries(interpolate_loading PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
 
 #=================================================
-                      #add_executable(test_sinex2
-                      #        cpp/3rdparty/enum.h
-                      #        cpp/test/sinex/test_sinex2.cpp
-                      #        cpp/test/include/minunit.h
-                      #        cpp/common/newsnx.cpp
-                      #        cpp/common/gaTime.cpp
-                      #        cpp/common/gaTime.hpp
-                      #        cpp/common/constants.h
-                      #        cpp/common/constants.cpp
-                      #)
+					#add_executable(test_sinex2
+					#        cpp/3rdparty/enum.h
+					#        cpp/test/sinex/test_sinex2.cpp
+					#        cpp/test/include/minunit.h
+					#        cpp/common/snx.cpp
+					#        cpp/common/gaTime.cpp
+					#        cpp/common/gTime.hpp
+					#        cpp/common/constants.h
+					#        cpp/common/constants.cpp
+					#)
 #
 #target_include_directories(test_sinex2 PUBLIC
 #	cpp/pea
@@ -776,29 +776,29 @@ endif()
 
 
 target_link_libraries(pea PUBLIC
-                        m
-                        pthread
-                        ${Boost_LIBRARIES}
+						m
+						pthread
+						${Boost_LIBRARIES}
 			${BLAS_LIBRARIES}
-                        ${LAPACK_LIBRARIES}
-                        ${YAML_CPP_LIBRARIES}
-                        ${YAML_CPP_LIB}
-                        ${LIBMONGOCXX_LIBRARIES}
-                        ${LIBBSONCXX_LIBRARIES}
+						${LAPACK_LIBRARIES}
+						${YAML_CPP_LIBRARIES}
+						${YAML_CPP_LIB}
+						${LIBMONGOCXX_LIBRARIES}
+						${LIBBSONCXX_LIBRARIES}
 			${BLAS_LIBRARY_DIRS}
-                        ${OPENSSL_LIBRARY_DIRS}
-                        ssl
-                        crypto
-					 )
+						${OPENSSL_LIBRARY_DIRS}
+						ssl
+						crypto
+					)
 
-                 #target_link_libraries(test_sinex2 PUBLIC
-                 #                        m
-                 #                        pthread
-                 #                        ${Boost_LIBRARIES}
-                 #                        ${OpenBLAS_LIB}
-                 #                        ${LAPACK_LIBRARIES}
-                 #                        ${YAML_CPP_LIBRARIES}
-                 #                        ${YAML_CPP_LIB} )
+				#target_link_libraries(test_sinex2 PUBLIC
+				#                        m
+				#                        pthread
+				#                        ${Boost_LIBRARIES}
+				#                        ${OpenBLAS_LIB}
+				#                        ${LAPACK_LIBRARIES}
+				#                        ${YAML_CPP_LIBRARIES}
+				#                        ${YAML_CPP_LIB} )
 
 
 # first we can indicate the documentation build as an option and set it to ON by default
@@ -808,37 +808,37 @@ option(BUILD_DOC "Build documentation" ON)
 find_package(Doxygen)
 if (DOXYGEN_FOUND)
 
-    # set input and output files
-    set(DOXYGEN_IN      ${CMAKE_CURRENT_SOURCE_DIR}/doc_templates/Doxyfile.in)
-    set(DOXYGEN_OUT     ${CMAKE_CURRENT_BINARY_DIR}/../../docs/Doxyfile)
-    set(DOXYGEN_LAYIN   ${CMAKE_CURRENT_SOURCE_DIR}/doc_templates/DoxygenLayout.xml.in)
-    set(DOXYGEN_LAYOUT  ${CMAKE_CURRENT_BINARY_DIR}/../../docs/DoxygenLayout.xml)
+	# set input and output files
+	set(DOXYGEN_IN      ${CMAKE_CURRENT_SOURCE_DIR}/doc_templates/Doxyfile.in)
+	set(DOXYGEN_OUT     ${CMAKE_CURRENT_BINARY_DIR}/../../docs/Doxyfile)
+	set(DOXYGEN_LAYIN   ${CMAKE_CURRENT_SOURCE_DIR}/doc_templates/DoxygenLayout.xml.in)
+	set(DOXYGEN_LAYOUT  ${CMAKE_CURRENT_BINARY_DIR}/../../docs/DoxygenLayout.xml)
 
-    # request to configure the file
-    if (EXISTS "${DOXYGEN_IN}")
+	# request to configure the file
+	if (EXISTS "${DOXYGEN_IN}")
 		configure_file(${DOXYGEN_IN}		${DOXYGEN_OUT}		@ONLY)
 	endif()
-    if (EXISTS "${DOXYGEN_LAYIN}")
+	if (EXISTS "${DOXYGEN_LAYIN}")
 		configure_file(${DOXYGEN_LAYIN}		${DOXYGEN_LAYOUT}	@ONLY)
 	endif()
 
-    # note the option ALL which allows to build the docs together with the application
-    add_custom_target( doc_doxygen
+	# note the option ALL which allows to build the docs together with the application
+	add_custom_target( doc_doxygen
 	ALL
-        COMMAND				${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-        WORKING_DIRECTORY	${CMAKE_CURRENT_SOURCE_DIR}/../docs
-        COMMENT				"Generating API documentation with Doxygen"
-        VERBATIM )
+		COMMAND				${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+		WORKING_DIRECTORY	${CMAKE_CURRENT_SOURCE_DIR}/../docs
+		COMMENT				"Generating API documentation with Doxygen"
+		VERBATIM )
 
 else (DOXYGEN_FOUND)
 
-  message("Doxygen need to be installed to generate the doxygen documentation")
+message("Doxygen need to be installed to generate the doxygen documentation")
 
 endif (DOXYGEN_FOUND)
 
 list(APPEND CTEST_CUSTOM_WARNING_EXCEPTION
-  ".*warning: ignoring loop annotation.*"
-  ".*warning: .*Consider increasing DOT_GRAPH_MAX_NODES."
+".*warning: ignoring loop annotation.*"
+".*warning: .*Consider increasing DOT_GRAPH_MAX_NODES."
 )
 
 if(ENABLE_MONGODB)
@@ -854,45 +854,45 @@ link_directories(/usr/lib64 ${CMAKE_BINARY_DIR}/../../build/lib)
 
 target_include_directories(pod PUBLIC
 	.
-        fortran/
-        ${LAPACK_INCLUDE_DIRS}
-        ${BLAS_INCLUDE_DIRS})
+		fortran/
+		${LAPACK_INCLUDE_DIRS}
+		${BLAS_INCLUDE_DIRS})
 
 #must get all the modules built first to build all the other libraries - so make everything depend on pod_lib & yaml ...
-target_link_libraries(rw_param pod_lib yaml)
-target_link_libraries(force pod_lib yaml)
-target_link_libraries(eop pod_lib yaml)
-target_link_libraries(yaw pod_lib yaml)
-target_link_libraries(tides pod_lib yaml)
-target_link_libraries(ga_tz pod_lib yaml)
-target_link_libraries(rk pod_lib yaml)
-target_link_libraries(ga_math pod_lib yaml)
-target_link_libraries(iau_math pod_lib yaml)
-target_link_libraries(ga_gen pod_lib yaml)
-target_link_libraries(boxwing pod_lib yaml)
-target_link_libraries(kepler pod_lib yaml)
-target_link_libraries(rel pod_lib yaml)
-target_link_libraries(eclipse pod_lib yaml)
-target_link_libraries(pod_lib yaml)
+target_link_libraries(rw_param 	pod_lib yaml)
+target_link_libraries(force 	pod_lib yaml)
+target_link_libraries(eop 		pod_lib yaml)
+target_link_libraries(yaw 		pod_lib yaml)
+target_link_libraries(tides 	pod_lib yaml)
+target_link_libraries(ga_tz 	pod_lib yaml)
+target_link_libraries(rk 		pod_lib yaml)
+target_link_libraries(ga_math 	pod_lib yaml)
+target_link_libraries(iau_math 	pod_lib yaml)
+target_link_libraries(ga_gen 	pod_lib yaml)
+target_link_libraries(boxwing 	pod_lib yaml)
+target_link_libraries(kepler 	pod_lib yaml)
+target_link_libraries(rel 		pod_lib yaml)
+target_link_libraries(eclipse 	pod_lib yaml)
+target_link_libraries(pod_lib 			yaml)
 
 # must have pod_lib first to get all the modules. As rw_param requires pod_lib it must be listed again after that. 
 # rk and force depend on eop and boxwing and must precede them in the list, likewise yaw must precede eclipse
-target_link_libraries(pod pod_lib rw_param pod_lib rel kepler yaw eclipse tides ga_tz rk force eop boxwing ga_math ga_gen iers iau_math yaml ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(crs2trs pod_lib rw_param pod_lib ga_tz rk force eop boxwing ga_math ga_gen iers iau_math yaml ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(brdc2ecef pod_lib rw_param pod_lib ga_tz rk force eop boxwing ga_math ga_gen iers iau_math yaml ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(timesystem pod_lib rw_param pod_lib ga_tz rk force eop boxwing ga_math ga_gen iers iau_math ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(test_yaml ga_gen yaml ${CMAKE_THREAD_LIBS_INIT}) 
+target_link_libraries(pod 			pod_lib rw_param pod_lib rel kepler yaw eclipse tides ga_tz rk force eop boxwing ga_math ga_gen iers iau_math yaml ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(crs2trs 		pod_lib rw_param pod_lib ga_tz rk force eop boxwing ga_math ga_gen iers iau_math yaml 	${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(brdc2ecef 	pod_lib rw_param pod_lib ga_tz rk force eop boxwing ga_math ga_gen iers iau_math yaml 	${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(timesystem 	pod_lib rw_param pod_lib ga_tz rk force eop boxwing ga_math ga_gen iers iau_math 		${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(test_yaml 																ga_gen 				yaml	${CMAKE_THREAD_LIBS_INIT}) 
 
-set_target_properties(pod PROPERTIES LINKER_LANGUAGE Fortran)
-set_target_properties(crs2trs PROPERTIES LINKER_LANGUAGE Fortran)
-set_target_properties(brdc2ecef PROPERTIES LINKER_LANGUAGE Fortran)
-set_target_properties(timesystem PROPERTIES LINKER_LANGUAGE Fortran)
-set_target_properties(test_yaml PROPERTIES LINKER_LANGUAGE Fortran)
+set_target_properties(pod 			PROPERTIES LINKER_LANGUAGE Fortran)
+set_target_properties(crs2trs 		PROPERTIES LINKER_LANGUAGE Fortran)
+set_target_properties(brdc2ecef 	PROPERTIES LINKER_LANGUAGE Fortran)
+set_target_properties(timesystem 	PROPERTIES LINKER_LANGUAGE Fortran)
+set_target_properties(test_yaml 	PROPERTIES LINKER_LANGUAGE Fortran)
 
-target_compile_definitions(pod PRIVATE LAPACK BLAS)
-target_compile_definitions(crs2trs PRIVATE)
-target_compile_definitions(brdc2ecef PRIVATE)
-target_compile_definitions(timesystem PRIVATE)
-target_compile_definitions(test_yaml PRIVATE)
+target_compile_definitions(pod 			PRIVATE LAPACK BLAS)
+target_compile_definitions(crs2trs 		PRIVATE)
+target_compile_definitions(brdc2ecef 	PRIVATE)
+target_compile_definitions(timesystem 	PRIVATE)
+target_compile_definitions(test_yaml 	PRIVATE)
 
 #print_all_variables()

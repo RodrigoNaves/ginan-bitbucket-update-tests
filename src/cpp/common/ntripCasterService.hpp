@@ -19,13 +19,13 @@ extern ACSConfig acsConfig;
 struct NtripCasterService
 {
 public:
-    std::vector<SourceTableEntry> sourceTableData;
-    std::multimap<std::string, std::shared_ptr<NtripRtcmStream>> downloadStreamMap;
-    std::multimap<std::string,std::string> traceFiles;
-    std::string caster_stream_root;
-    
-    void startPerformanceMonitoring();
-    void makeTraceFiles();
+	std::vector<SourceTableEntry> sourceTableData;
+	std::multimap<std::string, std::shared_ptr<NtripRtcmStream>> downloadStreamMap;
+	std::multimap<std::string,std::string> traceFiles;
+	std::string caster_stream_root;
+	
+	void startPerformanceMonitoring();
+	void makeTraceFiles();
 };
 
 #endif

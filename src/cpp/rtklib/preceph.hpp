@@ -9,7 +9,7 @@ using std::string;
 using std::list;
 
 #include "antenna.hpp"
-#include "gaTime.hpp"
+#include "gTime.hpp"
 #include "satSys.hpp"
 
 //forward declarations

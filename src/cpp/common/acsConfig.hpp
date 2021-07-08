@@ -80,11 +80,11 @@ struct OutputOptions
 	double	clocks_rotate_period		= 0;
 	bool	output_AR_clocks			= false;
 
-    bool	output_ppp_sol 				= false;
+	bool	output_ppp_sol 				= false;
 	string	ppp_sol_directory			= "./";
 	string	ppp_sol_filename			= "pea<YYYY><DDD><HH>.pppsol";
 
-    bool	output_ionex 				= false;
+	bool	output_ionex 				= false;
 	string	ionex_directory				= "./";
 	string	ionex_filename				= "pea<YYYY><DDD><HH>.ionex";
 	double	ionex_rotate_period			= 0;
@@ -160,10 +160,10 @@ struct GlobalOptions
 	string	analysis_program			= "AUSACS";
 	string	rinex_comment				= "AUSNETWORK1";
 
-    bool    print_stream_statistics     = false;
-    bool    caster_test                 = false;
-    string  caster_stream_root          = "";
-    
+	bool    print_stream_statistics     = false;
+	bool    caster_test                 = false;
+	string  caster_stream_root          = "";
+	
 	bool	process_user				= true;
 	bool	process_network 			= false;
 	bool	process_minimum_constraints	= false;
@@ -466,8 +466,8 @@ struct CycleSlipOptions
 struct SsrOptions
 {
 	bool	calculate_ssr			= false;
-    int		update_interval			= 0;
-    int 	ssr_ephemeris      		= E_Ephemeris::PRECISE;
+	int		update_interval			= 0;
+	int 	ssr_ephemeris      		= E_Ephemeris::PRECISE;
 	bool	upload_to_caster		= false;
 	bool	sync_epochs				= false;
 	int		sync_epoch_offset		= 0;

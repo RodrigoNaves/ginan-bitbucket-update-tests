@@ -19,7 +19,7 @@
 #define     MAXSTR      32          /* max string length */
 
 /** Clock jump repair object
- */
+*/
 struct ClockJump
 {
 	int msJump;
@@ -27,63 +27,63 @@ struct ClockJump
 };
 
 /** Cycle slip repair filter
- */
+*/
 struct flt_t
 {
-    double  a[3];       ///< cycle slip state vector
-    double  Qa[3][3];   ///< cycle slip state variance-covariance matrix
-    int     slip;       ///< cycle slip indicator for multi-epoch
-    int     amb[3];     ///< repaired cycle slip
-    int     ne;         ///< number of epochs involved
-    lc_t    lc_pre;     ///< lc information used for cycle slip repair
+	double  a[3];       ///< cycle slip state vector
+	double  Qa[3][3];   ///< cycle slip state variance-covariance matrix
+	int     slip;       ///< cycle slip indicator for multi-epoch
+	int     amb[3];     ///< repaired cycle slip
+	int     ne;         ///< number of epochs involved
+	lc_t    lc_pre;     ///< lc information used for cycle slip repair
 };
 
 /* trop sinex file */
 struct mgex_tropcoord                 /* trop station coordinates block */
 {
-    char    sitecode[4];        /* site code */
-    char    ptcode[2];          /* point code */
-    char    solid[4];           /* solution ID */
-    char    obscode;            /* observation code */
-    double  x[3];               /* coordinates */
-    char    sys[6];             /* system */
-    char    remark[5];
-    double  std[3];             /* (mm) */
-    int     counter;
+	char    sitecode[4];        /* site code */
+	char    ptcode[2];          /* point code */
+	char    solid[4];           /* solution ID */
+	char    obscode;            /* observation code */
+	double  x[3];               /* coordinates */
+	char    sys[6];             /* system */
+	char    remark[5];
+	double  std[3];             /* (mm) */
+	int     counter;
 };
 
 struct mgex_tropsol                 /* trop description block */
 {
-    char    marker[4];          /* marker name */
-    double  ts[3];              /* solution time YDS */
-    double  x[14];
-    int     actak;
-    int     acdel;
+	char    marker[4];          /* marker name */
+	double  ts[3];              /* solution time YDS */
+	double  x[14];
+	int     actak;
+	int     acdel;
 };
 
 struct mgex_trop                 /* trop information */
 {
-    char    id[5];
-    double  ver;
-    char    agency[3];
-    char    agencycode[3];
-    int     tbc[3];             /* time created */
-    int     tbs[3];             /* time started */
-    int     tbe[3];             /* time end */
-    char    obscode;            /* observation code */
-    char    solcon[4];
-    /* description block */
-    char    solfield[14][6];    /* solution */
-    int     inttrop;            /* trop solution sample rate */
-    int     intdata;            /* data sampling interval */
-    char    tropmap[22];        /* mapping function */
-    double  el;                 /* elevation cut off */
-    int     bstart;             /* bias start */
-    int     bend;               /* bias end */
-    double  factor;             /* delete factor */
-    char    cfactor[22];        /* conversion factor */
-    mgex_tropcoord  tcoord[MAXIGSSTA];
-    mgex_tropsol    *tsol;
+	char    id[5];
+	double  ver;
+	char    agency[3];
+	char    agencycode[3];
+	int     tbc[3];             /* time created */
+	int     tbs[3];             /* time started */
+	int     tbe[3];             /* time end */
+	char    obscode;            /* observation code */
+	char    solcon[4];
+	/* description block */
+	char    solfield[14][6];    /* solution */
+	int     inttrop;            /* trop solution sample rate */
+	int     intdata;            /* data sampling interval */
+	char    tropmap[22];        /* mapping function */
+	double  el;                 /* elevation cut off */
+	int     bstart;             /* bias start */
+	int     bend;               /* bias end */
+	double  factor;             /* delete factor */
+	char    cfactor[22];        /* conversion factor */
+	mgex_tropcoord  tcoord[MAXIGSSTA];
+	mgex_tropsol    *tsol;
 };
 
 int lsqqc(
