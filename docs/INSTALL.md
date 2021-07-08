@@ -9,17 +9,69 @@ GINAN is supported on the following Platforms
 * Linux
 * Mac OSX
   
+## Download
+
+You can downlaod GINAN source from github using git clone:
+
+    $ git clone git@https://github.com/GeoscienceAustralia/ginan.git
+    
+Then download all of the example data using git-lfs:
+
+    $ python3 scripts/download_examples.py 
+
+## Directory Structure
+
+    ginan/
+    ├── README.md			! General README information
+    ├── LICENSE.md		    ! Software License information
+    ├── aws/		        ! Amazon Web Services config
+    ├── bin/		        ! Binary executables directory*
+    ├── CMakeLists.txt		! Cmake build file
+    ├── docs/			    ! Documentation directory
+    ├── examples/           ! GINAN examples directory
+    |   ├── data/           ! example dataset (rinex files)**
+    |   ├── products/       ! example products and aux files**
+    |   ├── solutions/      ! example solutions for QC**
+    |   --------------PEA examples--------------
+    |   ├── ex11            ! PEA example 1
+    |   ├── ex12            ! PEA example 2
+    |   ├── ex13            ! PEA example 3
+    |   ├── ex14            ! PEA example 4
+    |   ├── ex15            ! PEA example 5
+    |   ├── ex17            ! PEA example 7
+    |   ├── ex18            ! PEA example 8
+    |   --------------POD examples--------------
+    |   ├── ex21            ! POD example 1
+    |   ├── ex22            ! POD example 2
+    |   ├── ex23            ! POD example 3
+    |   ├── ex24            ! POD example 4
+    |   ├── ex25            ! POD example 5
+    |   └── ex26            ! POD example 6
+    |
+    ├── lib/		        ! Compiled objectlibrary directory*
+    ├── scripts/		    ! Auxillary Python and Shell scripts and libraries
+    └── src/		        ! Source code directory
+        ├── cpp/            ! PEA source code
+        ├── fortran/        ! POD source code
+        ├── cmake/   
+        ├── doc_templates/
+        ├── build/			! Cmake build directory*
+        └── CMakeLists.txt
+
+\* created during installation process
+
+\*\* created by download_examples.py script
 ## Dependencies
 
 GINAN has several software dependencies:
 
-* C/C++ and Fortran compiler. We use and recommend [gcc-g++ (> 4.1) and gfortran](https://gcc.gnu.org/git.html).
-* [POD-only] BLAS and [LAPACK](https://github.com/Reference-LAPACK/lapack) linear algebra libraries. We use and recommend [OpenBlas](https://www.openblas.net/)
+* C/C++ and Fortran compiler. We use and recommend [gcc-g++ and gfortran](https://gcc.gnu.org)
+* BLAS and LAPACK linear algebra libraries. We use and recommend [OpenBlas](https://www.openblas.net/) as this contains both libraries required
 * CMAKE  > 3.0 
 * YAML   > 0.6
 * Boost  > 1.70
 * Eigen3
-* [Optional] netCDF4
+* netCDF4
 * Python3 (including Numpy and Matplotlib modules)
 
 ## Installing dependencies with Ubuntu
@@ -31,18 +83,18 @@ Update the base operating system:
 
 Install base utilities gcc, gfortran, git, openssl, blas, lapack, etc
 
-    $ sudo apt install -y git gobjc gobjc++ gfortran libopenblas-dev openssl curl net-tools openssh-server cmake make liblapack-dev libssl1.0-dev
+    $ sudo apt install -y git gobjc gobjc++ gfortran libopenblas-dev openssl curl net-tools openssh-server cmake make libssl1.0-dev
 
 ## Building additional dependencies 
 
-Depending on the user's installation choice: install PEA-only, POD-only or all software packages, a set of additional dependencies that need to be built may change. Here, we list building of all dependencies:
+Depending on the user's installation choice: install PEA-only, POD-only or all software packages, a set of additional dependencies that need to be built may change. Below, we explain building all the additional dependencies:
 
 First, create a temporary directory structure to make the dependencies in, it can be removed after the installation process is done:
 
-    $ sudo mkdir -p /data/tmp*
+    $ sudo mkdir -p /data/tmp
     $ cd /data/tmp
 
-\* `/data/tmp` is only used here as example and can be any directory
+Note that `/data/tmp` is only used here as example and can be any directory
 ### YAML
 We are using the YAML library to parse the configuration files used to run many of the programs found in this library (https://github.com/jbeder/yaml-cpp). Here is an example of how we have installed the yaml library from source:
 
@@ -84,7 +136,7 @@ Eigen3 is used for performing matrix calculations, and has a very nice API.
     $ sudo rm -rf eigen
 
 
-### Mongo-db (PEA-only)
+### MongoDB (PEA-only)
     $ wget https://github.com/mongodb/mongo-c-driver/releases/download/1.17.1/mongo-c-driver-1.17.1.tar.gz
     $ tar -xvf mongo-c-driver-1.17.1.tar.gz
 
@@ -114,78 +166,28 @@ Eigen3 is used for performing matrix calculations, and has a very nice API.
     $ sudo apt update
     $ sudo apt install mongodb-org
 
-    If you are using WSL see the notes below and skip this next section:
+If you are using WSL see the notes below and skip this next section:
 
     $ sudo systemctl start mongod
     $ sudo systemctl status mongod
     $ mongod
 
 
-    For WSL:
-    Even though the documentation on MongoBB says that WSL is not supportedm it is still possible to install.
-    In order to run mongod as a service on WSL you will need to:
+#### For WSL:
+Even though the documentation on MongoBB says that WSL is not supportedm it is still possible to install.
+In order to run mongod as a service on WSL you will need to:
 
-    Copy the script from : https://raw.githubusercontent.com/mongodb/mongo/master/debian/init.d
-    to /etc/init.d/mongod
+Copy the script from : https://raw.githubusercontent.com/mongodb/mongo/master/debian/init.d
+to /etc/init.d/mongod
 
-    Make the script executable:
+Make the script executable:
     $ sudo chmod a+x /etc/init.d/mongod
 
-    Now you can start it as a service by:
+Now you can start it as a service by:
     $ sudo service mongod start
 
 ### netcdf4 (for ocean tide loading package)
     $ apt -y install libnetcdf-dev libnetcdf-c++4-dev
-## Download
-
-You can downlaod GINAN source from github using git clone:
-
-    $ git clone git@https://github.com/GeoscienceAustralia/ginan.git
-    
-Then download all of the example data using git-lfs:
-
-    $ python3 scripts/download_examples.py 
-
-## Directory Structure
-
-    ginan/
-    ├── README.md			! General README information
-    ├── LICENSE.md		    ! Software License information
-    ├── aws/		        ! Amazon Web Services config
-    ├── bin*/		        ! Binary executables directory
-    ├── build*/			    ! Cmake build directory
-    ├── CMakeLists.txt		! Cmake build file
-    ├── docs/			    ! Documentation directory
-    ├── examples/           ! GINAN examples directory
-    |   ├── data**          ! example dataset (rinex files)
-    |   ├── products**      ! example products and aux files
-    |   ├── solutions**     ! example solutions for QC
-    |   ---------PEA examples----------
-    |   ├── ex12            ! PEA example 1
-    |   ├── ex13            ! PEA example 2
-    |   ├── ex11            ! PEA example 3
-    |   ├── ex14            ! PEA example 4
-    |   ├── ex15            ! PEA example 5
-    |   ├── ex17            ! PEA example 7
-    |   ├── ex18            ! PEA example 8
-    |   ----------POD examples----------
-    |   ├── ex21            ! POD example 1
-    |   ├── ex22            ! POD example 2
-    |   ├── ex23            ! POD example 3
-    |   ├── ex24            ! POD example 4
-    |   ├── ex25            ! POD example 5
-    |   └── ex26            ! POD example 6
-    ├── lib*/		        ! Compiled objectlibrary directory 
-    ├── scripts/		    ! Auxillary Python and Shell scripts and libraries
-    ├── src/		        ! Source code directory
-        ├── cpp/            ! PEA source code
-        ├── fortran/        ! POD source code
-        ├── cmake/   
-        ├── doc_templates/
-        └── CMakeLists.txt
-
-\* - created during installation process\
-\*\* - created by download_examples.py
 
 ## Build
 Prepare a directory to build in, its better practise to keep this seperated from the source code.
@@ -194,28 +196,24 @@ Prepare a directory to build in, its better practise to keep this seperated from
     $ mkdir -p build
     $ cd build
 
-Run cmake to find the build dependencies and create the make file:
+Run cmake to find the build dependencies and create the make file. If you wish to enable the optional MONGO DB utilities you will need to add the `-DENABLE_MONGODB=TRUE` flag. If you wish to compile an optimised version, typically this version will run 3 times faster but you may run into compile problems depending on your system, add the `-DOPTIMISATION=TRUE` flag:
 
-    $ cmake ..
-
-If you wish to enable the optional MONGO DB utilities you will need to add the `-DENABLE_MONGODB=TRUE` flag. If you wish to compile an optimised version, typically this version will run 3 times faster but you may run into compile problems depending on your system, add the `-DOPTIMISATION=TRUE` flag:
-
-    $ cmake -DENABLE_MONGODB=TRUE -DENABLE_OPTIMISATION=TRUE ..
+    $ cmake [-DENABLE_MONGODB=TRUE] [-DENABLE_OPTIMISATION=TRUE] ..
 
 To build every package simply run `make` or `make -j 2`, where 2 is a number of parallel threads you want to use for the compilation:
 
-    $ make -j 2
+    $ make [-j 2]
 
 To build specific package (e.g. PEA or POD), run as below:
 
-    $ make PEA -j 2
-    $ make POD -j 2
+    $ make pea -j 2
+    $ make pod -j 2
 
 This should create executables in the `bin` directory of GINAN.
 
 Check to see if you can execute the PEA:
 
-    $ ../bin/pea --help
+    $ ../../bin/pea --help
 
 and you should see something similar to:
 
@@ -256,7 +254,7 @@ and you should see something similar to:
 
 Similarly, check the POD:
 
-    $ ../bin/pod --help
+    $ ../../bin/pod --help
 This returns:
 
     Earth Radiation Model (ERM):   1
@@ -318,18 +316,30 @@ This returns:
     * crs2trs 
     * brdc2ecef -->
 
+## Documentation
+
+The documentation for Ginan can be generated using `doxygen` and `graphviz`. If not already installed, type as follows:
+
+	$ sudo apt -y install doxygen graphviz
+
+On success, proceed to the build directory and call make with `doc_doxygen` target:
+
+	$ cd src/build
+	$ make doc_doxygen
+
+The docs can then be found at `docs/html/index.html`. Note that documentation is generated automatically if `make` is called without arguments and `doxygen` and `graphviz` dependencies are satisfied.
 ## Ready!
-Congratulations! You are now ready to trial the examples of `PEA` and `POD` from the examples directory. See Ginan's manual for detailed explanation of each example. Note that examples have relative paths to files in them and rely on the presence of `products`, `data` and `solutions` directories inside the `examples` directory. Make sure you've run download_examples.py from the `Download` step of this instruction.
+Congratulations! You are now ready to trial the examples of `PEA` and `POD` from the examples directory. See Ginan's manual for detailed explanation of each example. Note that examples have relative paths to files in them and rely on the presence of `products`, `data` and `solutions` directories inside the `examples` directory. Make sure you've run `download_examples.py` from the `Download` step of this instruction.
 
-The paths are relative to the exampels directory and hence all the examples must be run from the `examples` directory.
+The paths are relative to the examples directory and hence all the examples must be run from the `examples` directory.
 
-    cd ../examples
+    cd ../../examples
 
 To run the first example of the PEA:
 
     ../bin/pea --config ex11_pea_pp_user_gps.yaml
 
-This should create `ex11` directory with `ex11-ALIC201919900.TRACE` and `ex1120624.snx` output files. You can remove the need for full path to the executable by adding ginan's bin directory to `~/.bachrc` file:
+This should create `ex11` directory with `ex11-ALIC201919900.TRACE` and `ex1120624.snx` output files. You can remove the need for path specification to the executable by adding ginan's bin directory to `~/.bachrc` file:
 
     PATH="path_to_ginan_bin:$PATH"
 
@@ -349,18 +359,19 @@ The best way to take advantage of this is to install the Miniconda virtual envir
 This will allow you to pass the .yaml file into the conda command and automatically set up a new python environment.
 
 ### Install Miniconda
-To install Miniconda, enter the following commands:
+To install Miniconda, download and execute the Miniconda shell file:
 
     $ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
     $ bash Miniconda3-latest-Linux-x86_64.sh
-And follow the installation instructions on screen (choosing all defaults is fine).
+
+And follow the on-screen instructions  (choosing all defaults is fine).
 
 ### Create virtual environment
-After installation you can create the ginan37 python environment. First open a new terminal session and enter:
+After installation you can create the `gn37` python environment using a prepared receipy. First open a new terminal session and enter:
 
-    $ conda env create -f <dir_to_pea>/python/ginan_py37.yaml
+    $ conda env create -f <dir_to_ginan>/scripts/conda_gn37.yaml
 
-You have now created the virtual python environment ginan37 with all necessary dependencies. Anytime you wish you run python scripts, ensure you are in the virtual environment by activating:
+You have now created the virtual python environment `gn37` with all necessary dependencies. Anytime you wish you run python scripts, ensure you are in the virtual environment by activating:
 
     $ conda activate gn37
 
