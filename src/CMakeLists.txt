@@ -810,9 +810,9 @@ if (DOXYGEN_FOUND)
 
 	# set input and output files
 	set(DOXYGEN_IN      ${CMAKE_CURRENT_SOURCE_DIR}/doc_templates/Doxyfile.in)
-	set(DOXYGEN_OUT     ${CMAKE_CURRENT_BINARY_DIR}/../../docs/Doxyfile)
+	set(DOXYGEN_OUT     ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 	set(DOXYGEN_LAYIN   ${CMAKE_CURRENT_SOURCE_DIR}/doc_templates/DoxygenLayout.xml.in)
-	set(DOXYGEN_LAYOUT  ${CMAKE_CURRENT_BINARY_DIR}/../../docs/DoxygenLayout.xml)
+	set(DOXYGEN_LAYOUT  ${CMAKE_CURRENT_BINARY_DIR}/DoxygenLayout.xml)
 
 	# request to configure the file
 	if (EXISTS "${DOXYGEN_IN}")
