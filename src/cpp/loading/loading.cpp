@@ -21,6 +21,8 @@ double interpolate( vector<double> &xData, vector<double> &yData, double x, bool
 {
 	int size =  xData.size();
 	int i = 0;// find left end of interval for interpolation
+
+	if (x==0) return (double) 0.0;
 	if ( x >= xData[size - 2] )                                                 // special case: beyond right end
 	{
 		i = size - 2;

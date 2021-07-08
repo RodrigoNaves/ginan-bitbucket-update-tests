@@ -936,6 +936,7 @@ void update_stat(
 	//test # of valid satellites
 	rtk.sol.numSats = 0;
 
+	std::string recId = "";
 	for (auto& obs : obsList)
 	{
 		if (obs.exclude)
@@ -968,13 +969,16 @@ void update_stat(
 		{
 			rtk.sol.numSats++;
 		}
+		if (recId != "")
+			assert(recId == obs.mount);
+		recId = obs.mount;
 	}
 
 	if (rtk.sol.numSats >= MIN_NSAT_SOL)	rtk.sol.stat = stat;
 	else									rtk.sol.stat = SOLQ_NONE;
 
-	for (short i = 0; i < 3; i++)	rtk.pppState.getKFValue({KF::REC_POS,		{}, "",i}, rtk.sol.pppRRec		[i]);
-	for (short i = 0; i < 2; i++)	rtk.pppState.getKFValue({KF::REC_SYS_BIAS,	{}, "",i}, rtk.sol.pppdtRec_m	[i]);
+	for (short i = 0; i < 3; i++)	rtk.pppState.getKFValue({KF::REC_POS,		{}, recId,	i}, rtk.sol.pppRRec		[i]);
+	for (short i = 0; i < 2; i++)	rtk.pppState.getKFValue({KF::REC_SYS_BIAS,	{}, recId,	i}, rtk.sol.pppdtRec_m	[i]);
 
 	//remove gps from glonass bias
 	rtk.sol.pppdtRec_m[1] -= rtk.sol.pppdtRec_m[0];

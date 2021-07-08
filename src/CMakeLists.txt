@@ -41,7 +41,8 @@ set(CMAKE_MODULE_PATH                           "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_VISIBILITY_PRESET         hidden)
 set(CMAKE_VERBOSE_MAKEFILE                      ON)
 set(CMAKE_CXX_FLAGS                             "${CMAKE_CXX_FLAGS} -std=c++1z -ggdb3 -fpermissive -Wno-write-strings -Wno-deprecated-declarations -Wno-format-overflow")
-set (CMAKE_Fortran_FLAGS "-g -frecursive -fall-intrinsics -Wmaybe-uninitialized -Wunused-dummy-argument -fcheck=all -fbacktrace")
+set (CMAKE_Fortran_FLAGS "-g -frecursive -fall-intrinsics -Wmaybe-uninitialized -fcheck=all -fbacktrace")
+#set (CMAKE_Fortran_FLAGS "-g -frecursive -fall-intrinsics -Wmaybe-uninitialized -Wunused-dummy-argument -fcheck=all -fbacktrace")
 
 # Uncomment these for Linux (e.g. CentOS 7) where boost 1.69.0 is packaged as boost169 (and boost is 1.53.0 for e.g.)
 #set(BOOST_INCLUDEDIR /data/work/lib/boost-1.70.0/include)
@@ -559,6 +560,20 @@ add_executable(pea
         cpp/common/testUtils.hpp
         cpp/common/writeClock.cpp
         cpp/common/writeClock.hpp
+	cpp/common/acsNtripBroadcast.cpp
+	cpp/common/acsNtripBroadcast.hpp
+	cpp/common/acsNtripServer.cpp
+	cpp/common/acsNtripServer.hpp
+	cpp/common/ntripCasterService.cpp
+	cpp/common/ntripCasterService.hpp
+	cpp/common/ntripSocket.cpp
+	cpp/common/ntripSocket.hpp
+	cpp/common/ntripTrace.cpp
+	cpp/common/ntripTrace.hpp
+	cpp/common/ntripSourceTable.cpp
+	cpp/common/ntripSourceTable.hpp
+	cpp/common/rtcmEncoder.cpp
+	cpp/common/rtcmEncoder.hpp
 
         cpp/iono/ionoMeas.cpp
         cpp/iono/ionoModel.cpp

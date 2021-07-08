@@ -170,8 +170,7 @@ extern map<int, double> lam_carr;		/* carrier wave length (m) {L1,L2,...} */
 
 
 
-const char PREAMBLE = BOOST_BINARY(11010011);
-
+const char RTCM_PREAMBLE = BOOST_BINARY(11010011);
 
 extern const boost::bimap<E_ObsCode,int> mCodes_gps;
 extern const boost::bimap<E_ObsCode,int> mCodes_glo;

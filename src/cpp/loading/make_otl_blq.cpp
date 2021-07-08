@@ -20,6 +20,7 @@
 #include <iostream>
 #include <fstream>
 #include <omp.h>
+#include <cstdlib> 
 
 #include <yaml-cpp/yaml.h>
 #include <boost/timer/timer.hpp>
@@ -38,6 +39,17 @@ using namespace boost::timer;
 namespace po = boost::program_options;
 
 const int THREAD_COUNT = 8;
+
+void expand_path (std::string & path)
+{
+	if (path[0] == '~')
+	{
+		std::string env_h = std::getenv("HOME");
+		path.erase(0, 1);
+		path.insert(0, env_h);
+	}
+}
+
 
 void program_options(int argc, char * argv[], otl_input & input)
 {
@@ -95,10 +107,13 @@ void program_options(int argc, char * argv[], otl_input & input)
 	YAML::Node config = YAML::LoadFile(config_f );
 
 	input.green = config["greenfunction"].as<string>();
+	expand_path(input.green);
 
 	YAML::Node tidefiles = config["tide"];
 	for (YAML::const_iterator it = tidefiles.begin() ; it != tidefiles.end(); ++it) {
-		input.tide_file.push_back(it->as<std::string>(""));
+		std::string value = it->as<std::string>("");
+		expand_path(value) ;
+		input.tide_file.push_back( value );
 	};
 
 	vector <string> row;

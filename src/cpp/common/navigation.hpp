@@ -223,164 +223,157 @@ struct erp_t
 };
 
 
-// This class is to store variables, used to debug
-// encode decode SSR messages.
-struct SSRDebug
+// SSR message metadata
+struct SSRMeta
 {
-	int	epochTime1s;
-	int	ssrUpdateIntIndex;
-	int	multipleMessage;
-	unsigned int referenceDatum;
-	unsigned int provider;
-	unsigned int solution;    
+	int				epochTime1s			= 0;
+	int				ssrUpdateIntIndex	= -1;
+	int				multipleMessage		= 0;
+	unsigned int	referenceDatum		= 0;
+	unsigned int	provider			= 0;
+	unsigned int	solution			= 0;
 };
 
 struct SSREph
 {
-	// Addition message information for encoding.
-	SSRDebug ssrDebug;
-	
-	GTime	t0	= {};
-	double	udi	= 0;
-	int		iod	= -1;
-
-	int		iode;          /* issue of data */
-	int		iodcrc;
-	double	deph [3];    /* delta orbit {radial,along,cross} (m) */
-	double	ddeph[3];    /* dot delta orbit {radial,along,cross} (m/s) */
+	SSRMeta ssrMeta;
+	GTime	t0			= {};
+	double	udi			= 0;		///< update interval
+	int		iod			= -1;	
+	int		iode		= -1;		///< issue of data
+	int		iodcrc		= -1;
+	double	deph [3]	= {};		///< delta orbit {radial,along,cross} (m)
+	double	ddeph[3]	= {};		///< dot delta orbit {radial,along,cross} (m/s)
 };
 
 struct SSRClk
 {
-	// Addition message information for encoding.
-	SSRDebug ssrDebug;
-	
-	GTime	t0	= {};
-	double	udi	= 0;
-	int		iod	= -1;
-
-	double	dclk[3];    /* delta clock {c0,c1,c2} (m,m/s,m/s^2) */
+	SSRMeta ssrMeta	= {};
+	GTime	t0		= {};
+	double	udi		= 0;			///< update interval
+	int		iod		= -1;
+	double	dclk[3]	= {};			///< delta clock {c0,c1,c2} (m,m/s,m/s^2)
 };
 
 struct SSRHRClk
 {
-	// Addition message information for encoding.
-	SSRDebug ssrDebug;
-	
-	GTime	t0	= {};
-	double	udi	= 0;
-	int		iod	= -1;
-
-	double hrclk;       /* high-rate clock corection (m) */
+	SSRMeta ssrMeta	= {};
+	GTime	t0		= {};
+	double	udi		= 0;			///< update interval
+	int		iod		= -1;
+	double hrclk	= 0;       /* high-rate clock corection (m) */
 };
 
 struct SSRUra
 {
 	GTime	t0	= {};
-	double	udi	= 0;
+	double	udi	= 0;				///< update interval
 	int		iod	= -1;
-
-	int ura;            /* URA indicator */
+	int		ura	= 0;            /* URA indicator */
 };
 
-// This class is to store variables, used to debug
-// encode decode SSR messages.
 struct SSRPhase
 {
-	int dispBiasConistInd = -1;
-	int MWConistInd = -1;
-	unsigned int nbias = -1;
-	double yawAngle = 0;
-	double yawRate = 0;
+	int dispBiasConistInd	= -1;
+	int MWConistInd			= -1;
+	unsigned int nbias		= 0;
+	double yawAngle			= 0;
+	double yawRate			= 0;
 };
 
-struct SSRPhaseExtra
+struct SSRPhaseCh
 {
-	unsigned int signalIntInd = 0;
-	unsigned int signalWidIntInd = 0;
-	unsigned int signalDisconCnt = 0;
+	unsigned int signalIntInd		= -1;
+	unsigned int signalWidIntInd	= -1;
+	unsigned int signalDisconCnt	= -1;
 };
+
+
 
 struct SSRBias
 {
-	// Addition message information for encoding.
-	SSRDebug ssrDebug = {};
+	SSRMeta		ssrMeta;
 	
-	// Addition phase bias information for encoding.
-	SSRPhase ssrPhase = {};
+	GTime	t0	= {};
+	double	udi	= 0;						///< update interval
+	int		iod	= -1;
 	
-	// Addition phase bias information for encoding.
-	map<E_ObsCode,SSRPhaseExtra> pExtra; 
-	
-	GTime	t0_code	 = {};
-	GTime	t0_phas	 = {};
-	double	udi_code = 0;
-	double	udi_phas = 0;
-	int		iod_code = -1;
-	int		iod_phas = -1;
-
-	map<E_ObsCode,double> cbias; /* code biases (m) */
-	map<E_ObsCode,double> cvari; /* code biases variance (m^2) */
-	map<E_ObsCode,double> pbias; /* phase biases (m) */
-	map<E_ObsCode,double> pvari; /* phase biases variance (m^2) */
+	map<E_ObsCode, double> bias;			///< biases (m) 
+	map<E_ObsCode, double> var;				///< biases variance (m^2) 
 };
 
-struct SSRBiasOut : SSRBias
+struct SSRCodeBias : SSRBias
 {
-	bool codeIsSet				= false;
-	bool phaseIsSet				= false;
+	//just inherit.
+};
+
+struct SSRPhasBias : SSRBias
+{
+	SSRPhase	ssrPhase; 					///< Additional data for SSR phase messages
+	map<E_ObsCode,SSRPhaseCh> ssrPhaseChs;	///< Additional data for SSR phase messages, for each channel
+};
+
+struct SSRCodeBiasOut : SSRCodeBias
+{
+	bool canExport	= false;
+	bool isSet		= false;
+};
+
+struct SSRPhasBiasOut : SSRPhasBias
+{
+	bool canExport	= false;
+	bool isSet		= false;
 };
 
 struct SSRClkOut : SSRClk
 {
-	double  broadcast			= 0;	// (m)
-	double  precise				= 0;	// (m)
-	bool    broadcastIsSet		= false;
-	bool    preciseIsSet		= false;
-	//double	prevDiff			= 0; //not used yet
-	//bool		prevDiffIsSet		= false; //not used yet
-	bool	readyForExport		= false;
+	double  broadcast		= 0;	// (m)
+	double  precise			= 0;	// (m)
+	bool    isBroadcastSet	= false;
+	bool    isPreciseSet	= false;
+	bool	canExport		= false;
 };
 
 struct SSREphOut : SSREph
 {
-	bool isSet					= false;
-	Eigen::VectorXd prevDEphem	= {};
-};
+	Vector3d	broadcast			= {};
+	Vector3d	broadcastVel		= {};
+	Vector3d	precise				= {};
+	Vector3d	nextBroadcast		= {};
+	Vector3d	nextBroadcastVel	= {};
+	Vector3d	nextPrecise			= {};
+	bool    	isBroadcastSet		= false;
+	bool    	isPreciseSet		= false;
+	bool    	isNextBroadcastSet	= false;
+	bool    	isNextPreciseSet	= false;
+	bool		canExport			= false;
+};	
 
 /* SSR correction type */
 struct ssr_t
 {
-	SSRBias		ssrBias;
-	SSRClk		ssrClk;
-	SSREph		ssrEph;
-	SSRHRClk	ssrHRClk;
-	SSRUra		ssrUra;
+	map<GTime, SSRCodeBias,	std::greater<GTime>>	ssrCodeBias_map;
+	map<GTime, SSRPhasBias,	std::greater<GTime>>	ssrPhasBias_map;
+	map<GTime, SSRClk,		std::greater<GTime>>	ssrClk_map;
+	map<GTime, SSREph,		std::greater<GTime>>	ssrEph_map;
+	map<GTime, SSRHRClk,	std::greater<GTime>>	ssrHRClk_map;
+	map<GTime, SSRUra,		std::greater<GTime>>	ssrUra_map;
 
-	int refd_;           /* sat ref datum (0:ITRF,1:regional) */
-	unsigned char update_; /* update flag (0:no update,1:update) */
+	int refd_;					///< sat ref datum (0:ITRF,1:regional)
+	unsigned char update_;		///<update flag (0:no update,1:update)
 };
+
+// map<string, map<GTime, pcvacs_t,	std::greater<GTime>>>	pcvMap;
 
 struct SSROut
 {
-	SSRBiasOut      ssrBias;
+	SSRPhasBiasOut	ssrPhasBias;
+	SSRCodeBiasOut	ssrCodeBias;
 	SSRClkOut       ssrClk;
 	SSREphOut       ssrEph;
-	bool            locked              = false;
-	int             udiEpochs           = 0; /* UDI in epochs */
-	int             epochsSinceUpdate   = 0;
-	int             numObs              = 0; /* Number of observations for this sat */
-
-	void            lock()
-	{
-		while (locked){}
-		locked = true;
-	}
-	void            unlock()
-	{
-		locked = false;
-	}
-
+	int             udiNumEpochs		= 0; /* UDI in epochs */
+	int             epochsSinceUpdate	= 0;
+	int             numObs				= 0; /* Number of observations for this sat */
 };
 
 struct SatNav
@@ -401,7 +394,7 @@ struct nav_t
 {
 	/* navigation data type */
 
-    map<string, map<GTime, pcvacs_t,	std::greater<GTime>>>	pcvMap;
+	map<string, map<GTime, pcvacs_t,	std::greater<GTime>>>	pcvMap;
 	
 	unordered_map<int, EphList> 		ephMap;        /* GPS/QZS/GAL ephemeris */
 	unordered_map<int, GephList>		gephMap;       /* GLONASS ephemeris */
@@ -489,27 +482,21 @@ namespace boost::serialization
 }
 
 void	initSsrOut(double tgap);
-void	calcSsrOut();
-void	exportSsrOut();
+void	calcSsrCorrections(
+	Trace&				trace,
+	std::set<SatSys>&	sats,
+	GTime				iontime);
+void	writeSsrOutToFile(
+	int					epochNum,
+	std::set<SatSys>	sats);
+void	rtcmEncodeToFile			(int epochNum);
+void	rtcmDecodeFromFile			(int epochNum);
+void	exportSyncFile				(int epochNum);
+void	waitForSyncFile				(int epochNum);
 
-const map<int,int> udiMap = 
-{
-	{1,		0	},
-	{2,		1	},
-	{5,		2	},
-	{10,	3	},
-	{15,	4	},
-	{30,	5	},
-	{60,	6	},
-	{120,	7	},
-	{240,	8	},
-	{300,	9	},
-	{600,	10	},
-	{900,	11	},
-	{1800,	12	},
-	{3600,	13	},
-	{7200,	14	},
-	{10800,	15	},
-};
+Vector3d ecef2rac(
+	Vector3d vecToRotate,
+	Vector3d r,
+	Vector3d v);
 
 #endif

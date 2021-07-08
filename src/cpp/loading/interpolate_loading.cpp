@@ -182,10 +182,10 @@ int main(int argc, char * argv[]) {
 //		load.set_name(input.green);
 //		load.read();
 		BOOST_LOG_TRIVIAL(info) << "All file read \n\t" << timer.format();
-		cout << tideinfo.get_lat(0) << "  " << tideinfo.get_lon(0) << "\n\n";
-		for (int iw = 0; iw < tideinfo.get_nwave()*6; iw ++)
-			cout << tideinfo.interpolate(iw, input.lon[0] , input.lat[0]) << "\t";
-		cout << "\n";
+		// cout << tideinfo.get_lat(0) << "  " << tideinfo.get_lon(0) << "\n\n";
+		// for (int iw = 0; iw < tideinfo.get_nwave()*6; iw ++)
+		// 	cout << tideinfo.interpolate(iw, input.lon[0] , input.lat[0]) << "\t";
+		// cout << "\n";
 		//cout << tideinfo.interpolate(1, input.lon[0], input.lat[0]) << "\n \n";
 
 		input.out_disp.resize(boost::extents[input.code.size()][tideinfo.get_nwave()][3]) ;
@@ -198,11 +198,11 @@ int main(int argc, char * argv[]) {
 																				tideinfo.interpolate(i_wave*6 + 2*i_dir +1, input.lon[i_sta], input.lat[i_sta])
 																				);
 
-		for (int i_sta = 0 ; i_sta < input.lat.size(); i_sta++)
-			for ( int i_wave = 0 ; i_wave < tideinfo.get_nwave(); i_wave ++ )		
-				for (int i_dir = 0 ; i_dir < 3; i_dir++ )
-					cout << std::arg( input.out_disp[i_sta][i_wave][i_dir] )* 180 / M_PI  << "\t";
-		cout << "\n";
+		// for (int i_sta = 0 ; i_sta < input.lat.size(); i_sta++)
+		// 	for ( int i_wave = 0 ; i_wave < tideinfo.get_nwave(); i_wave ++ )		
+		// 		for (int i_dir = 0 ; i_dir < 3; i_dir++ )
+		// 			cout << std::arg( input.out_disp[i_sta][i_wave][i_dir] )* 180 / M_PI  << "\t";
+		// cout << "\n";
 		write_BLQ(&input, 0);
 
 	}

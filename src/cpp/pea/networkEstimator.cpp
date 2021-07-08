@@ -474,7 +474,7 @@ void networkEstimator(
 		else if (ft == scndfr)	kfMeasEntryListL2.push_back(phasMeas);
 		else if (ft == iffreq)	kfMeasEntryListLc.push_back(phasMeas);
 
-		//record number of observations per satellite for SSR correction publishing
+		//record number of observations per satellite - for publishing SSR corrections
 		++nav.satNavMap[obs.Sat].ssrOut.numObs;
 	}
 

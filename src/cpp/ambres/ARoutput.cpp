@@ -363,15 +363,20 @@ double update_out_bias(SatSys sat, E_AmbTyp ambtyp, double rawbia)
 	return satamb.bias_out[ambtyp].outbias;
 }
 
-int Satelt_bias_out ( Trace& trace, GTime time, double tupdt, double arelev )
+int Satelt_bias_out(
+	Trace& trace, 
+	GTime time, 
+	double tupdt, 
+	double arelev)
 {
 	int nbia = 0;
 
-	for ( auto& [sat, satamb] : satpiv )
+	for (auto& [sat, satamb] : satpiv)
 	{
-		int nval = 0, nfix = 0;
+		int nval = 0;
+		int nfix = 0;
 
-		if (!sys_solve[sat.sys]) 
+		if (sys_solve[sat.sys] == false) 
 			continue;
 
 		if (satamb.reset)
@@ -404,25 +409,10 @@ int Satelt_bias_out ( Trace& trace, GTime time, double tupdt, double arelev )
 
 			switch (sat.sys)
 			{
-				case E_Sys::GPS:
-					def1 = E_ObsCode::L1C;
-					def2 = E_ObsCode::L2W;
-					break;
-
-				case E_Sys::GAL:
-					def1 = E_ObsCode::L1C;
-					def2 = E_ObsCode::L5Q;
-					break;
-
-				case E_Sys::CMP:
-					def1 = E_ObsCode::L2I;
-					def2 = E_ObsCode::L7I;
-					break;
-
-				case E_Sys::QZS:
-					def1 = E_ObsCode::L1C;
-					def2 = E_ObsCode::L2L;
-					break;
+				case E_Sys::GPS:			def1 = E_ObsCode::L1C;			def2 = E_ObsCode::L2W;		break;
+				case E_Sys::GAL:			def1 = E_ObsCode::L1C;			def2 = E_ObsCode::L5Q;		break;
+				case E_Sys::CMP:			def1 = E_ObsCode::L2I;			def2 = E_ObsCode::L7I;		break;
+				case E_Sys::QZS:			def1 = E_ObsCode::L1C;			def2 = E_ObsCode::L2L;		break;
 			}
 
 			double lam1 = lambdas[def1];
@@ -447,15 +437,14 @@ int Satelt_bias_out ( Trace& trace, GTime time, double tupdt, double arelev )
 			satamb.bias_out[E_AmbTyp::UCL2].outbias = L2bias;
 			satamb.bias_out[E_AmbTyp::UCL2].outvari = L2var;
 
-			if (acsConfig.ssrOpts.ssr_corrections_enabled)
+			if (acsConfig.ssrOpts.calculate_ssr)
 			{
-				nav.satNavMap[sat].ssrOut.lock();
-				nav.satNavMap[sat].ssrOut.ssrBias.pbias[def1] = L1bias;
-				nav.satNavMap[sat].ssrOut.ssrBias.pvari[def1] = L1var;
-				nav.satNavMap[sat].ssrOut.ssrBias.pbias[def2] = L2bias;
-				nav.satNavMap[sat].ssrOut.ssrBias.pvari[def2] = L2var;
-				nav.satNavMap[sat].ssrOut.ssrBias.phaseIsSet = true;
-				nav.satNavMap[sat].ssrOut.unlock();
+				nav.satNavMap[sat].ssrOut.ssrPhasBias.canExport		= false;
+				nav.satNavMap[sat].ssrOut.ssrPhasBias.bias	[def1]	= L1bias;
+				nav.satNavMap[sat].ssrOut.ssrPhasBias.var	[def1]	= L1var;
+				nav.satNavMap[sat].ssrOut.ssrPhasBias.bias	[def2]	= L2bias;
+				nav.satNavMap[sat].ssrOut.ssrPhasBias.var	[def2]	= L2var;
+				nav.satNavMap[sat].ssrOut.ssrPhasBias.isSet			= true;
 			}
 
 			nbia++;
