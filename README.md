@@ -1,4 +1,4 @@
-# Ginan GNSS Data Dnalysis Software Toolkit
+# Ginan a GNSS Data Analysis Software Toolkit
 
 ## Overview
 
