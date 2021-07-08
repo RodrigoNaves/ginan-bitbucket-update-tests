@@ -15,5 +15,4 @@ double deg_to_rad(double rad);
 
 void calcDistanceBearing(float *lat1, float *lon1, float * lat2, float *lon2, double *dist, double *brng);
 
-
 #endif //PEA_UTILS_H

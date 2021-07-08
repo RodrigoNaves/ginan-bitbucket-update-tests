@@ -117,6 +117,7 @@ struct Obs : RawObs, IonoObs
     string 		mount			= "";	///< ID of the receiver that generated the observation
 	double		dtSat[2]		= {};	///< Clock bias of the satellite
 	int 		svh				= 0;	///< Satellite vehicle health
+	int 		iode			= 0;	///< Issue of data ephemeris
 	double 		rescode_v		= 0;	///< Residuals of code
 	bool		vsat			= 0;	///< Valid satellite flag
 	MatrixXd	satPartialMat;			///< Partial derivative matrices for orbits

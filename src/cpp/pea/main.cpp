@@ -21,6 +21,8 @@ using std::string;
 #include <boost/filesystem.hpp>
 
 
+#include "ntripCasterService.hpp"
+#include "acsNtripBroadcast.hpp"
 #include "minimumConstraints.hpp"
 #include "networkEstimator.hpp"
 #include "peaCommitVersion.h"
@@ -32,6 +34,7 @@ using std::string;
 #include "GNSSambres.hpp"
 #include "acsConfig.hpp"
 #include "acsStream.hpp"
+#include "ntripSocket.hpp"
 #include "testUtils.hpp"
 #include "biasSINEX.hpp"
 #include "ionoModel.hpp"
@@ -56,9 +59,12 @@ nav_t		nav		= {};
 int			epoch	= 1;
 GTime		tsync	= GTime::noTime();
 
+// Used for stream specific tracing.
+std::multimap	<string, std::shared_ptr<NtripRtcmStream>>	ntripRtcmMultimap;
 std::multimap	<string, ACSObsStreamPtr>	obsStreamMultimap;
 std::multimap	<string, ACSNavStreamPtr>	navStreamMultimap;
 std::map		<string, bool>				streamDOAMap;
+NtripBroadcaster outStreamManager;
 
 #ifdef ENABLE_MONGODB
 	Mongo*	mongo_ptr = nullptr;
@@ -422,6 +428,31 @@ void createTracefiles(
 	{
 		createNewTraceFile(net.id,	logtime, acsConfig.clocks_filename + SMOOTHED_SUFFIX,	net.rtsClockFilename,			"",					false, false);
 	}
+	
+	for (auto& [id, upStream_ptr] : outStreamManager.ntripUploadStreams)
+	{ 
+		NtripBroadcaster::NtripUploadClient& upStream = *upStream_ptr;
+		upStream.ntripTrace.level_trace = level_trace;
+		string path_trace = acsConfig.trace_filename;
+		replaceString(path_trace, "<STATION>", id + "-UPLOAD");
+		replaceString(path_trace, "<LOGTIME>", logtime);
+		BOOST_LOG_TRIVIAL(debug)
+		<< "\tCreating trace file for stream " << id;		
+		upStream.traceFilename	= path_trace;
+		auto trace = getTraceFile(upStream);
+
+		// Trace file head
+		trace << "station    : " << id << std::endl;
+		trace << "start_epoch: " << acsConfig.start_epoch << std::endl;
+		trace << "end_epoch  : " << acsConfig.end_epoch   << std::endl;
+		trace << "trace_level: " << acsConfig.trace_level << std::endl;
+		trace << "pea_version: " << PEA_COMMIT_VERSION    << std::endl;
+
+		if (acsConfig.output_config)
+		{
+			dumpConfig(trace);
+		}
+	}
 }
 
 void mainOncePerEpochPerStation(
@@ -502,6 +533,39 @@ void mainOncePerEpochPerStation(
 				trace << std::endl << "------------ AR PPP solution end --------------------" << std::endl;
 			}
 		}
+
+		// Compare estimated station position with benchmark in SINEX file
+		if (acsConfig.output_ppp_sol)
+		{
+			Vector3d snxPos = rec.snx.pos;
+			Vector3d estPos = rec.rtk.sol.pppRRec;
+			Vector3d diffEcef = snxPos - estPos;
+			double latLonHt[3];
+			ecef2pos(snxPos, latLonHt); // rad,rad,m
+			double diffEcefArr[3];
+			Vector3d::Map(diffEcefArr, diffEcef.rows())	= diffEcef; // equiv. to diffEcef = diff
+			double diffEnuArr[3];
+			ecef2enu(latLonHt, diffEcefArr, diffEnuArr);
+			Vector3d diffEnu;
+			diffEnu = Vector3d::Map(diffEnuArr, diffEnu.rows());
+
+			std::ofstream fout(acsConfig.ppp_sol_filename, std::ios::out | std::ios::app);
+			if (!fout)
+			{
+				BOOST_LOG_TRIVIAL(error)
+				<< "Could not open trace file for PPP solution at " << acsConfig.ppp_sol_filename;
+			}
+			else
+			{
+				fout << epoch << " ";
+				fout << rec.id << " ";
+				fout << snxPos.transpose() << " ";
+				fout << estPos.transpose() << " ";
+				fout << diffEcef.transpose() << " ";
+				fout << diffEnu.transpose() << " ";
+				fout << std::endl;
+			}
+		}
 	}
 
 	if (acsConfig.process_network)
@@ -572,7 +636,7 @@ void mainOncePerEpoch(
 
 	auto netTrace = getTraceFile(net);
 	
-	if (acsConfig.ssrOpts.ssr_corrections_enabled)
+	if (acsConfig.ssrOpts.calculate_ssr)
 	{
 		initSsrOut(tgap);
 	}
@@ -661,6 +725,21 @@ void mainOncePerEpoch(
 			}
 #			endif
 		}
+
+		if (acsConfig.ssrOpts.calculate_ssr)
+		{
+			std::set<SatSys> sats;	// List of satellites visible in this epoch
+			for (auto& rec_ptr	: epochStations)
+				for (auto& obs	: rec_ptr->obsList)
+					sats.insert(obs.Sat);
+			calcSsrCorrections(netTrace, sats, tsync);
+			if (acsConfig.ssrOpts.upload_to_caster)
+				outStreamManager.sendMessages(true);
+			else
+				rtcmEncodeToFile(epoch);
+			if (acsConfig.ssrOpts.sync_epochs)
+				exportSyncFile(epoch);
+		}
 	}
 
 	if (acsConfig.process_ionosphere)
@@ -672,13 +751,6 @@ void mainOncePerEpoch(
 	{
 		outputPersistanceNav();
 	}
-
-	if (acsConfig.ssrOpts.ssr_corrections_enabled)
-	{
-		calcSsrOut();
-		exportSsrOut();
-	}
-
 
 	TestStack::saveData();
 	TestStack::testStatus();
@@ -810,6 +882,8 @@ void mainPostProcessing(
 	}
 }
 
+void testRtcmEncodeDecode();
+
 int main(int argc, char **argv)
 {
 	tracelevel(5);
@@ -854,16 +928,65 @@ int main(int argc, char **argv)
 	if (!acsConfig.biasSINEX_directory	.empty())	boost::filesystem::create_directories(acsConfig.biasSINEX_directory);
 	if (!acsConfig.sinex_directory		.empty())	boost::filesystem::create_directories(acsConfig.sinex_directory);
 	if (!acsConfig.testOpts.directory	.empty())	boost::filesystem::create_directories(acsConfig.testOpts.directory);
+	if (!acsConfig.ssrOpts.rtcm_directory.empty())	boost::filesystem::create_directories(acsConfig.ssrOpts.rtcm_directory);
+	if (!acsConfig.ppp_sol_directory.empty())		boost::filesystem::create_directories(acsConfig.ppp_sol_directory);
 	if (!acsConfig.persistance_directory.empty())	boost::filesystem::create_directories(acsConfig.persistance_directory);
 
 	BOOST_LOG_TRIVIAL(info)
 	<< "Logging with trace level:" << acsConfig.trace_level << std::endl << std::endl;
 
 	tracelevel(acsConfig.trace_level);
+	
+	if ( acsConfig.caster_test )
+	{
+		// This struct stops normal operation of the PEA and puts it into
+		// caster testing mode and sets up the stream performance web service.
 
+		
+		// Existing streams from the configuration are not required. To remove them
+		// the networking is started and shutdown as work for the network thread gets
+		// queued when the stream is created.
+#ifndef	ENABLE_UNIT_TESTS
+		NtripSocket::startClients();
+#endif
+		for (auto& [id, s] : ntripRtcmMultimap)
+		{
+			NtripStream& downStream = *s;
+			downStream.disconnect();
+		}
+		outStreamManager.stopBroadcast();
+		
+		ntripRtcmMultimap.clear();
+		obsStreamMultimap.clear();
+		outStreamManager.ntripUploadStreams.clear();
+		
 
+		NtripCasterService casterService;   
+		casterService.caster_stream_root = acsConfig.caster_stream_root;
+		casterService.startPerformanceMonitoring();
+
+#ifndef	ENABLE_UNIT_TESTS
+		NtripSocket::io_service.stop();
+#endif
+		exit(0);
+	}
+	
+	for (auto& [id, s] : ntripRtcmMultimap )
+	{
+		NtripRtcmStream& downStream = *s;
+		downStream.ntripTrace.level_trace = acsConfig.trace_level;
+		downStream.print_stream_statistics = acsConfig.print_stream_statistics;
+	}
+
+	for (auto& [id, s] : outStreamManager.ntripUploadStreams)
+	{
+		NtripBroadcaster::NtripUploadClient& uploadStream = *s;
+		uploadStream.ntripTrace.level_trace = acsConfig.trace_level;
+		uploadStream.print_stream_statistics = acsConfig.print_stream_statistics;
+	}
+	
 	double		orog[NGRID] = {};	 		/* vmf3 orography information, config->orography */
-	gptgrid_t	gptg		= {};         	/* gpt grid information */
+	gptgrid_t	gptg		= {};			/* gpt grid information */
 
 
 	//read orography file for VMF3
@@ -910,6 +1033,10 @@ int main(int argc, char **argv)
 	if (acsConfig.output_biasSINEX)
 	{
 		std::ofstream(acsConfig.biasSINEX_filename);
+	}
+	if (acsConfig.output_ppp_sol)
+	{
+		std::ofstream(acsConfig.ppp_sol_filename);
 	}
 
 	Network net;
@@ -959,6 +1086,10 @@ int main(int argc, char **argv)
 	<< "Starting to process epochs...";
 
 	TestStack ts(acsConfig.config_description);
+
+#ifndef	ENABLE_UNIT_TESTS
+	NtripSocket::startClients();
+#endif
 
 	//============================================================================
 	// MAIN PROCESSING LOOP														//
@@ -1157,7 +1288,72 @@ int main(int argc, char **argv)
 				epochStations.push_back(&rec);
 			}
 		}
+		if (acsConfig.process_user)
+		{
+			if (acsConfig.ssrOpts.sync_epochs)
+				waitForSyncFile(epoch + acsConfig.ssrOpts.sync_epoch_offset);
+			if (acsConfig.ssrOpts.read_from_files)
+				rtcmDecodeFromFile(epoch + acsConfig.ssrOpts.sync_epoch_offset); // add an offset if starting later than 00:00:00
+		}
 		
+		// Observations or not provide trace information on the downloading station stream.
+
+		
+		for (auto& [id, rec] : stationMap )
+		{
+			auto down_it = ntripRtcmMultimap.find(rec.id);
+			if( down_it != ntripRtcmMultimap.end() )
+			{
+				std::ofstream stecfile(acsConfig.ionstec_filename, std::ofstream::app);
+				auto trace = getTraceFile(rec);
+				trace << std::endl << "<<<<<<<<<<< Network Trace : Epoch " << epoch << " >>>>>>>>>>>" << std::endl;      
+				NtripRtcmStream& downStream = *down_it->second;
+				downStream.traceWriteEpoch(trace);             
+			} 
+		}
+
+		for (auto& [id, s] : outStreamManager.ntripUploadStreams)
+		{
+			NtripBroadcaster::NtripUploadClient& uploadStream = *s;
+			auto trace = getTraceFile(uploadStream);
+			trace << std::endl << "<<<<<<<<<<< Network Trace : Epoch " << epoch << " >>>>>>>>>>>" << std::endl;
+			uploadStream.traceWriteEpoch(trace);
+		}
+		
+		{
+			std::ofstream netStream(acsConfig.trace_directory + "NetworkStatistics.json",std::ofstream::out | std::ofstream::ate);
+			
+			netStream << "[";
+			bool isFirstEntry = true;
+			
+			for (auto& [id, rec] : stationMap )
+			{
+				auto down_it = ntripRtcmMultimap.find(rec.id);
+				if	(down_it != ntripRtcmMultimap.end())
+				{
+					NtripRtcmStream& downStream = *down_it->second;
+					
+					if (isFirstEntry)
+						isFirstEntry = false;
+					else
+						netStream << ",";
+					netStream << downStream.getJsonNetworkStatistics(breakTime);
+				}
+			}
+			
+			for (auto& [id, s] : outStreamManager.ntripUploadStreams)
+			{ 
+				NtripBroadcaster::NtripUploadClient& uploadStream = *s;
+				
+				if (isFirstEntry)
+					isFirstEntry = false;
+				else
+					netStream << ",";
+				netStream << uploadStream.getJsonNetworkStatistics(breakTime);
+			}
+			netStream << "]";
+		}
+	
 		if	(complete)
 		{
 			break;
@@ -1234,9 +1430,9 @@ int main(int argc, char **argv)
 			std::advance(rec_ptr_iterator, i);
 
 			Station& rec = **rec_ptr_iterator;
-
 			mainOncePerEpochPerStation(rec, orog, gptg);
 		}	
+
 
 		Eigen::setNbThreads(0);
 
@@ -1281,6 +1477,18 @@ int main(int argc, char **argv)
 		epoch++;
 	}
 
+
+#ifndef	ENABLE_UNIT_TESTS
+	// Disconnect the downloading clients and stop the io_service for clean shutdown.
+	for (auto& [id, s] : ntripRtcmMultimap)
+	{
+		NtripStream& downStream = *s;
+		downStream.disconnect();
+	}
+	outStreamManager.stopBroadcast();  
+	NtripSocket::io_service.stop();
+#endif
+		
 	auto peaInterTime = boost::posix_time::from_time_t(system_clock::to_time_t(system_clock::now()));
 	BOOST_LOG_TRIVIAL(info)
 	<< std::endl

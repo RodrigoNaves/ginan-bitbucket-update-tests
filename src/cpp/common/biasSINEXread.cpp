@@ -524,25 +524,35 @@ void inpt_hard_bias(
 	var [PHAS] = 0;
 	
 	if (opt.SSR_biases)
-	{
-		auto& ssrbia = satNav.ssr.ssrBias;
-		
-		if	(  opt.COD_biases 
-			&& ssrbia.t0_code.time > 0
-			&& fabs(timediff(time, ssrbia.t0_code)) < SSR_CBIA_VALID
-			&& ssrbia.cbias.find(obsCode) != ssrbia.cbias.end())
+	{	
+		auto codeIt = satNav.ssr.ssrCodeBias_map.lower_bound(time);
+		if (codeIt != satNav.ssr.ssrCodeBias_map.end())
 		{
-			bias[CODE] += -ssrbia.cbias[obsCode];
-			var [CODE] +=  ssrbia.cvari[obsCode];
+			auto& [t, ssrbias] = *codeIt;
+			
+			if	(  opt.COD_biases 
+				&& ssrbias.t0.time > 0
+				&& fabs(timediff(time, ssrbias.t0)) < SSR_CBIA_VALID
+				&& ssrbias.bias.find(obsCode) != ssrbias.bias.end())
+			{
+				bias[CODE] += -ssrbias.bias	[obsCode];
+				var [CODE] +=  ssrbias.var	[obsCode];
+			}
 		}
 		
-		if	(  opt.PHS_biases 
-			&& ssrbia.t0_phas.time > 0
-			&& fabs(timediff(time,ssrbia.t0_phas)) < SSR_PBIA_VALID
-			&& ssrbia.pbias.find(obsCode) != ssrbia.pbias.end())
+		auto phasIt = satNav.ssr.ssrPhasBias_map.lower_bound(time);
+		if (phasIt != satNav.ssr.ssrPhasBias_map.end())
 		{
-			bias[PHAS] += -ssrbia.pbias[obsCode];
-			var [PHAS] +=  ssrbia.pvari[obsCode];
+			auto& [t, ssrbias] = *phasIt;
+			
+			if	(  opt.PHS_biases 
+				&& ssrbias.t0.time > 0
+				&& fabs(timediff(time, ssrbias.t0)) < SSR_PBIA_VALID
+				&& ssrbias.bias.find(obsCode) != ssrbias.bias.end())
+			{
+				bias[PHAS] += -ssrbias.bias	[obsCode];
+				var [PHAS] +=  ssrbias.var	[obsCode];
+			}
 		}
 	}
 

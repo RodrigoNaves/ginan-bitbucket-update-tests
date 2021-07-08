@@ -10,6 +10,7 @@
 #include "station.hpp"
 #include "algebra.hpp"
 #include "enums.h"
+#include "GNSSambres.hpp"
 
 
 /* macro defintions */
@@ -85,13 +86,11 @@ void outputSatelliteClocks(
 					clk/CLIGHT,
 					sigma);
 			
-			if (acsConfig.ssrOpts.ssr_corrections_enabled)
+			if (acsConfig.ssrOpts.calculate_ssr
+			&& (!acsConfig.output_AR_clocks || ARsol_ready())) // Always records non-AR clocks; records AR-clocks if AR solution is stable
 			{
-				if (nav.satNavMap[key.Sat].ssrOut.numObs > 0)
-				{
-					nav.satNavMap[key.Sat].ssrOut.ssrClk.precise = clk; // units: m
-					nav.satNavMap[key.Sat].ssrOut.ssrClk.preciseIsSet = true;
-				}
+				nav.satNavMap[key.Sat].ssrOut.ssrClk.precise = clk; // units: m
+				nav.satNavMap[key.Sat].ssrOut.ssrClk.isPreciseSet = true;
 			}
 		}
 	}

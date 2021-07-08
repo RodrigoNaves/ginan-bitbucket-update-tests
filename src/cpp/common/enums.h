@@ -71,6 +71,7 @@ BETTER_ENUM(BiasGroup,		short int,
 BETTER_ENUM(E_Ephemeris,	short int,
 			BROADCAST,
 			PRECISE,
+			PRECISE_COM,
 			SBAS,
 			SSR_APC,
 			SSR_COM)
@@ -355,6 +356,11 @@ BETTER_ENUM(RtcmMessageType, uint16_t,
 		GAL_SSR_COMB_CORR	= 1243,
 		GAL_SSR_CODE_BIAS	= 1242,
 		GAL_SSR_PHASE_BIAS	= 1267
+        
+        //RECEIVER_AND_ANTENNA_DESC = 1033,
+        //BDS_EPHEMERIS = 1042,
+        //GPS_NETWORK_RTK_RESIDUAL = 1030,
+        //GLONASS_AUX_OPERATION_INFO = 1230
 )
 
 

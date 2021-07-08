@@ -15,6 +15,7 @@ using std::string;
 
 #include <yaml-cpp/yaml.h>
 
+#include "acsNtripBroadcast.hpp"
 #include "rtsSmoothing.hpp"
 #include "streamTrace.hpp"
 #include "acsConfig.hpp"
@@ -22,9 +23,11 @@ using std::string;
 
 ACSConfig acsConfig = {};
 
+extern	std::multimap	<string, std::shared_ptr<NtripRtcmStream>>	ntripRtcmMultimap;
 extern	std::multimap	<string, ACSObsStreamPtr>	obsStreamMultimap;
 extern	std::multimap	<string, ACSNavStreamPtr>	navStreamMultimap;
 extern	std::map		<string, bool>				streamDOAMap;
+extern	NtripBroadcaster outStreamManager;
 
 /** Set value according to variable map entry if found
  */
@@ -1026,6 +1029,10 @@ bool ACSConfig::parse(
 		trySetFromYaml(clocks_filename,			output_files, {"clocks_filename"	});
 		trySetFromYaml(output_AR_clocks,		output_files, {"output_AR_clocks"	});
 		
+		trySetFromYaml(output_ppp_sol,			output_files, {"output_ppp_sol"		});
+		trySetFromYaml(ppp_sol_directory,		output_files, {"ppp_sol_directory"	});
+		trySetFromYaml(ppp_sol_filename,		output_files, {"ppp_sol_filename"	});
+
 		trySetFromYaml(output_ionex,			output_files, {"output_ionex"		});
 		trySetFromYaml(ionex_directory,			output_files, {"ionex_directory"	});
 		trySetFromYaml(ionex_filename,			output_files, {"ionex_filename"		});
@@ -1318,16 +1325,23 @@ bool ACSConfig::parse(
 		trySetFromYaml(csOpts.int_valid_combo_jump_alpha,		cycle_slip, {"int_valid_combo_jump_alpha"		});
 	}
 
-	auto ssr = stringsToYamlObject(yaml, {"ssr_parameters"});
+	auto ssr = stringsToYamlObject(yaml, {"ssr_corrections"});
 	{
-		trySetFromYaml(ssrOpts.ssr_corrections_enabled,			ssr, {"ssr_corrections_enabled"					});
-		trySetFromYaml(ssrOpts.rtcm_publishing_enabled,			ssr, {"rtcm_publishing_enabled"					});
-		trySetFromYaml(ssrOpts.update_interval,					ssr, {"update_interval"							});
+		trySetFromYaml(ssrOpts.calculate_ssr,			ssr, {"calculate_ssr"			});
+		trySetFromYaml(ssrOpts.update_interval,			ssr, {"update_interval"			});
+		trySetEnumOpt (ssrOpts.ssr_ephemeris, 			ssr, {"ssr_ephemeris" 			}, E_Ephemeris::_from_string_nocase);
+		trySetFromYaml(ssrOpts.upload_to_caster,		ssr, {"upload_to_caster"		});
+		trySetFromYaml(ssrOpts.sync_epochs,				ssr, {"sync_epochs"				});
+		trySetFromYaml(ssrOpts.sync_epoch_offset,		ssr, {"sync_epoch_offset"		});
+		trySetFromYaml(ssrOpts.settime_week_override,	ssr, {"settime_week_override"	});
+		trySetFromYaml(ssrOpts.rtcm_directory,			ssr, {"rtcm_directory"			});
+		trySetFromYaml(ssrOpts.read_from_files,	ssr, {"read_from_files"	});
 	}
 
 	tryAddRootToPath(root_output_dir, 				trace_directory);
 	tryAddRootToPath(root_output_dir,				summary_directory);
 	tryAddRootToPath(root_output_dir,				clocks_directory);
+	tryAddRootToPath(root_output_dir,				ppp_sol_directory);
 	tryAddRootToPath(root_output_dir,				ionex_directory);
 	tryAddRootToPath(root_output_dir,				ionstec_directory);
 	tryAddRootToPath(root_output_dir,				biasSINEX_directory);
@@ -1337,10 +1351,12 @@ bool ACSConfig::parse(
 	tryAddRootToPath(root_output_dir,				ionFilterOpts.rts_directory);
 	tryAddRootToPath(root_output_dir,				netwOpts.rts_directory);
 	tryAddRootToPath(root_output_dir,				pppOpts.rts_directory);
+	tryAddRootToPath(root_output_dir,				ssrOpts.rtcm_directory);
 
 	tryAddRootToPath(trace_directory, 				trace_filename);
 	tryAddRootToPath(summary_directory,				summary_filename);
 	tryAddRootToPath(clocks_directory,				clocks_filename);
+	tryAddRootToPath(ppp_sol_directory,				ppp_sol_filename);
 	tryAddRootToPath(ionex_directory,				ionex_filename);
 	tryAddRootToPath(ionstec_directory,				ionstec_filename);
 	tryAddRootToPath(biasSINEX_directory,			biasSINEX_filename);
@@ -1376,6 +1392,8 @@ bool ACSConfig::parse(
 	replaceTimes(summary_filename,		start_epoch);
 	replaceTimes(clocks_directory,		start_epoch);
 	replaceTimes(clocks_filename,		start_epoch);
+	replaceTimes(ppp_sol_directory,		start_epoch);
+	replaceTimes(ppp_sol_filename,		start_epoch);
 	replaceTimes(root_stations_dir,		start_epoch);
 	replaceTimes(sinex_directory,		start_epoch);
 	replaceTimes(sinex_filename,		start_epoch);
@@ -1391,8 +1409,14 @@ bool ACSConfig::parse(
 	}
 
 
+    trySetFromYaml(acsConfig.caster_test,	yaml,{"station_data", "caster_test"});
+    trySetFromYaml(acsConfig.print_stream_statistics,	yaml,{"station_data", "print_stats"});
+
+
 	string streamRoot = "";
 	trySetFromYaml(streamRoot,		yaml,	{"station_data", "stream_root"	});
+    if( acsConfig.caster_test )
+        acsConfig.caster_stream_root = streamRoot;
 
 	auto obsStreamNode = stringsToYamlObject(yaml, {"station_data","obs_streams"});
 	auto navStreamNode = stringsToYamlObject(yaml, {"station_data","nav_streams"});
@@ -1409,17 +1433,19 @@ bool ACSConfig::parse(
 			string streamUrl_str = streamUrl.as<string>();
 			string fullUrl = streamUrl_str;
 
-	// 		if (filename_str == "<ALL MOUNTPOINTS>")
-
 			tryAddRootToPath(streamRoot, fullUrl);
-
-			string id = streamUrl_str.substr(0,4);
+			if (fullUrl.front() == '/')
+				fullUrl.erase(fullUrl.begin()); // in case of full urls given in station_data.streams
+			while (fullUrl.back() == '/')
+				fullUrl.pop_back();				// in case of terminating '/'
+			std::size_t slashPos = fullUrl.find_last_of("/");	// find first 4 characters after last '/'
+    		string id = fullUrl.substr(slashPos + 1, 4);		// e.g. http://user:pass@auscors.ga.gov.au:2101/BCEP00BKG0 --> BCEP
 
 			ntripStreams[id] = fullUrl;
 		}
 
 		for (auto& [id, streamUrl] : ntripStreams)
-		{	
+		{
 			if (streamDOAMap.find(streamUrl) != streamDOAMap.end())
 			{
 				//this stream was already added, dont re-add
@@ -1428,12 +1454,10 @@ bool ACSConfig::parse(
 			
 			BOOST_LOG_TRIVIAL(info)
 			<< std::endl << "Adding stream from " << streamUrl;
-			
 			auto ntripStream_ptr = std::make_shared<NtripRtcmStream>(streamUrl);
-			
+			ntripRtcmMultimap.insert({id, ntripStream_ptr}); // for network (internet) tracing
 			if (nav == false)		{	obsStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}
-			else					{	navStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}
-			
+			else					{	navStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}			
 			streamDOAMap[streamUrl] = false;
 		}
 	}
@@ -1459,6 +1483,44 @@ bool ACSConfig::parse(
 			<< root_stations_dir;
 		}
 	}
+	
+	string ouputStreamRoot = "";
+	trySetFromYaml(ouputStreamRoot,	yaml,{"output_streams", "stream_root"});
+
+    auto outStreamNode = stringsToYamlObject(yaml, {"output_streams","stream_label"});
+  	
+	for (auto outLabelYaml : outStreamNode)
+    {
+        string outLabel = outLabelYaml.as<string>();
+        auto outStreamsYaml = stringsToYamlObject(yaml, {"output_streams",outLabel});
+        
+        bool addOutStream = false;
+        string fullUrl = "";
+        trySetFromYaml(fullUrl,outStreamsYaml,{"streams"});
+        tryAddRootToPath(ouputStreamRoot, fullUrl);
+        auto messageNodes = stringsToYamlObject(outStreamsYaml, {"messages"});
+        auto ntripOutStream_ptr = std::make_shared<NtripBroadcaster::NtripUploadClient>(fullUrl);
+        NtripBroadcaster::NtripUploadClient& outStreamOb = *ntripOutStream_ptr.get();
+        for (auto outMessage : messageNodes)
+        { 
+            string messStr = outMessage.as<string>();
+            try 
+            {
+                int messNum = (int)(std::stod(messStr));
+                RtcmMessageType mess = RtcmMessageType::_from_integral(messNum);
+                outStreamOb.rtcmMessagesTypes.push_back(mess);
+            }
+            catch (std::exception& e)
+            {
+                BOOST_LOG_TRIVIAL(error) << "Error defining output stream message for label : " << outLabel;
+                exit(1);                
+            }
+            addOutStream = true;    
+        }
+        if( addOutStream )
+            outStreamManager.ntripUploadStreams.insert({outLabel, std::move(ntripOutStream_ptr)});
+    }
+    
 
 #	ifndef ENABLE_MONGODB
 	if	( output_mongo_measurements

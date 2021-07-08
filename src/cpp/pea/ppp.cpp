@@ -360,18 +360,17 @@ void corr_meas(
 	
 	inpt_hard_bias(trace, obs, sig.code, bias, bvar, biaopt);
 
-	if (acsConfig.ssrOpts.ssr_corrections_enabled)
+	if (acsConfig.ssrOpts.calculate_ssr)
 	{
 		double dummyVal = 0; // Set dummy code biases L1C & L2W to zero (not currently used)
 		double dummyVar = 0; // Set dummy code biases L1C & L2W to zero (not currently used)
 		if	( (ft == F1 && sig.code == +E_ObsCode::L1C) 
 			||(ft == F2 && sig.code == +E_ObsCode::L2W))
 		{
-			obs.satNav_ptr->ssrOut.lock();
-			obs.satNav_ptr->ssrOut.ssrBias.cbias[sig.code] = dummyVal;
-			obs.satNav_ptr->ssrOut.ssrBias.cvari[sig.code] = dummyVar;
-			obs.satNav_ptr->ssrOut.ssrBias.codeIsSet = true;
-			obs.satNav_ptr->ssrOut.unlock();
+			obs.satNav_ptr->ssrOut.ssrCodeBias.canExport		= false;
+			obs.satNav_ptr->ssrOut.ssrCodeBias.bias	[sig.code]	= dummyVal;
+			obs.satNav_ptr->ssrOut.ssrCodeBias.var	[sig.code]	= dummyVar;
+			obs.satNav_ptr->ssrOut.ssrCodeBias.isSet			= true;
 		}
 	}
 

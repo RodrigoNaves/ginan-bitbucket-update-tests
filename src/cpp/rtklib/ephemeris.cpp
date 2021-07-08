@@ -36,7 +36,7 @@
 #define TSTEP    60.0             /* integration step glonass ephemeris (s) */
 #define RTOL_KEPLER 1E-14         /* relative tolerance for Kepler equation */
 
-#define DEFURASSR 0.05            /* default accurary of ssr corr (m) */
+#define DEFURASSR 0.03            /* default accurary of ssr corr (m) */
 #define MAXECORSSR 10.0           /* max orbit correction of ssr (m) */
 #define MAXCCORSSR (1E-6*CLIGHT)  /* max clock correction of ssr (m) */
 #define MAXAGESSR 90.0            /* max age of ssr orbit and clock (s) */
@@ -208,7 +208,7 @@ void eph2pos(
 			+ eph->f2 * tk * tk;
 
 	/* relativity correction */
-	*dts	-= 2 * sqrt(mu * eph->A) * eph->e * sinE / SQR(CLIGHT);
+	*dts	-= 2 * sqrt(mu * eph->A) * eph->e * sinE / SQR(CLIGHT); //is equivalent to - 2 * obs.rSat.dot(obs.satVel) / CLIGHT; 
 
 	/* position and clock error variance */
 	if (var)
@@ -376,10 +376,17 @@ extern void seph2pos(GTime time, Seph* seph, double* rs, double* dts, double* va
 }
 
 /* select ephememeris --------------------------------------------------------*/
-Eph* seleph(GTime time, SatSys Sat, int iode, nav_t& nav)
+Eph* seleph(
+	GTime	time, 
+	SatSys	Sat, 
+	int		iode, 
+	nav_t&	nav)
 {
-	double t, tmax, tmin;
-	Eph* closest = NULL;
+	double t;
+	double tmax;
+//	double tmin;
+	
+	Eph* chosen = nullptr;
 //     trace(4,"seleph  : time=%s sat=%2d iode=%d\n",time.to_string(3).c_str(),Sat,iode);
 
 	switch (Sat.sys)
@@ -390,10 +397,11 @@ Eph* seleph(GTime time, SatSys Sat, int iode, nav_t& nav)
 		default: 			tmax = MAXDTOE		+ 1; break;
 	}
 
-	tmin = tmax + 1;
+//	tmin = tmax + 1;
 
 	auto& ephList = nav.ephMap[Sat];
 
+ 	GTime latestToe = GTime::noTime();
 	for (auto& eph : ephList)
 	{
 		if 	( iode >= 0
@@ -408,21 +416,28 @@ Eph* seleph(GTime time, SatSys Sat, int iode, nav_t& nav)
 		if (iode >= 0)
 			return &eph;
 
-		if (t <= tmin)
-		{
-			/* toe closest to time */
-			closest	= &eph;
-			tmin	= t;
-		}
+//		if (t <= tmin)
+//		{
+//			/* toe closest to time */
+//			chosen	= &eph;
+//			tmin	= t;
+//		}
+ 		if (eph.toe > latestToe)
+ 		{
+ 			/* latest ephem with toe within +-MAXDTOE of current epoch */
+ 			chosen	= &eph;
+ 			latestToe = eph.toe;
+ 		}
 	}
 
-	if (iode >= 0 || closest == NULL)
+	if	(  iode >= 0
+		|| chosen == nullptr)
 	{
 //         trace(2,"no broadcast ephemeris: %s sat=%2d iode=%3d\n",time.to_string(0).c_str(), Sat,iode);
-		return NULL;
+		return nullptr;
 	}
 
-	return closest;
+	return chosen;
 }
 
 /* select glonass ephememeris ------------------------------------------------*/
@@ -544,10 +559,11 @@ int		iode)
 		if (!eph)
 			return 0;
 
-		eph2pos(time, 	eph, 	obs.rSat.data(), 	obs.dtSat, 	&obs.var);
-		time = timeadd(time, tt);
-		eph2pos(time,	eph, 	rst.data(),			&dtst,		NULL);
-		obs.svh = eph->svh;
+										eph2pos(time, 	eph, 	obs.rSat.data(), 	obs.dtSat, 	&obs.var);
+		time = timeadd(time, tt);		eph2pos(time,	eph, 	rst.data(),			&dtst,		nullptr);
+		
+		obs.svh		= eph->svh;
+		obs.iode	= eph->iode;
 	}
 	else if (sys == +E_Sys::GLO)
 	{
@@ -556,9 +572,9 @@ int		iode)
 		if (!geph)
 			return 0;
 
-		geph2pos(time,	geph,	obs.rSat.data(),	obs.dtSat,	&obs.var);
-		time = timeadd(time, tt);
-		geph2pos(time,	geph,	rst.data(),			&dtst,		NULL);
+										geph2pos(time,	geph,	obs.rSat.data(),	obs.dtSat,	&obs.var);
+		time = timeadd(time, tt);		geph2pos(time,	geph,	rst.data(),			&dtst,		nullptr);
+		
 		obs.svh = geph->svh;
 	}
 	else if (sys == +E_Sys::SBS)
@@ -568,9 +584,9 @@ int		iode)
 		if (!seph)
 			return 0;
 
-		seph2pos(time,	seph,	obs.rSat.data(),	obs.dtSat,	&obs.var);
-		time = timeadd(time, tt);
-		seph2pos(time,	seph,	rst.data(),			&dtst,		NULL);
+										seph2pos(time,	seph,	obs.rSat.data(),	obs.dtSat,	&obs.var);
+		time = timeadd(time, tt);		seph2pos(time,	seph,	rst.data(),			&dtst,		nullptr);
+		
 		obs.svh = seph->svh;
 	}
 	else
@@ -626,6 +642,26 @@ int satpos_sbas(gtime_t time, gtime_t teph, SatSys Sat, const nav_t* nav,
 }
 #endif
 
+Vector3d ecef2rac(
+	Vector3d vecToRotate,	// ECEF vector to transform to RAC
+	Vector3d r,				// Sat position (ECEF)
+	Vector3d v)				// Sat velocity (ECEF)
+{
+	// Ref: RTCM c10403.3, equation (3.12-5), p188 (this rotation matrix performs RAC->ECEF, so ECEF->RAC is simply the transpose of this)
+	Vector3d ea = v.normalized();
+	Vector3d rv = r.cross(v);
+	Vector3d ec = rv.normalized();
+	Vector3d er = ea.cross(ec);
+
+	Matrix3d Rt;
+	Rt.row(0) = er;
+	Rt.row(1) = ea;
+	Rt.row(2) = ec;
+
+	// RAC = Rt * ECEF
+	return Rt * vecToRotate;
+}
+
 /* satellite position and clock with ssr correction --------------------------*/
 int satpos_ssr(
 	GTime		time,
@@ -635,22 +671,21 @@ int satpos_ssr(
 	int			opt,
 	PcoMapType*	pcoMap_ptr)
 {
-//     trace(4,"satpos_ssr: time=%s sat=%2d\n",time.to_string(3).c_str(),obs.Sat);
+//     trace(4, __FUNCTION__ ": time=%s sat=%2d\n",time.to_string(3).c_str(),obs.Sat);
 
 	const ssr_t& ssr = obs.satNav_ptr->ssr;
-
-	if (ssr.ssrEph.t0.time == 0)
-	{
-		return 0;
-	}
-
-	if (ssr.ssrClk.t0.time == 0)
-	{
-		return 0;
-	}
+	
+	//get 'price is right' closest ssr components to ephemeris time.
+	auto ephIt = ssr.ssrEph_map		.lower_bound(time);			if (ephIt == ssr.ssrEph_map		.end())		return 0;
+	auto clkIt = ssr.ssrClk_map		.lower_bound(time);			if (clkIt == ssr.ssrClk_map		.end())		return 0;
+	auto uraIt = ssr.ssrUra_map		.lower_bound(time);		//	if (uraIt == ssr.ssrUra_map		.end())		return 0;	//check these later
+	auto hrcIt = ssr.ssrHRClk_map	.lower_bound(time);		//	if (hrcIt == ssr.ssrHRClk_map	.end())		return 0;
+	
+	auto& [t_e, ssrEph] = *ephIt;
+	auto& [t_c, ssrClk] = *clkIt;
 
 	/* inconsistency between orbit and clock correction */
-	if (ssr.ssrEph.iod != ssr.ssrClk.iod)
+	if (ssrEph.iod != ssrClk.iod)
 	{
 //         trace(2,"inconsist ssr correction: %s sat=%2d iod=%d %d\n",
 //               time.to_string(0).c_str(),obs.Sat,ssr->iod[0],ssr->iod[1]);
@@ -658,9 +693,8 @@ int satpos_ssr(
 		return 0;
 	}
 
-	double tEph = timediff(time, ssr.ssrEph.t0);
-	double tClk = timediff(time, ssr.ssrClk.t0);
-	double tHRC = timediff(time, ssr.ssrHRClk.t0);
+	double tEph = timediff(time, ssrEph.t0);
+	double tClk = timediff(time, ssrClk.t0);
 
 	/* ssr orbit and clock correction (ref [4]) */
 	if 	( fabs(tEph) > MAXAGESSR
@@ -672,27 +706,33 @@ int satpos_ssr(
 		return 0;
 	}
 
-	if (ssr.ssrEph.udi >= 1)	tEph -= ssr.ssrEph.udi / 2;
-	if (ssr.ssrClk.udi >= 1)	tClk -= ssr.ssrClk.udi / 2;
+	if (ssrEph.udi >= 1)		tEph -= ssrEph.udi / 2;
+	if (ssrClk.udi >= 1)		tClk -= ssrClk.udi / 2;
 
 	double deph[3];
 
 	for (int i = 0; i < 3; i++)
 	{
-		deph[i]	= ssr.ssrEph.deph[i]
-				+ ssr.ssrEph.ddeph[i] * tEph;
+		deph[i]	= ssrEph.deph [i]
+				+ ssrEph.ddeph[i] * tEph;
 	}
 
-	double dclk = ssr.ssrClk.dclk[0]
-				+ ssr.ssrClk.dclk[1] * tClk
-				+ ssr.ssrClk.dclk[2] * tClk * tClk;
+	double dclk = ssrClk.dclk[0]
+				+ ssrClk.dclk[1] * tClk
+				+ ssrClk.dclk[2] * tClk * tClk;
 
 	/* ssr highrate clock correction (ref [4]) */
-	if 	(  ssr.ssrEph.iod == ssr.ssrHRClk.iod
-		&& ssr.ssrHRClk.t0.time
-		&& fabs(tHRC) < MAXAGESSR_HRCLK)
+	if (hrcIt != ssr.ssrHRClk_map.end())	
 	{
-		dclk += ssr.ssrHRClk.hrclk;
+		auto& [t_h, ssrHrc] = *hrcIt;
+		
+		double tHrc = timediff(time, ssrHrc.t0);
+		
+		if 	(  ssrEph.iod == ssrHrc.iod
+			&& fabs(tHrc) < MAXAGESSR_HRCLK)
+		{
+			dclk += ssrHrc.hrclk;
+		}
 	}
 
 	if 	( norm(deph, 3)	> MAXECORSSR
@@ -705,7 +745,7 @@ int satpos_ssr(
 	}
 
 	/* satellite postion and clock by broadcast ephemeris */
-	bool pass = ephpos(time, teph, obs, nav, ssr.ssrEph.iode);
+	bool pass = ephpos(time, teph, obs, nav, ssrEph.iode);
 
 	if (pass == false)
 		return 0;
@@ -718,7 +758,7 @@ int satpos_ssr(
 		|| sys == +E_Sys::QZS
 		|| sys == +E_Sys::CMP)
 	{
-		Eph* eph = seleph(teph, obs.Sat, ssr.ssrEph.iode, nav);
+		Eph* eph = seleph(teph, obs.Sat, ssrEph.iode, nav);
 
 		if (eph == nullptr)
 			return 0;
@@ -737,10 +777,9 @@ int satpos_ssr(
 	}
 
 	/* radial-along-cross directions in ecef */
-	Vector3d ea = obs.satVel.normalized();
-	Vector3d rc = obs.rSat.cross(obs.satVel);
-	Vector3d ec = rc.normalized();		//todo aaron, check normalized dont fail
-	Vector3d er = ea.cross(ec);
+												Vector3d ea = obs.satVel.normalized();
+	Vector3d rc = obs.rSat.cross(obs.satVel);	Vector3d ec = rc.normalized();
+												Vector3d er = ea.cross(ec);
 
 	Vector3d dant = Vector3d::Zero();
 
@@ -750,13 +789,22 @@ int satpos_ssr(
 		satantoff(nullStream, time, obs.rSat, obs.Sat, obs.satNav_ptr, dant, pcoMap_ptr);
 	}
 
-	obs.rSat += -(er * deph[0] + ea * deph[1] + ec * deph[2]) + dant;		//todo aaron, change to rotation matrix and generalise
+	obs.rSat += -(	  er * deph[0] 
+					+ ea * deph[1] 
+					+ ec * deph[2]) + dant;		//todo aaron, change to rotation matrix and generalise
 
 	/* t_corr = t_sv - (dtSat(brdc) + dclk(ssr) / CLIGHT) (ref [10] eq.3.12-7) */
 	obs.dtSat[0] += dclk / CLIGHT;
 
 	/* variance by ssr ura */
-	obs.var = var_urassr(ssr.ssrUra.ura);
+	double ura = -1;
+	if (uraIt != ssr.ssrUra_map.end())
+	{
+		auto& [t_u, ssrUra] = *uraIt;
+		
+		ura = ssrUra.ura;
+	}
+	obs.var = var_urassr(ura);
 
 //     trace(5,"satpos_ssr: %s sat=%2d deph=%6.3f %6.3f %6.3f er=%6.3f %6.3f %6.3f dclk=%6.3f var=%6.3f\n",
 //           time.to_string(2).c_str(),obs.Sat,deph[0],deph[1],deph[2],er[0],er[1],er[2],dclk,obs.var);
@@ -804,6 +852,9 @@ int satpos(
 		case E_Ephemeris::SSR_COM: 		return satpos_ssr	(time, teph, obs, nav, +1, pcoMap_ptr);
 		case E_Ephemeris::PRECISE:
 			if (!peph2pos(trace, time, obs.Sat, nav, +1, obs, pcoMap_ptr)) break;
+			else return 1;
+		case E_Ephemeris::PRECISE_COM:
+			if (!peph2pos(trace, time, obs.Sat, nav,  0, obs, pcoMap_ptr)) break;
 			else return 1;
 
 //             if (!peph2pos(fp,time,obs.Sat,nav,0,obs,pcoMap_ptr)) break; else return 1;	//todo aaron, turned off pco for debuggin
@@ -856,7 +907,7 @@ void satposs(
 			continue;
 		}
 
-		double pr;
+		double pr = 0;
 
 		for (auto& [a, sig] : obs.Sigs)
 		{
@@ -870,14 +921,6 @@ void satposs(
 		/* satellite clock bias by broadcast ephemeris */
 		double dt;
 		bool pass = ephclk(time, teph, obs, dt);
-
-		/* record sat clock bias for SSR corrections */
-		if (acsConfig.ssrOpts.ssr_corrections_enabled)
-		{
-			obs.satNav_ptr->ssrOut.ssrClk.broadcast = dt * CLIGHT; // units: m
-			obs.satNav_ptr->ssrOut.ssrClk.broadcastIsSet = true;
-		}
-
 		if (pass == false)
 		{
 			tracepde(2, trace, "no broadcast clock %s sat=%s\n", time.to_string(3).c_str(), id);
@@ -887,7 +930,7 @@ void satposs(
 
 		time = timeadd(time, -dt);
 
-		/* grep satellite antenna information */
+		/* satellite antenna information */
 		PcoMapType* pcoMap_ptr = NULL;
 		{
 			double ep[6];
@@ -907,6 +950,7 @@ void satposs(
 				pcoMap_ptr = &pcsat->pcoMap;
 			}
 		}
+		
 		//todo aaron, send through satNav_ptrs rather than the whole set of options
 		/* satellite position and clock at transmission time */
 		pass = satpos(trace, time, teph, obs, ephopt, nav, pcoMap_ptr);

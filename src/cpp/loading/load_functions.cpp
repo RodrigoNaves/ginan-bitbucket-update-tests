@@ -48,12 +48,17 @@ void load_1_point(tide *tide_info, otl_input *input, loading load,  int idx)
 			calcDistanceBearing(&lat0, &lon0, lat_ptr, lon_ptr, &dist, &azimuth);
 
 			*greenZ_it = load.interpolate_gz(dist);
-			*greenEW_it = load.interpolate_gh(dist);
-			*greenNS_it = *greenEW_it;
+			*greenNS_it = load.interpolate_gh(dist) * cos(azimuth);
+			*greenEW_it = load.interpolate_gh(dist) * sin(azimuth);
 
-			*greenNS_it *= cos(azimuth);
-			*greenEW_it *= sin(azimuth);
-
+			// *greenNS_it *= cos(azimuth);
+			// *greenEW_it *= sin(azimuth);
+			if (*greenZ_it != *greenZ_it)
+			{
+				std::cout << " nan detected for " << *lat_ptr << " " <<*lon_ptr << std::endl;
+				std::cout << dist << "  " << azimuth << std::endl;
+				exit(0);
+			}
 			greenZ_it++;
 			greenNS_it++;
 			greenEW_it++;
@@ -71,12 +76,14 @@ void load_1_point(tide *tide_info, otl_input *input, loading load,  int idx)
 		for (auto tidere_it = tide_info[it].get_in_ptr();
 			 tidere_it != tide_info[it].get_in_ptr_end();
 			 tidere_it++, tideim_it++, gz_it++, gNS_it++, gEW_it++) {
+			
+			input->dispEW_in[idx][it] += *gEW_it * *tidere_it;
+			input->dispEW_out[idx][it]+= *gEW_it * *tideim_it;
 			input->dispZ_in[idx][it]  += *gz_it  * *tidere_it;
 			input->dispZ_out[idx][it] += *gz_it  * *tideim_it;
 			input->dispNS_in[idx][it] += *gNS_it * *tidere_it;
 			input->dispNS_out[idx][it]+= *gNS_it * *tideim_it;
-			input->dispEW_in[idx][it] += *gEW_it * *tidere_it;
-			input->dispEW_out[idx][it]+= *gEW_it * *tideim_it;
+
 		}
 	}
 }
@@ -93,21 +100,21 @@ void write_BLQ(otl_input *input, int mode)
 	for (unsigned int i=0; i< input->wave_names.size(); i++ )
 		out << "$$	WN: " << input->wave_names[i] <<"\n";
 	for (unsigned int i=0; i< input->code.size(); i++) {
-		out <<input->code[i] <<"\n";
+		out <<"  " << input->code[i] <<"\n";
 		out << "$$ " <<input->code[i] <<"                    RADI TANG  lon/lat: " <<input->lon[i] << " " << input->lat[i] << "\n";
 		out.setf(std::ios::fixed);
 		out << std::setprecision(5) ;
 		// write Amplitudes
 		for (int i_dir = 0; i_dir< 3; i_dir++)
 		{
-			for (int it = 0; it < 2 ; it++)  // Will need to write nwaves
+			for (int it = 0; it < input->wave_names.size() ; it++)  // Will need to write nwaves
 				out << " " << std::setprecision(5)<< std::setw(8) <<  std::abs(input->out_disp[i][it][i_dir]) << " ";
 			out << "\n";
 		}
 		// Now write the angles. 
 		for (int i_dir = 0; i_dir< 3; i_dir++)
 		{
-			for (int it = 0; it < 2 ; it++)  // Will need to write nwaves
+			for (int it = 0; it < input->wave_names.size() ; it++)  // Will need to write nwaves
 				out << " " << std::setprecision(1) << std::setw(8)  << std::arg(input->out_disp[i][it][i_dir]) * 180 / M_PI << " ";
 			out << "\n";
 		}	
@@ -126,7 +133,7 @@ void write_BLQ(otl_input *input)
 	fprintf(fp,"$$ Green function used is %s\n",input->green.c_str());
 
 	for (unsigned int i=0; i< input->code.size(); i++) {
-		fprintf(fp, "%s\n", input->code[i].c_str());
+		fprintf(fp, "  %s\n", input->code[i].c_str());
 		fprintf(fp, "$$ %s                    RADI TANG  lon/lat: %f %f\n", input->code[i].c_str(), input->lon[i],
 				input->lat[i]);
 		for (int it = 0; it < input->tide_file.size(); it++)
