@@ -89,7 +89,7 @@ WORKDIR /tmp/build
 RUN wget -c https://boostorg.jfrog.io/artifactory/main/release/1.75.0/source/boost_1_75_0.tar.gz \
     && gunzip boost_1_75_0.tar.gz \
     && tar xvf boost_1_75_0.tar \
-    && rm boost_1_75_0.tar gunzip boost_1_75_0.tar.gz
+    && rm boost_1_75_0.tar
 WORKDIR /tmp/build/boost_1_75_0/
 RUN ./bootstrap.sh && ./b2 install
 
