@@ -1113,6 +1113,7 @@ bool ACSConfig::parse(
 		trySetFromYaml(thres_slip,			processing_options, {"cycle_slip",		"thres_slip"	});
 		trySetFromYaml(max_inno,			processing_options, {"max_inno"			});
 		trySetFromYaml(deweight_factor,		processing_options, {"deweight_factor"	});
+		trySetFromYaml(ratio_limit,			processing_options, {"ratio_limit"		});
 		trySetFromYaml(max_gdop,			processing_options, {"max_gdop"			});
 		trySetFromYaml(antexacs,			processing_options, {"antexacs"			});
 		trySetFromYaml(sat_pcv,				processing_options, {"sat_pcv"			});
@@ -1335,7 +1336,7 @@ bool ACSConfig::parse(
 		trySetFromYaml(ssrOpts.sync_epoch_offset,		ssr, {"sync_epoch_offset"		});
 		trySetFromYaml(ssrOpts.settime_week_override,	ssr, {"settime_week_override"	});
 		trySetFromYaml(ssrOpts.rtcm_directory,			ssr, {"rtcm_directory"			});
-		trySetFromYaml(ssrOpts.read_from_files,	ssr, {"read_from_files"	});
+		trySetFromYaml(ssrOpts.read_from_files,			ssr, {"read_from_files"			});
 	}
 
 	tryAddRootToPath(root_output_dir, 				trace_directory);
@@ -1397,7 +1398,8 @@ bool ACSConfig::parse(
 	replaceTimes(root_stations_dir,		start_epoch);
 	replaceTimes(sinex_directory,		start_epoch);
 	replaceTimes(sinex_filename,		start_epoch);
-	replaceTimes(persistance_directory,         start_epoch);
+	replaceTimes(ssrOpts.rtcm_directory,		start_epoch);
+	replaceTimes(persistance_directory,			start_epoch);
 	replaceTimes(persistance_filename,			start_epoch);
 	replaceTimes(pppOpts.rts_filename,			start_epoch);
 	replaceTimes(netwOpts.rts_filename,			start_epoch);

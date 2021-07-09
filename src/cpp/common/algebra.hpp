@@ -179,7 +179,7 @@ typedef list<KFMeasEntry>	KFMeasEntryList;
 
 struct KFState;
 
-typedef bool (*RejectCallback)(Trace& trace, KFState& kfState, KFMeas& meas, int index);
+typedef bool (*RejectCallback)(Trace& trace, KFState& kfState, KFMeas& meas, int index, VectorXd& ratios);
 typedef bool (*AcceptCallback)(Trace& trace, KFState& kfState, KFMeas& meas, int index);
 
 
@@ -296,11 +296,13 @@ struct KFState
 		Trace&		trace,
 		KFMeas&		kfMeas,
 		VectorXd&	xp,
-		VectorXd&	dx);
+		VectorXd&	dx,
+		VectorXd&	ratiosOut);
 
 	int	preFitSigmaCheck(
 		Trace&		trace,
-		KFMeas&		kfMeas);
+		KFMeas&		kfMeas,
+		VectorXd&	ratiosOut);
 
 	int 	kFilter(
 		Trace&			trace,
@@ -320,7 +322,8 @@ struct KFState
 	void	doRejectCallbacks(
 		Trace&			trace,
 		KFMeas&			kfMeas,
-		int				badIndex);
+		int				badIndex,
+		VectorXd&		ratios);
 
 	int		filterKalman(
 		Trace&			trace,

@@ -192,6 +192,7 @@ struct GlobalOptions
 	double	max_inno     	= 30;
 	double	max_gdop     	= 30;
 	double	deweight_factor	= 100;
+	double	ratio_limit		= 4000;
 
 	double	wait_next_epoch		= 60;
 	double	wait_all_stations	= 0;

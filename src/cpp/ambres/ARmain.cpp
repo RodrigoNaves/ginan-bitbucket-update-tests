@@ -313,7 +313,7 @@ int Load_rawmeas(Trace& trace, ObsList& obslst, KFState& kfState)
 			}
 		}
 		else
-			NLambKey = {KF::AMBIGUITY, sat, rec, 0};
+			NLambKey = {KF::AMBIGUITY, sat, rec, 12};
 
 		if (kfState.kfIndexMap.find(NLambKey) == kfState.kfIndexMap.end())
 		{

@@ -775,16 +775,65 @@ void selectAprioriSource(
 	}
 }
 
+/** Deweight worst measurement, and any other excessivly bad ones.
+ */
 bool deweightMeas(
 	Trace&		trace,
 	KFState&	kfState,
 	KFMeas&		kfMeas,
-	int			index)
+	int			index,
+	VectorXd&	ratios)
 {
-	trace << std::endl << "Deweighting " << kfMeas.obsKeys[index] << std::endl;
+	for (int i = 0; i < ratios.rows(); i++)
+	{
+		if	( i != index
+			&&ratios(i) < acsConfig.ratio_limit)
+		{
+			continue;
+		}
+		
+		trace << std::endl << "Deweighting " << kfMeas.obsKeys[i] << std::endl;
+		trace << ratios(i);
 
-	kfMeas.R[index] *= SQR(acsConfig.deweight_factor);
+		kfMeas.R[i] *= SQR(acsConfig.deweight_factor);
+	}
+	
+	return true;
+}
 
+/** Count worst measurement and any other excessively bad ones as errors.
+ */
+bool incrementPhaseSignalError(
+	Trace&		trace,
+	KFState&	kfState,
+	KFMeas&		kfMeas,
+	int			index,
+	VectorXd&	ratios)
+{
+	for (int i = 0; i < ratios.rows(); i++)
+	{
+		if	( i != index
+			&&ratios(i) < acsConfig.ratio_limit)
+		{
+			continue;
+		}
+		
+		map<string, void*>& metaDataMap = kfMeas.metaDataMaps[i];
+
+		unsigned int* phaseRejectCount_ptr = (unsigned int*) metaDataMap["phaseRejectCount_ptr"];
+
+		if (phaseRejectCount_ptr == nullptr)
+		{
+			continue;
+		}
+
+		unsigned int&	phaseRejectCount	= *phaseRejectCount_ptr;
+
+		//increment counter, and clear the pointer so it cant be reset to zero in subsequent operations (because this is a failure)
+		phaseRejectCount++;
+		metaDataMap["phaseRejectCount_ptr"] = nullptr;
+	}
+	
 	return true;
 }
 
@@ -792,7 +841,8 @@ bool countSignalErrors(
 	Trace&		trace,
 	KFState&	kfState,
 	KFMeas&		kfMeas,
-	int			index)
+	int			index,
+	VectorXd&	ratios)
 {
 	map<string, void*>& metaDataMap = kfMeas.metaDataMaps[index];
 
@@ -811,30 +861,6 @@ bool countSignalErrors(
 		//this is a phase observation
 		obs.Sigs[(E_FType)obsKey.num].phaseError = true;
 	}
-
-	return true;
-}
-
-bool incrementPhaseSignalError(
-	Trace&		trace,
-	KFState&	kfState,
-	KFMeas&		kfMeas,
-	int			index)
-{
-	map<string, void*>& metaDataMap = kfMeas.metaDataMaps[index];
-
-	unsigned int* phaseRejectCount_ptr = (unsigned int*) metaDataMap["phaseRejectCount_ptr"];
-
-	if (phaseRejectCount_ptr == nullptr)
-	{
-		return true;
-	}
-
-	unsigned int&	phaseRejectCount	= *phaseRejectCount_ptr;
-
-	//increment counter, and clear the pointer so it cant be reset to zero in subsequent operations (because this is a failure)
-	phaseRejectCount++;
-	metaDataMap["phaseRejectCount_ptr"] = nullptr;
 
 	return true;
 }

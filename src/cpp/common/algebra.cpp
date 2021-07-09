@@ -559,7 +559,8 @@ int KFState::postFitSigmaCheck(
 	Trace&		trace,      ///< Trace file to output to
 	KFMeas&		kfMeas,		///< Measurements, noise, and design matrix
 	VectorXd&	xp,         ///< The post-filter state vector to compare with measurements
-	VectorXd&	dx)			///< The innovations from filtering to recalculate the deltas.
+	VectorXd&	dx,			///< The innovations from filtering to recalculate the deltas.
+	VectorXd&	ratiosOut)	///< A vector to output the error ratio of each measurement.
 {
 	MatrixXd&	H = kfMeas.A;
 	VectorXd	v = kfMeas.V	- H * dx;
@@ -569,7 +570,7 @@ int KFState::postFitSigmaCheck(
 	auto		variances		= kfMeas.R.array();
 	auto		ratios			= variations / variances;
 	auto		outsideExp		= ratios > SQR(4);
-	double		meanVariations	= variations.mean();
+// 	double		meanVariations	= variations.mean();
 
 	if (output_residuals)
 	{
@@ -593,6 +594,8 @@ int KFState::postFitSigmaCheck(
 	trace << std::endl << "DOING SIGMACHECK: ";
 // 	std::cout << std::endl << "meanVariations+: " << meanVariations << std::endl;
 
+	ratiosOut = ratios;
+	
 	//if any are outside the expected value, flag an error
 	if (outsideExp.any())
 	{
@@ -609,7 +612,8 @@ int KFState::postFitSigmaCheck(
 */
 int KFState::preFitSigmaCheck(
 	Trace&		trace,      ///< Trace to output to
-	KFMeas&		kfMeas)		///< Measurements, noise, and design matrix
+	KFMeas&		kfMeas,		///< Measurements, noise, and design matrix
+	VectorXd&	ratiosOut)	///< Vector to output the error ratios of measurements
 {
 	auto	v = kfMeas.V;
 	auto	R = kfMeas.R;
@@ -622,16 +626,17 @@ int KFState::preFitSigmaCheck(
 	auto		variances	= (R + (H * P * H.transpose()).diagonal()).array();
 
 	auto		ratios		= variations / variances;
+	auto		outsideExp	= ratios > SQR(4);
 
-	double		meanRatios		= ratios.mean();
-	double		meanVariations	= variations.mean();
+// 	double		meanRatios		= ratios.mean();
+// 	double		meanVariations	= variations.mean();
 
 	trace << std::endl << "DOING PRE SIGMA CHECK: ";
 // 	std::cout << std::endl << "meanVariations-: " << meanVariations << std::endl;
 
+	ratiosOut = ratios;
 
 	//if any are outside the expected value, flag an error
-	auto outsideExp	= ratios > SQR(4);
 	if (outsideExp.any())
 	{
 		Eigen::ArrayXd::Index index;
@@ -849,13 +854,14 @@ KFMeas KFState::combineKFMeasList(
 }
 
 void KFState::doRejectCallbacks(
-	Trace&	trace,				///< Trace file for output
-	KFMeas&	kfMeas,				///< Measurements that were passed to the filter
-	int		badIndex)			///< Index in measurement list that was unsatisfactory
+	Trace&		trace,				///< Trace file for output
+	KFMeas&		kfMeas,				///< Measurements that were passed to the filter
+	int			badIndex,			///< Index in measurement list that was unsatisfactory
+	VectorXd&	ratios)				///< Error ratios of each measurement
 {
 	for (auto& callback : rejectCallbacks)
 	{
-		bool keepGoing = callback(trace, *this, kfMeas, badIndex);
+		bool keepGoing = callback(trace, *this, kfMeas, badIndex, ratios);
 
 		if (keepGoing == false)
 		{
@@ -929,9 +935,10 @@ int KFState::filterKalman(
 //		cout << kfState.P.size() << endl;
 //		cout << kfMeas.Y.size() << endl;
 //		cout << kfMeas.V.size() << endl;
-		int badIndex = kfState.preFitSigmaCheck(trace, kfMeas);
+		VectorXd ratios;
+		int badIndex = kfState.preFitSigmaCheck(trace, kfMeas, ratios);
 		if (badIndex < 0)	{	trace << std::endl << "PreSigma check passed" << std::endl;											break;		}
-		else				{	trace << std::endl << "PreSigma check failed.";		doRejectCallbacks(trace, kfMeas, badIndex);		continue;	}
+		else				{	trace << std::endl << "PreSigma check failed.";	doRejectCallbacks(trace, kfMeas, badIndex, ratios);	continue;	}
 	}
 
 	MatrixXd Pp;
@@ -947,9 +954,10 @@ int KFState::filterKalman(
 			return 0;
 		}
 
-		int badIndex = kfState.postFitSigmaCheck(trace, kfMeas, xp, dx);
+		VectorXd ratios;
+		int badIndex = kfState.postFitSigmaCheck(trace, kfMeas, xp, dx, ratios);
 		if (badIndex < 0)	{	trace << std::endl << "Sigma check passed" << std::endl;												break;		}
-		else				{	trace << std::endl << "Sigma check failed.";			doRejectCallbacks(trace, kfMeas, badIndex);		continue;	}
+		else				{	trace << std::endl << "Sigma check failed.";	doRejectCallbacks(trace, kfMeas, badIndex, ratios);	continue;	}
 	}
 
 // 	if (pass)

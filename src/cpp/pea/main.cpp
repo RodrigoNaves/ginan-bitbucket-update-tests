@@ -922,17 +922,17 @@ int main(int argc, char **argv)
 	<< " threads" << std::endl;
 
 	// Ensure the output directories exist
-	if (!acsConfig.summary_directory	.empty())	boost::filesystem::create_directories(acsConfig.summary_directory);
-	if (!acsConfig.trace_directory		.empty())	boost::filesystem::create_directories(acsConfig.trace_directory);
-	if (!acsConfig.clocks_directory		.empty())	boost::filesystem::create_directories(acsConfig.clocks_directory);
-	if (!acsConfig.ionex_directory		.empty())	boost::filesystem::create_directories(acsConfig.ionex_directory);
-	if (!acsConfig.ionstec_directory	.empty())	boost::filesystem::create_directories(acsConfig.ionstec_directory);
-	if (!acsConfig.biasSINEX_directory	.empty())	boost::filesystem::create_directories(acsConfig.biasSINEX_directory);
-	if (!acsConfig.sinex_directory		.empty())	boost::filesystem::create_directories(acsConfig.sinex_directory);
-	if (!acsConfig.testOpts.directory	.empty())	boost::filesystem::create_directories(acsConfig.testOpts.directory);
-	if (!acsConfig.ssrOpts.rtcm_directory.empty())	boost::filesystem::create_directories(acsConfig.ssrOpts.rtcm_directory);
-	if (!acsConfig.ppp_sol_directory.empty())		boost::filesystem::create_directories(acsConfig.ppp_sol_directory);
-	if (!acsConfig.persistance_directory.empty())	boost::filesystem::create_directories(acsConfig.persistance_directory);
+	if (!acsConfig.summary_directory		.empty())	boost::filesystem::create_directories(acsConfig.summary_directory);
+	if (!acsConfig.trace_directory			.empty())	boost::filesystem::create_directories(acsConfig.trace_directory);
+	if (!acsConfig.clocks_directory			.empty())	boost::filesystem::create_directories(acsConfig.clocks_directory);
+	if (!acsConfig.ionex_directory			.empty())	boost::filesystem::create_directories(acsConfig.ionex_directory);
+	if (!acsConfig.ionstec_directory		.empty())	boost::filesystem::create_directories(acsConfig.ionstec_directory);
+	if (!acsConfig.biasSINEX_directory		.empty())	boost::filesystem::create_directories(acsConfig.biasSINEX_directory);
+	if (!acsConfig.sinex_directory			.empty())	boost::filesystem::create_directories(acsConfig.sinex_directory);
+	if (!acsConfig.testOpts.directory		.empty())	boost::filesystem::create_directories(acsConfig.testOpts.directory);
+	if (!acsConfig.ssrOpts.rtcm_directory	.empty())	boost::filesystem::create_directories(acsConfig.ssrOpts.rtcm_directory);
+	if (!acsConfig.ppp_sol_directory		.empty())	boost::filesystem::create_directories(acsConfig.ppp_sol_directory);
+	if (!acsConfig.persistance_directory	.empty())	boost::filesystem::create_directories(acsConfig.persistance_directory);
 
 	BOOST_LOG_TRIVIAL(info)
 	<< "Logging with trace level:" << acsConfig.trace_level << std::endl << std::endl;
