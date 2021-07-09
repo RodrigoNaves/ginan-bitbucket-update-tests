@@ -611,9 +611,8 @@ int KFState::postFitSigmaCheck(
 /** Compare variances of measurements and pre-filtered states to detect unreasonable values
 */
 int KFState::preFitSigmaCheck(
-	Trace&		trace,      ///< Trace to output to
-	KFMeas&		kfMeas,		///< Measurements, noise, and design matrix
-	VectorXd&	ratiosOut)	///< Vector to output the error ratios of measurements
+	Trace&		trace,		///< Trace to output to
+	KFMeas&		kfMeas)		///< Measurements, noise, and design matrix
 {
 	auto	v = kfMeas.V;
 	auto	R = kfMeas.R;
@@ -633,8 +632,6 @@ int KFState::preFitSigmaCheck(
 
 	trace << std::endl << "DOING PRE SIGMA CHECK: ";
 // 	std::cout << std::endl << "meanVariations-: " << meanVariations << std::endl;
-
-	ratiosOut = ratios;
 
 	//if any are outside the expected value, flag an error
 	if (outsideExp.any())
@@ -936,7 +933,7 @@ int KFState::filterKalman(
 //		cout << kfMeas.Y.size() << endl;
 //		cout << kfMeas.V.size() << endl;
 		VectorXd ratios;
-		int badIndex = kfState.preFitSigmaCheck(trace, kfMeas, ratios);
+		int badIndex = kfState.preFitSigmaCheck(trace, kfMeas);
 		if (badIndex < 0)	{	trace << std::endl << "PreSigma check passed" << std::endl;											break;		}
 		else				{	trace << std::endl << "PreSigma check failed.";	doRejectCallbacks(trace, kfMeas, badIndex, ratios);	continue;	}
 	}

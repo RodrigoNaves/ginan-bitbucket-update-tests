@@ -309,7 +309,7 @@ void networkEstimator(
 
 		//all obs have GPS clock bias
 		if (recOpts.clk.estimate)
-		if (&rec != refRec)
+// 		if (&rec != refRec)
 		{
 			InitialState init		= initialStateFromConfig(recOpts.clk);
 			codeMeas.addDsgnEntry(recClockKey,		+1,					init);
@@ -321,21 +321,21 @@ void networkEstimator(
 				kfState.setKFTransRate(recClockKey, recClockRateKey,	1, init);
 			}
 		}
-		else
-		{
-			if (refClk == false)
-			{
-				refClk = true;
-
-				KFMeasEntry	pseudoMeas(&kfState);	//todo aaron, add pseudomeasurements to set the reference receiver to 0 rather than being blank?
-				pseudoMeas.setValue(0);				//this works, but is it general? what happens after the first epoch?
-				pseudoMeas.setNoise(0.000001);
-
-				InitialState init		= {0, SQR(0.0001), SQR(0)};
-				pseudoMeas.addDsgnEntry(refClockKey,	+1,					init);
-				kfMeasEntryList.push_back(pseudoMeas);
-			}
-		}
+// 		else
+// 		{
+// 			if (refClk == false)
+// 			{
+// 				refClk = true;
+// 
+// 				KFMeasEntry	pseudoMeas(&kfState);	//todo aaron, add pseudomeasurements to set the reference receiver to 0 rather than being blank?
+// 				pseudoMeas.setValue(0);				//this works, but is it general? what happens after the first epoch?
+// 				pseudoMeas.setNoise(0.000001);
+// 
+// 				InitialState init		= {0, SQR(0.0001), SQR(0)};
+// 				pseudoMeas.addDsgnEntry(refClockKey,	+1,					init);
+// 				kfMeasEntryList.push_back(pseudoMeas);
+// 			}
+// 		}
 
 		//other systems may have inter-system bias too.
 		if (recOpts.clk.estimate)

@@ -301,8 +301,7 @@ struct KFState
 
 	int	preFitSigmaCheck(
 		Trace&		trace,
-		KFMeas&		kfMeas,
-		VectorXd&	ratiosOut);
+		KFMeas&		kfMeas);
 
 	int 	kFilter(
 		Trace&			trace,
