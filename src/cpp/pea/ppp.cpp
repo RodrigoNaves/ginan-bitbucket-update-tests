@@ -793,7 +793,6 @@ bool deweightMeas(
 		}
 		
 		trace << std::endl << "Deweighting " << kfMeas.obsKeys[i] << std::endl;
-		trace << ratios(i);
 
 		kfMeas.R[i] *= SQR(acsConfig.deweight_factor);
 	}
