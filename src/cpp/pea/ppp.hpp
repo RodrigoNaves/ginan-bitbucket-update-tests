@@ -170,22 +170,19 @@ bool deweightMeas(
 	Trace&		trace,
 	KFState&	kfState,
 	KFMeas&		kfMeas,
-	int			index,
-	VectorXd&	ratios);
+	int			index);
 
 bool countSignalErrors(
 	Trace&		trace,
 	KFState&	kfState,
 	KFMeas&		kfMeas,
-	int			index,
-	VectorXd&	ratios);
+	int			index);
 
 bool incrementPhaseSignalError(
 	Trace&		trace,
 	KFState&	kfState,
 	KFMeas&		kfMeas,
-	int			index,
-	VectorXd&	ratios);
+	int			index);
 
 bool resetPhaseSignalError(
 	KFMeas&		kfMeas,

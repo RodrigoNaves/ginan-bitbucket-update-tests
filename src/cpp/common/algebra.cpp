@@ -559,8 +559,7 @@ int KFState::postFitSigmaCheck(
 	Trace&		trace,      ///< Trace file to output to
 	KFMeas&		kfMeas,		///< Measurements, noise, and design matrix
 	VectorXd&	xp,         ///< The post-filter state vector to compare with measurements
-	VectorXd&	dx,			///< The innovations from filtering to recalculate the deltas.
-	VectorXd&	ratiosOut)	///< A vector to output the error ratio of each measurement.
+	VectorXd&	dx)			///< The innovations from filtering to recalculate the deltas.
 {
 	MatrixXd&	H = kfMeas.A;
 	VectorXd	v = kfMeas.V	- H * dx;
@@ -594,8 +593,6 @@ int KFState::postFitSigmaCheck(
 	trace << std::endl << "DOING SIGMACHECK: ";
 // 	std::cout << std::endl << "meanVariations+: " << meanVariations << std::endl;
 
-	ratiosOut = ratios;
-	
 	//if any are outside the expected value, flag an error
 	if (outsideExp.any())
 	{
@@ -853,12 +850,11 @@ KFMeas KFState::combineKFMeasList(
 void KFState::doRejectCallbacks(
 	Trace&		trace,				///< Trace file for output
 	KFMeas&		kfMeas,				///< Measurements that were passed to the filter
-	int			badIndex,			///< Index in measurement list that was unsatisfactory
-	VectorXd&	ratios)				///< Error ratios of each measurement
+	int			badIndex)			///< Index in measurement list that was unsatisfactory
 {
 	for (auto& callback : rejectCallbacks)
 	{
-		bool keepGoing = callback(trace, *this, kfMeas, badIndex, ratios);
+		bool keepGoing = callback(trace, *this, kfMeas, badIndex);
 
 		if (keepGoing == false)
 		{
@@ -932,10 +928,9 @@ int KFState::filterKalman(
 //		cout << kfState.P.size() << endl;
 //		cout << kfMeas.Y.size() << endl;
 //		cout << kfMeas.V.size() << endl;
-		VectorXd ratios;
 		int badIndex = kfState.preFitSigmaCheck(trace, kfMeas);
-		if (badIndex < 0)	{	trace << std::endl << "PreSigma check passed" << std::endl;											break;		}
-		else				{	trace << std::endl << "PreSigma check failed.";	doRejectCallbacks(trace, kfMeas, badIndex, ratios);	continue;	}
+		if (badIndex < 0)	{	trace << std::endl << "PreSigma check passed" << std::endl;									break;		}
+		else				{	trace << std::endl << "PreSigma check failed.";	doRejectCallbacks(trace, kfMeas, badIndex);	continue;	}
 	}
 
 	MatrixXd Pp;
@@ -951,10 +946,9 @@ int KFState::filterKalman(
 			return 0;
 		}
 
-		VectorXd ratios;
-		int badIndex = kfState.postFitSigmaCheck(trace, kfMeas, xp, dx, ratios);
-		if (badIndex < 0)	{	trace << std::endl << "Sigma check passed" << std::endl;												break;		}
-		else				{	trace << std::endl << "Sigma check failed.";	doRejectCallbacks(trace, kfMeas, badIndex, ratios);	continue;	}
+		int badIndex = kfState.postFitSigmaCheck(trace, kfMeas, xp, dx);
+		if (badIndex < 0)	{	trace << std::endl << "Sigma check passed" << std::endl;									break;		}
+		else				{	trace << std::endl << "Sigma check failed.";	doRejectCallbacks(trace, kfMeas, badIndex);	continue;	}
 	}
 
 // 	if (pass)
