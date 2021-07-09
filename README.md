@@ -3,18 +3,21 @@
 # Ginan: software toolkit and service
 
 
-#### `GINAN v1.0.0 alpha release`
+#### `Ginan v1.0.0 alpha release`
 
 ## Overview
+
 Ginan is a processing package being developed to processes GNSS observations for geodetic applications.  
 
 We currently support the processing of:
 
-* the American Global Positioning System (`GPS`);
-* the Russian GLONASS system (`GLONASS`);
-* The European Gallileo system (`Gallileo`);
-* the Chinese Navigation Satellite System (`Beidou`);
-* The Japanese QZSS develop system (`QZSS`).
+* the United States' Global Positioning System (`GPS`);
+* the Russian GLONASS system (`GLONASS`)*;
+* the European Union's Galileo system (`Galileo`);
+* the Chinese Navigation Satellite System (`BeiDou`)*;
+* the Japanese QZSS develop system (`QZSS`)*.
+
+*\*precise orbit determination only with full support coming soon*
 
 We are actively developing the ACS to have the following capabilities and features:
 
@@ -30,24 +33,24 @@ We are actively developing the ACS to have the following capabilities and featur
 * Routinely produce IGS final, rapid, ultra-rapid and real-time (RT) products.
 
 The software is broken into two main components: Network Parameter Estimation Algorithm (`PEA`) and Precise Orbit Determination (`POD`).
-
+***
 ## Supported Platforms
 
-GINAN is supported on the following Platforms
+Ginan is supported on the following Platforms
 
 * Linux
 * Mac OSX
-  
+***
 ## Download
 
-You can downlaod GINAN source from github using git clone:
+You can downlaod Ginan source from github using git clone:
 
     $ git clone git@https://github.com/GeoscienceAustralia/ginan.git
     
 Then download all of the example data using the python script provided:
 
     $ python3 scripts/download_examples.py 
-
+***
 ## Directory Structure
 
     ginan/
@@ -57,7 +60,7 @@ Then download all of the example data using the python script provided:
     ├── bin/		        ! Binary executables directory*
     ├── CMakeLists.txt		! Cmake build file
     ├── docs/			    ! Documentation directory
-    ├── examples/           ! GINAN examples directory
+    ├── examples/           ! Ginan examples directory
     |   ├── data/           ! example dataset (rinex files)**
     |   ├── products/       ! example products and aux files**
     |   ├── solutions/      ! example solutions for QC**
@@ -87,12 +90,13 @@ Then download all of the example data using the python script provided:
         ├── build/			! Cmake build directory*
         └── CMakeLists.txt
 
-\* created during installation process
+*\*created during installation process*
 
-\*\* created by download_examples.py script
+*\*\*created by `download_examples.py` script*
+***
 ## Dependencies
 
-GINAN has several software dependencies:
+Ginan has several software dependencies:
 
 * C/C++ and Fortran compiler. We use and recommend [gcc-g++ and gfortran](https://gcc.gnu.org)
 * BLAS and LAPACK linear algebra libraries. We use and recommend [OpenBlas](https://www.openblas.net/) as this contains both libraries required
@@ -101,8 +105,8 @@ GINAN has several software dependencies:
 * Boost  > 1.70
 * Eigen3
 * netCDF4
-* Python3 (including Numpy and Matplotlib modules)
-
+* Python3 (including Numpy, Pandas and Matplotlib modules)
+***
 ## Installing dependencies with Ubuntu
 
 Update the base operating system:
@@ -110,13 +114,13 @@ Update the base operating system:
     $ sudo apt update
     $ sudo apt upgrade
 
-Install base utilities gcc, gfortran, git, openssl, blas, lapack, etc
+Install base utilities `gcc`, `gfortran`, `git`, `openssl`, `openblas` etc:
 
     $ sudo apt install -y git gobjc gobjc++ gfortran libopenblas-dev openssl curl net-tools openssh-server cmake make libssl1.0-dev
-
+***
 ## Building additional dependencies 
 
-Depending on the user's installation choice: install PEA-only, POD-only or all software packages, a set of additional dependencies that need to be built may change. Below, we explain building all the additional dependencies:
+Depending on the user's installation choice: install `PEA`-only, `POD`-only or all software packages, a set of additional dependencies that need to be built may change. Below, we explain building all the additional dependencies:
 
 First, create a temporary directory structure to make the dependencies in, it can be removed after the installation process is done:
 
@@ -124,8 +128,9 @@ First, create a temporary directory structure to make the dependencies in, it ca
     $ cd /data/tmp
 
 Note that `/data/tmp` is only used here as example and can be any directory
+
 ### YAML
-We are using the YAML library to parse the configuration files used to run many of the programs found in this library (https://github.com/jbeder/yaml-cpp). Here is an example of how we have installed the yaml library from source:
+We are using the [YAML](https://github.com/jbeder/yaml-cpp) library to parse the configuration files used to run many of the programs found in this library. Here is an example of how to install the yaml library from source:
 
     $ cd /data/tmp
     $ sudo git clone https://github.com/jbeder/yaml-cpp.git
@@ -137,8 +142,8 @@ We are using the YAML library to parse the configuration files used to run many 
     $ cd ../..
     $ sudo rm -fr yaml-cpp
 
-### Boost (PEA-only)
-PEA relies on a number of the utilities provided by boost (https://www.boost.org/), such as their time and logging libraries.
+### Boost (`PEA`-only)
+`PEA` relies on a number of the utilities provided by [boost](https://www.boost.org/), such as their time and logging libraries.
 
     $ cd /data/tmp/
     $ sudo wget -c https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.tar.gz
@@ -150,9 +155,8 @@ PEA relies on a number of the utilities provided by boost (https://www.boost.org
     $ cd ..
     $ sudo rm -fr boost_1_73_0/ boost_1_73_0.tar
 
-
-### Eigen3 (PEA-only)
-Eigen3 is used for performing matrix calculations, and has a very nice API.
+### Eigen3 (`PEA`-only)
+`Eigen3` is used for performing matrix calculations in `PEA`, and has a very nice API.
 
     $ cd /data/tmp/
     $ sudo git clone https://gitlab.com/libeigen/eigen.git
@@ -165,7 +169,8 @@ Eigen3 is used for performing matrix calculations, and has a very nice API.
     $ sudo rm -rf eigen
 
 
-### MongoDB (PEA-only)
+### MongoDB (`PEA`-only)
+
     $ wget https://github.com/mongodb/mongo-c-driver/releases/download/1.17.1/mongo-c-driver-1.17.1.tar.gz
     $ tar -xvf mongo-c-driver-1.17.1.tar.gz
 
@@ -183,7 +188,7 @@ Eigen3 is used for performing matrix calculations, and has a very nice API.
     $ cd mongo-cxx-driver-r3.6.0/
 
     $ cd build/
-    $ cmake ..                                    -DCMAKE_BUILD_TYPE=Release              -DCMAKE_INSTALL_PREFIX=/usr/local
+    $ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..
     $ sudo cmake --build . --target EP_mnmlstc_core
     $ cmake --build .
     $ sudo cmake --build . --target install
@@ -202,22 +207,24 @@ If you are using WSL see the notes below and skip this next section:
     $ mongod
 
 
-#### For WSL:
-Even though the documentation on MongoBB says that WSL is not supportedm it is still possible to install.
+<!-- #### For WSL:
+Even though the documentation on `MongoDB` says that WSL is not supported it is still possible to install.
 In order to run mongod as a service on WSL you will need to:
 
 Copy the script from : https://raw.githubusercontent.com/mongodb/mongo/master/debian/init.d
 to /etc/init.d/mongod
 
 Make the script executable:
+
     $ sudo chmod a+x /etc/init.d/mongod
 
 Now you can start it as a service by:
-    $ sudo service mongod start
+
+    $ sudo service mongod start -->
 
 ### netcdf4 (for ocean tide loading package)
     $ apt -y install libnetcdf-dev libnetcdf-c++4-dev
-
+***
 ## Build
 Prepare a directory to build in, its better practise to keep this seperated from the source code.
 
@@ -238,7 +245,7 @@ To build specific package (e.g. PEA or POD), run as below:
     $ make pea -j 2
     $ make pod -j 2
 
-This should create executables in the `bin` directory of GINAN.
+This should create executables in the `bin` directory of Ginan.
 
 Check to see if you can execute the PEA:
 
@@ -344,7 +351,7 @@ This returns:
     * pod 
     * crs2trs 
     * brdc2ecef -->
-
+***
 ## Documentation
 
 The documentation for Ginan can be generated using `doxygen` and `graphviz`. If not already installed, type as follows:
@@ -357,6 +364,7 @@ On success, proceed to the build directory and call make with `doc_doxygen` targ
 	$ make doc_doxygen
 
 The docs can then be found at `docs/html/index.html`. Note that documentation is generated automatically if `make` is called without arguments and `doxygen` and `graphviz` dependencies are satisfied.
+***
 ## Ready!
 Congratulations! You are now ready to trial the examples of `PEA` and `POD` from the examples directory. See Ginan's manual for detailed explanation of each example. Note that examples have relative paths to files in them and rely on the presence of `products`, `data` and `solutions` directories inside the `examples` directory. Make sure you've run `download_examples.py` from the `Download` step of this instruction.
 
@@ -368,7 +376,7 @@ To run the first example of the PEA:
 
     ../bin/pea --config ex11_pea_pp_user_gps.yaml
 
-This should create `ex11` directory with `ex11-ALIC201919900.TRACE` and `ex1120624.snx` output files. You can remove the need for path specification to the executable by adding ginan's bin directory to `~/.bachrc` file:
+This should create `ex11` directory with `ex11-ALIC201919900.TRACE` and `ex1120624.snx` output files. You can remove the need for path specification to the executable by adding Ginan's bin directory to `~/.bachrc` file:
 
     PATH="path_to_ginan_bin:$PATH"
 
@@ -379,7 +387,7 @@ And an example of POD:
 At the completion of the test run, `ex21` directory should be create. The `ex21_.sh` script will return any differences to the standard test resuts.
 
 
-
+***
 ## Python Installation for Plotting, Processing, etc.
 Lastly, to run many of the included scripts for fast parsing of .trace/.snx files, plotting of results, automatic running of the PEA based on input date/times and stations, etc. then a number of python dependencies are needed.
 
