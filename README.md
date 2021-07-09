@@ -11,11 +11,11 @@ Ginan is a processing package being developed to processes GNSS observations for
 
 We currently support the processing of:
 
-* the United States' Global Positioning System (`GPS`);
-* the Russian GLONASS system (`GLONASS`)*;
-* the European Union's Galileo system (`Galileo`);
-* the Chinese Navigation Satellite System (`BeiDou`)*;
-* the Japanese QZSS develop system (`QZSS`)*.
+* the United States' Global Positioning System (**GPS**);
+* the Russian GLONASS system (**GLONASS**)*;
+* the European Union's Galileo system (**Galileo**);
+* the Chinese Navigation Satellite System (**BeiDou**)*;
+* the Japanese QZSS develop system (**QZSS**)*.
 
 *\*precise orbit determination only with full support coming soon*
 
@@ -30,9 +30,10 @@ We are actively developing the ACS to have the following capabilities and featur
 * Delivering outputs usable and accessible by non-experts;
 * Providing both a real-time and off-line processing capability;
 * Delivering both position and integrity information;
-* Routinely produce IGS final, rapid, ultra-rapid and real-time (RT) products.
+* Routinely produce IGS final, rapid, ultra-rapid and real-time (RT) products;
+* Model Ocean Tide Loading (OTL) displacements.
 
-The software is broken into two main components: Network Parameter Estimation Algorithm (`PEA`) and Precise Orbit Determination (`POD`).
+The software is broken into two main components: Network Parameter Estimation Algorithm (PEA) and Precise Orbit Determination (POD).
 ***
 ## Supported Platforms
 
@@ -105,7 +106,7 @@ Ginan has several software dependencies:
 * Boost  > 1.70
 * Eigen3
 * netCDF4
-* Python3 (including Numpy, Pandas and Matplotlib modules)
+* Python3 (tested on Python 3.7)
 ***
 ## Installing dependencies with Ubuntu
 
@@ -120,7 +121,7 @@ Install base utilities `gcc`, `gfortran`, `git`, `openssl`, `openblas` etc:
 ***
 ## Building additional dependencies 
 
-Depending on the user's installation choice: install `PEA`-only, `POD`-only or all software packages, a set of additional dependencies that need to be built may change. Below, we explain building all the additional dependencies:
+Depending on the user's installation choice: install PEA-only, POD-only or all software packages, a set of additional dependencies that need to be built may change. Below, we explain building all the additional dependencies:
 
 First, create a temporary directory structure to make the dependencies in, it can be removed after the installation process is done:
 
@@ -142,8 +143,8 @@ We are using the [YAML](https://github.com/jbeder/yaml-cpp) library to parse the
     $ cd ../..
     $ sudo rm -fr yaml-cpp
 
-### Boost (`PEA`-only)
-`PEA` relies on a number of the utilities provided by [boost](https://www.boost.org/), such as their time and logging libraries.
+### Boost (PEA)
+PEA relies on a number of the utilities provided by [boost](https://www.boost.org/), such as their time and logging libraries.
 
     $ cd /data/tmp/
     $ sudo wget -c https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.tar.gz
@@ -155,8 +156,8 @@ We are using the [YAML](https://github.com/jbeder/yaml-cpp) library to parse the
     $ cd ..
     $ sudo rm -fr boost_1_73_0/ boost_1_73_0.tar
 
-### Eigen3 (`PEA`-only)
-`Eigen3` is used for performing matrix calculations in `PEA`, and has a very nice API.
+### Eigen3 (PEA)
+Eigen3 is used for performing matrix calculations in PEA, and has a very nice API.
 
     $ cd /data/tmp/
     $ sudo git clone https://gitlab.com/libeigen/eigen.git
@@ -169,7 +170,7 @@ We are using the [YAML](https://github.com/jbeder/yaml-cpp) library to parse the
     $ sudo rm -rf eigen
 
 
-### MongoDB (`PEA`-only)
+### MongoDB (PEA, optional)
 
     $ wget https://github.com/mongodb/mongo-c-driver/releases/download/1.17.1/mongo-c-driver-1.17.1.tar.gz
     $ tar -xvf mongo-c-driver-1.17.1.tar.gz
@@ -198,15 +199,13 @@ We are using the [YAML](https://github.com/jbeder/yaml-cpp) library to parse the
     $ echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
 
     $ sudo apt update
-    $ sudo apt install mongodb-org
-
-If you are using WSL see the notes below and skip this next section:
+    $ sudo apt install mongodb-org 
 
     $ sudo systemctl start mongod
     $ sudo systemctl status mongod
     $ mongod
 
-
+<!-- If you are using WSL see the notes below and skip this next section: -->
 <!-- #### For WSL:
 Even though the documentation on `MongoDB` says that WSL is not supported it is still possible to install.
 In order to run mongod as a service on WSL you will need to:
@@ -222,7 +221,7 @@ Now you can start it as a service by:
 
     $ sudo service mongod start -->
 
-### netcdf4 (for ocean tide loading package)
+### netcdf4 (OTL package)
     $ apt -y install libnetcdf-dev libnetcdf-c++4-dev
 ***
 ## Build
@@ -366,7 +365,7 @@ On success, proceed to the build directory and call make with `doc_doxygen` targ
 The docs can then be found at `docs/html/index.html`. Note that documentation is generated automatically if `make` is called without arguments and `doxygen` and `graphviz` dependencies are satisfied.
 ***
 ## Ready!
-Congratulations! You are now ready to trial the examples of `PEA` and `POD` from the examples directory. See Ginan's manual for detailed explanation of each example. Note that examples have relative paths to files in them and rely on the presence of `products`, `data` and `solutions` directories inside the `examples` directory. Make sure you've run `download_examples.py` from the `Download` step of this instruction.
+Congratulations! You are now ready to trial the examples of PEA and POD from the examples directory. See Ginan's manual for detailed explanation of each example. Note that examples have relative paths to files in them and rely on the presence of `products`, `data` and `solutions` directories inside the `examples` directory. Make sure you've run `download_examples.py` from the **Download** step of this instruction.
 
 The paths are relative to the examples directory and hence all the examples must be run from the `examples` directory.
 
