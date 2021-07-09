@@ -44,7 +44,7 @@ You can downlaod GINAN source from github using git clone:
 
     $ git clone git@https://github.com/GeoscienceAustralia/ginan.git
     
-Then download all of the example data using git-lfs:
+Then download all of the example data using the python script provided:
 
     $ python3 scripts/download_examples.py 
 
