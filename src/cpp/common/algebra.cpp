@@ -306,14 +306,21 @@ void KFState::clampStateValues()
 }
 
 /** Add process noise and dynamics to filter object according to time gap.
-* This will also sort states according to their kfKey as a result of the way the state transition matrix is generated.
-*/
+ * This will also sort states according to their kfKey as a result of the way the state transition matrix is generated.
+ */
 void KFState::stateTransition(
 	Trace&		trace,		///< [out]	Trace file for output
-	double		tgap)		///< [in]	Time since last update for process noise and dynamics (s)
+	GTime		newTime)	///< [in]	Time of update for process noise and dynamics (s)
 {
-
 	KFState& kfState = *this;
+//
+	if (time == GTime::noTime())
+	{
+		time = newTime;
+	}
+	
+	double tgap = newTime.time - time.time;
+	time = newTime;
 //
 //	TestStack ts(__FUNCTION__);
 

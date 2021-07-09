@@ -845,6 +845,7 @@ bool resetPhaseSignalError(
 {
 	map<string, void*>& metaDataMap = kfMeas.metaDataMaps[index];
 
+	//this will have been set to null if there was an error after adding the measurement to the list
 	unsigned int* phaseRejectCount_ptr = (unsigned int*) metaDataMap["phaseRejectCount_ptr"];
 
 	if (phaseRejectCount_ptr == nullptr)
@@ -855,6 +856,26 @@ bool resetPhaseSignalError(
 	unsigned int&	phaseRejectCount	= *phaseRejectCount_ptr;
 
 	phaseRejectCount = 0;
+
+	return true;
+}
+
+bool resetPhaseSignalOutage(
+	KFMeas&		kfMeas,
+	int			index)
+{
+	map<string, void*>& metaDataMap = kfMeas.metaDataMaps[index];
+
+	unsigned int* phaseOutageCount_ptr = (unsigned int*) metaDataMap["phaseOutageCount_ptr"];
+
+	if (phaseOutageCount_ptr == nullptr)
+	{
+		return true;
+	}
+
+	unsigned int&	phaseOutageCount	= *phaseOutageCount_ptr;
+
+	phaseOutageCount = 0;
 
 	return true;
 }

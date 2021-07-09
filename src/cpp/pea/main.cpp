@@ -55,7 +55,7 @@ using std::string;
 #include "vmf3.h"
 
 nav_t		nav		= {};
-int			epoch	= 1;
+int			epoch	= 0;
 GTime		tsync	= GTime::noTime();
 
 // Used for stream specific tracing.
@@ -524,7 +524,7 @@ void mainOncePerEpochPerStation(
 		{
 			KFState kfARcopy = rec.rtk.pppState;
 			
-			int nfixed = enduserAmbigResl(trace, rec.obsList, kfARcopy, rec.rtk.tt);
+			int nfixed = enduserAmbigResl(trace, rec.obsList, kfARcopy);
 			if (nfixed>0)
 			{
 				trace << std::endl << "-------------- AR PPP solution ----------------------" << std::endl;
@@ -627,7 +627,7 @@ void mainOncePerEpochPerStation(
 void mainOncePerEpoch(
 	Network&		net,
 	StationList&	epochStations,
-	double			tgap)
+	GTime			tsync)
 {
 	TestStack ts("1/Ep");
 	double ep[6] = {};
@@ -637,14 +637,14 @@ void mainOncePerEpoch(
 	
 	if (acsConfig.ssrOpts.calculate_ssr)
 	{
-		initSsrOut(tgap);
+		initSsrOut();
 	}
 	
 	if (acsConfig.process_network)
 	{
 		netTrace << std::endl << "------=============== " << epoch << " =============-----------" << std::endl;
 
-		networkEstimator(netTrace, epochStations, net.kfState, tgap);
+		networkEstimator(netTrace, epochStations, net.kfState, tsync);
 
 		if	( acsConfig.output_AR_clocks == false 
 			||ARsol_ready() == false) 
@@ -678,7 +678,7 @@ void mainOncePerEpoch(
 			/* Instantaneous AR */
 			KF_ARcopy = net.kfState;
 		
-			networkAmbigResl(netTrace, epochStations, KF_ARcopy, tgap);
+			networkAmbigResl(netTrace, epochStations, KF_ARcopy);
 
 			if (acsConfig.output_AR_clocks  && ARsol_ready())
 			{
@@ -729,13 +729,16 @@ void mainOncePerEpoch(
 		{
 			std::set<SatSys> sats;	// List of satellites visible in this epoch
 			for (auto& rec_ptr	: epochStations)
-				for (auto& obs	: rec_ptr->obsList)
+			for (auto& obs	: rec_ptr->obsList)
 					sats.insert(obs.Sat);
+			
 			calcSsrCorrections(netTrace, sats, tsync);
+		
 			if (acsConfig.ssrOpts.upload_to_caster)
 				outStreamManager.sendMessages(true);
 			else
 				rtcmEncodeToFile(epoch);
+			
 			if (acsConfig.ssrOpts.sync_epochs)
 				exportSyncFile(epoch);
 		}
@@ -743,7 +746,7 @@ void mainOncePerEpoch(
 
 	if (acsConfig.process_ionosphere)
 	{
-		update_ionosph_model(netTrace, epochStations, tsync, tgap);
+		update_ionosph_model(netTrace, epochStations, tsync);
 	}
 
 	if (acsConfig.output_persistance)
@@ -1077,8 +1080,6 @@ int main(int argc, char **argv)
 		tsync.time = boost::posix_time::to_time_t(acsConfig.start_epoch);
 	}
 
-	double tgap = acsConfig.epoch_interval;
-
 	BOOST_LOG_TRIVIAL(info)
 	<< std::endl;
 	BOOST_LOG_TRIVIAL(info)
@@ -1095,13 +1096,22 @@ int main(int argc, char **argv)
 	//============================================================================
 
 	// Read the observations for each station and do stuff
-	auto epochStartTime		= system_clock::now();
 	bool complete = false;
+	int loopEpochs = 1;
+	auto nextNominalLoopStartTime = system_clock::now();
 	while (complete == false)
 	{
-		auto prevEpochStartTime	= epochStartTime;
-		epochStartTime = system_clock::now();
+		if (tsync != GTime::noTime())
+		{
+			tsync.time				+= loopEpochs * acsConfig.epoch_interval;
+		}
 		
+		epoch						+= loopEpochs;
+		nextNominalLoopStartTime	+= loopEpochs * std::chrono::milliseconds((int)(acsConfig.wait_next_epoch * 1000));
+		
+		auto breakTime	= nextNominalLoopStartTime
+						+ std::chrono::milliseconds((int)(acsConfig.wait_all_stations	* 1000));
+						
 		BOOST_LOG_TRIVIAL(info)
 		<< std::endl;
 		BOOST_LOG_TRIVIAL(info)
@@ -1110,12 +1120,10 @@ int main(int argc, char **argv)
 		TestStack ts("Epoch " + std::to_string(epoch));
 
 		StationList epochStations;
-
-		bool repeat		= true;
-		auto maxDelay	= prevEpochStartTime + std::chrono::milliseconds((int)(acsConfig.wait_next_epoch * 1000));
-		auto breakTime	= maxDelay;
 		
 		//get observations from streams (allow some delay between stations, and retry, to ensure all messages for the epoch have arrived)
+		bool foundFirst	= false;
+		bool repeat		= true;
 		while	( repeat
 				&&system_clock::now() < breakTime)
 		{
@@ -1192,10 +1200,19 @@ int main(int argc, char **argv)
 					continue;
 				}
 
-				if (breakTime == maxDelay)
+				if (foundFirst == false)
 				{
+					foundFirst = true;
+					
 					//first observation found for this epoch, give any other stations some time to get their observations too
-					breakTime = system_clock::now() + std::chrono::milliseconds((int)(acsConfig.wait_all_stations * 1000));
+					//only shorten waiting periods, never extend
+					auto now = system_clock::now();
+					
+					auto alternateBreakTime = now + std::chrono::milliseconds((int)(acsConfig.wait_all_stations	* 1000));
+					auto alternateStartTime = now + std::chrono::milliseconds((int)(acsConfig.wait_next_epoch	* 1000));
+					
+					if (alternateBreakTime < breakTime)						{	breakTime					= alternateBreakTime;	}
+					if (alternateStartTime < nextNominalLoopStartTime)		{	nextNominalLoopStartTime	= alternateStartTime;	}
 				}
 
 				//initialise the station if required
@@ -1279,6 +1296,8 @@ int main(int argc, char **argv)
 
 					obs.satStat_ptr					= &rec.rtk.satStatMap[obs.Sat];
 					obs.satOrb_ptr					= &nav.orbpod.satOrbitMap[obs.Sat];
+					
+					auto& satOpts = acsConfig.getSatOpts(obs.Sat);
 				}
 
 				obsVariances(rec.obsList);
@@ -1287,10 +1306,12 @@ int main(int argc, char **argv)
 				epochStations.push_back(&rec);
 			}
 		}
+		
 		if (acsConfig.process_user)
 		{
 			if (acsConfig.ssrOpts.sync_epochs)
 				waitForSyncFile(epoch + acsConfig.ssrOpts.sync_epoch_offset);
+			
 			if (acsConfig.ssrOpts.read_from_files)
 				rtcmDecodeFromFile(epoch + acsConfig.ssrOpts.sync_epoch_offset); // add an offset if starting later than 00:00:00
 		}
@@ -1368,8 +1389,8 @@ int main(int argc, char **argv)
 			BOOST_LOG_TRIVIAL(warning)
 			<< "Epoch " << epoch << " finished with no observations";
 			
-			tsync.time += tgap;
-			epoch++;
+			//eat one epoch before next loop
+			loopEpochs = 1;
 			continue;
 		}
 
@@ -1432,10 +1453,9 @@ int main(int argc, char **argv)
 			mainOncePerEpochPerStation(rec, orog, gptg);
 		}	
 
-
 		Eigen::setNbThreads(0);
 
-		mainOncePerEpoch(net, epochStations, tgap);
+		mainOncePerEpoch(net, epochStations, tsync);
 
 		auto epochStopTime = boost::posix_time::from_time_t(system_clock::to_time_t(system_clock::now()));
 
@@ -1472,8 +1492,14 @@ int main(int argc, char **argv)
 			break;
 		}
 
-		tsync.time += tgap;
-		epoch++;
+		auto loopStopTime		= system_clock::now();
+		auto loopExcessDuration = loopStopTime - (nextNominalLoopStartTime + std::chrono::milliseconds((int)(acsConfig.wait_all_stations * 1000)));
+		int excessLoops			= loopExcessDuration / std::chrono::milliseconds((int)(acsConfig.wait_next_epoch * 1000));
+		
+		if (excessLoops < 0)		{	excessLoops = 0;																						}	
+		if (excessLoops > 0)		{	BOOST_LOG_TRIVIAL(warning) << std::endl << "Excessive time elapsed, skipping " << excessLoops << " epochs";		}
+		
+		loopEpochs = 1 + excessLoops;
 	}
 
 

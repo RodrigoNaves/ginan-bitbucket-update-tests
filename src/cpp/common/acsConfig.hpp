@@ -260,7 +260,8 @@ struct KalmanModel
 */
 struct NetworkOptions
 {
-	int			phase_reject_count	= 10;	
+	int			phase_reject_limit	= 10;	
+	int			outage_reset_limit	= 10;	
 
 	int			filter_mode		= E_FilterMode::KALMAN;
 	int			inverter		= E_Inverter::INV;
@@ -421,8 +422,8 @@ struct MinimumConstraintOptions
 */
 struct PPPOptions
 {
-	int			outage_reset_count	= 50;		/* obs outage count to reset bias */
-	int			phase_reject_count	= 10;		/* obs outage count to reset bias */
+	int			phase_reject_limit	= 10;	
+	int			outage_reset_limit	= 10;	
 
 	int			max_filter_iter 	= 2;
 	int			max_prefit_remv 	= 2;
@@ -432,8 +433,6 @@ struct PPPOptions
 	int			rts_lag				= 0;
 	string		rts_directory		= "./";
 	string		rts_filename		= "PPP-<Station>-<YYYY><DDD><HH>.rts";
-
-	bool		ballistics			= false;
 };
 
 /** Options associated with cycle slip detection and repair within the network filter

@@ -290,7 +290,7 @@ struct KFState
 
 	void	stateTransition(
 		Trace&		trace,
-		double		tgap);
+		GTime		newTime);
 
 	int	postFitSigmaCheck(
 		Trace&		trace,

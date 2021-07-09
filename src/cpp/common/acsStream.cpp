@@ -1351,9 +1351,9 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 
 /** Initialises SSROut struct. To be called at the start of every epoch
 */
-void initSsrOut(
-	double tgap)
+void initSsrOut()
 {
+	double tgap = acsConfig.epoch_interval;
 	int udi			= acsConfig.ssrOpts.update_interval;
 	int udiIndex	= RtcmDecoder::SSRDecoder::getUdiIndex(udi);
 	int tgapInt		= (int)round(tgap);

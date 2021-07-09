@@ -40,7 +40,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_MODULE_PATH                           "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_VISIBILITY_PRESET         hidden)
 set(CMAKE_VERBOSE_MAKEFILE                      ON)
-set(CMAKE_CXX_FLAGS                             "${CMAKE_CXX_FLAGS} -std=c++1z -ggdb3 -fpermissive -Wno-write-strings -Wno-deprecated-declarations -Wno-format-overflow")
+set(CMAKE_CXX_FLAGS                             "${CMAKE_CXX_FLAGS} -std=c++1z -ggdb3 -fpermissive -Wno-write-strings -Wno-deprecated-declarations -Wno-format-overflow -Wno-c++11-narrowing -Wno-dangling-else")
 set (CMAKE_Fortran_FLAGS "-g -frecursive -fall-intrinsics -Wmaybe-uninitialized -fcheck=all -fbacktrace")
 #set (CMAKE_Fortran_FLAGS "-g -frecursive -fall-intrinsics -Wmaybe-uninitialized -Wunused-dummy-argument -fcheck=all -fbacktrace")
 

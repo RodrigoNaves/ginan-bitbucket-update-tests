@@ -1157,9 +1157,8 @@ bool ACSConfig::parse(
 		trySetFromYaml(pppOpts.rts_lag,					user_filter,	{"rts_lag"					});
 		trySetFromYaml(pppOpts.rts_directory,			user_filter,	{"rts_directory"			});
 		trySetFromYaml(pppOpts.rts_filename,			user_filter,	{"rts_filename"				});
-		trySetFromYaml(pppOpts.ballistics,				user_filter,	{"ballistics"				});
-		trySetFromYaml(pppOpts.outage_reset_count,		user_filter,	{"outage_reset_count"		});
-		trySetFromYaml(pppOpts.phase_reject_count,		user_filter,	{"phase_reject_count"		});
+		trySetFromYaml(pppOpts.outage_reset_limit,		user_filter,	{"outage_reset_limit"		});
+		trySetFromYaml(pppOpts.phase_reject_limit,		user_filter,	{"phase_reject_limit"		});
 	}
 
 	auto network_filter = stringsToYamlObject(yaml, {"network_filter_parameters"});
@@ -1171,7 +1170,8 @@ bool ACSConfig::parse(
 		trySetFromYaml(netwOpts.rts_lag,			network_filter,	{"rts_lag"					});
 		trySetFromYaml(netwOpts.rts_directory,		network_filter,	{"rts_directory"			});
 		trySetFromYaml(netwOpts.rts_filename,		network_filter,	{"rts_filename"				});
-		trySetFromYaml(netwOpts.phase_reject_count,	network_filter,	{"phase_reject_count"		});
+		trySetFromYaml(netwOpts.outage_reset_limit,	network_filter,	{"outage_reset_limit"		});
+		trySetFromYaml(netwOpts.phase_reject_limit,	network_filter,	{"phase_reject_limit"		});
 	}
 
 	auto troposphere = stringsToYamlObject(processing_options, {"troposphere"});
