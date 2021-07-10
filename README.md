@@ -299,10 +299,9 @@ This returns:
     
     POD.in config file options by defaut can be overridden on the command line
     
-    Command line: ../../bin/pod -c -m -s -o -e -v -a -p -r -t -n -i -u -q -k -w -y -h 
+    Command line: ../../bin/pod -m -s -o -a -p -r -t -n -i -u -q -k -w -y -h 
     
     Where: 
-        -c --config  = Config file name [Default POD.config]
         -m --podmode = POD Mode:
                                     1 - Orbit Determination (pseudo-observations; orbit fitting)
                                     2 - Orbit Determination and Prediction
@@ -310,8 +309,6 @@ This returns:
                                     4 - Orbit Integration and Partials (Equation of Motion and Variational Equations)
         -s --pobs    = Pseudo observations orbit .sp3 file name
         -o --cobs    = Comparison orbit .sp3 file name
-        -e --eqm     = EQuations of Motion input file name  [Default: EQM.in]
-        -v --veq     = Variatinal EQuations input file name [Default: VEQ.in]
         -a --arclen  = Orbit Estimation Arc length (hours)
         -p --predlen = Orbit Prediction Arc length (hours)
         -r --eopf    = Earth Orientation Paramaeter (EOP) values file
@@ -335,12 +332,11 @@ This returns:
     
     Examples:
     
-            ../../bin/pod -m 1 -q 1 -k 1 -w 0 -s igs16403.sp3 -o igs16403.sp3 
-            ../../bin/pod -m 2 -q 1 -k 1 -w 0 -s igs16403.sp3 -e EQMx.in -v VEQx.in -p 12
+            ../../bin/pod -m 1 -q 1 -k 1 -w 0 -s igs16403.sp3 -o igs16403.sp3 -y ex1.yaml
+            ../../bin/pod -m 2 -q 1 -k 1 -w 0 -s igs16403.sp3 -p 12 -y ex2.yaml
     
     For orbit updates using Parameter Estimation Algorithm (PEA):
-            ../../bin/pod -m 4 -q 2 -k 1 -w 0 -s igs16403.sp3 -o igs16403.sp3
-
+            ../../bin/pod -m 4 -q 2 -k 1 -w 0 -s igs16403.sp3 -o igs16403.sp3 -y ex3.yaml
 
 
 
