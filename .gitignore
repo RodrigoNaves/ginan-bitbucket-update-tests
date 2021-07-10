@@ -100,3 +100,5 @@ Thumbs.db
 # vscode settings
 .vscode/
 
+# remove commitversion.h
+src/cpp/pea/peaCommitVersion.h
