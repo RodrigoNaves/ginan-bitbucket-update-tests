@@ -43,14 +43,14 @@ const int THREAD_COUNT = 8;
 
 void program_options(int argc, char * argv[], otl_input & input)
 {
-	po::options_description desc{"make_otl_blq <options>"};
+	po::options_description desc{"interpolate_loading <options>"};
 
 	// Do not set default values here, as this will overide the configuration file opitions!!!
 	desc.add_options()
 			("help", 			"This help message")
 			("quiet", 			"Less output")
 			("verbose", 		"More output")
-			("config", 	 	po::value<std::string>(),	"Configuration file, This specifies the location of green function, and netcdf files for the ocean loading terms")
+			("grid", 	 	po::value<std::string>(),	"Loading grid netCDF file")
 			("location", 	po::value<std::vector<float>>()->multitoken(), "location: lon (decimal degrees) lat (decimal degrees)")
 			("code",     	po::value<std::string>(), "Station Code with or without DOMES number (ALIC 50137M0014)")
 			("input",		po::value<std::string>(),	"input file containing list of stations CSV format name, lon, lat")
@@ -69,11 +69,11 @@ void program_options(int argc, char * argv[], otl_input & input)
 	if (vm.count("help")) {
 		cout << "Usage: interpolate_loading [options]\n";
 		cout << desc << "\n\n";
-		cout << "Example: interpolate_loading --config atm_loadtide_interp.yaml --code 'ALIC 50137M0014' --location 133.8855 -23.6701 \n\n";
-		cout << "Example with input file: interpolate_loading --config atm_loadtide_interp.yaml --input station.csv\n";
+		cout << "Example: interpolate_loading --grid /<path_to>/oceantide.nc --code 'ALIC 50137M0014' --location 133.8855 -23.6701 \n\n";
+		cout << "Example with input file: interpolate_loading --grid /<path_to>/oceantide.nc --input station.csv\n";
 		cout << "                         Where station.csv contains station informations  \n";
 		cout << "                           format: station name, longitude, latitude\n\n";
-		cout << "  Config file atn_loadtide_interp.yaml contains the grid of interpolate loading grid file\n";
+		cout << "  The file oceantide.nc contains the precalculated ocean tide loads\n";
 
 		exit(0);
 	}
@@ -95,14 +95,16 @@ void program_options(int argc, char * argv[], otl_input & input)
 			input.code.push_back(vm["code"].as<std::string>());
 		} else { input.code.push_back("XXXX"); }
 	}
-	YAML::Node config = YAML::LoadFile(config_f );
+
+	input.tide_file.push_back(vm["grid"].as<std::string>());
+	// YAML::Node config = YAML::LoadFile(config_f );
 
 	// input.green = config["greenfunction"].as<string>();
 
-	YAML::Node tidefiles = config["tide"];
-	for (YAML::const_iterator it = tidefiles.begin() ; it != tidefiles.end(); ++it) {
-		input.tide_file.push_back(it->as<std::string>(""));
-	};
+	// YAML::Node tidefiles = config["tide"];
+	// for (YAML::const_iterator it = tidefiles.begin() ; it != tidefiles.end(); ++it) {
+		// input.tide_file.push_back(it->as<std::string>(""));
+	// };
 
 	vector <string> row;
 	string word;
