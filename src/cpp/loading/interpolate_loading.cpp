@@ -1,8 +1,3 @@
-/*!
- * @author Sébastien Allgeyer 
- * @date 9/4/21
- */
-
 /**
  * @file make_otl_blq.cpp
  *
@@ -72,12 +67,13 @@ void program_options(int argc, char * argv[], otl_input & input)
 
 
 	if (vm.count("help")) {
-		cout << "Usage: make_otl_blq [options]\n";
+		cout << "Usage: interpolate_loading [options]\n";
 		cout << desc << "\n\n";
-		cout << "Example: make_otl_blq --config otl.yaml --code 'ALIC 50137M0014' --location 133.8855 -23.6701 \n\n";
-		cout << "Example with input file: make_otl_blq --config otl.yaml --input station.csv\n";
+		cout << "Example: interpolate_loading --config atm_loadtide_interp.yaml --code 'ALIC 50137M0014' --location 133.8855 -23.6701 \n\n";
+		cout << "Example with input file: interpolate_loading --config atm_loadtide_interp.yaml --input station.csv\n";
 		cout << "                         Where station.csv contains station informations  \n";
 		cout << "                           format: station name, longitude, latitude\n\n";
+		cout << "  Config file atn_loadtide_interp.yaml contains the grid of interpolate loading grid file\n";
 
 		exit(0);
 	}
@@ -178,15 +174,9 @@ int main(int argc, char * argv[]) {
 		BOOST_LOG_TRIVIAL(debug) << "there is " << tideinfo.get_nwave() << " tides\n";
 		input.wave_names = tideinfo.get_wave_names();
 		
-//		loading load;
-//		load.set_name(input.green);
-//		load.read();
+
 		BOOST_LOG_TRIVIAL(info) << "All file read \n\t" << timer.format();
-		// cout << tideinfo.get_lat(0) << "  " << tideinfo.get_lon(0) << "\n\n";
-		// for (int iw = 0; iw < tideinfo.get_nwave()*6; iw ++)
-		// 	cout << tideinfo.interpolate(iw, input.lon[0] , input.lat[0]) << "\t";
-		// cout << "\n";
-		//cout << tideinfo.interpolate(1, input.lon[0], input.lat[0]) << "\n \n";
+
 
 		input.out_disp.resize(boost::extents[input.code.size()][tideinfo.get_nwave()][3]) ;
 	    std::fill(input.out_disp.data(), input.out_disp.data() + input.out_disp.num_elements(), std::complex<float> (0,0));
@@ -198,11 +188,6 @@ int main(int argc, char * argv[]) {
 																				tideinfo.interpolate(i_wave*6 + 2*i_dir +1, input.lon[i_sta], input.lat[i_sta])
 																				);
 
-		// for (int i_sta = 0 ; i_sta < input.lat.size(); i_sta++)
-		// 	for ( int i_wave = 0 ; i_wave < tideinfo.get_nwave(); i_wave ++ )		
-		// 		for (int i_dir = 0 ; i_dir < 3; i_dir++ )
-		// 			cout << std::arg( input.out_disp[i_sta][i_wave][i_dir] )* 180 / M_PI  << "\t";
-		// cout << "\n";
 		write_BLQ(&input, 0);
 
 	}
