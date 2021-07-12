@@ -33,20 +33,20 @@ We are actively developing the ACS to have the following capabilities and featur
 * Routinely produce IGS final, rapid, ultra-rapid and real-time (RT) products;
 * Model Ocean Tide Loading (OTL) displacements.
 
-The software is broken into two main components: Network Parameter Estimation Algorithm (PEA) and Precise Orbit Determination (POD).
+The software consists of two main components: Network Parameter Estimation Algorithm (PEA) and Precise Orbit Determination (POD).
 ***
 ## Supported Platforms
 
-Ginan is supported on the following Platforms
+Ginan is supported on the following platforms
 
 * Linux
-* Mac OSX
+* MacOS
 ***
 ## Download
 
 You can downlaod Ginan source from github using git clone:
 
-    $ git clone git@https://github.com/GeoscienceAustralia/ginan.git
+    $ git clone https://github.com/GeoscienceAustralia/ginan.git
     
 Then download all of the example data using the python script provided:
 
@@ -171,6 +171,7 @@ Eigen3 is used for performing matrix calculations in PEA, and has a very nice AP
 
 
 ### MongoDB (PEA, optional)
+Needed for realtime preview of the processed results (developers-only)
 
     $ wget https://github.com/mongodb/mongo-c-driver/releases/download/1.17.1/mongo-c-driver-1.17.1.tar.gz
     $ tar -xvf mongo-c-driver-1.17.1.tar.gz
@@ -299,10 +300,9 @@ This returns:
     
     POD.in config file options by defaut can be overridden on the command line
     
-    Command line: ../../bin/pod -c -m -s -o -e -v -a -p -r -t -n -i -u -q -k -w -y -h 
+    Command line: ../../bin/pod -m -s -o -a -p -r -t -n -i -u -q -k -w -y -h 
     
     Where: 
-        -c --config  = Config file name [Default POD.config]
         -m --podmode = POD Mode:
                                     1 - Orbit Determination (pseudo-observations; orbit fitting)
                                     2 - Orbit Determination and Prediction
@@ -310,8 +310,6 @@ This returns:
                                     4 - Orbit Integration and Partials (Equation of Motion and Variational Equations)
         -s --pobs    = Pseudo observations orbit .sp3 file name
         -o --cobs    = Comparison orbit .sp3 file name
-        -e --eqm     = EQuations of Motion input file name  [Default: EQM.in]
-        -v --veq     = Variatinal EQuations input file name [Default: VEQ.in]
         -a --arclen  = Orbit Estimation Arc length (hours)
         -p --predlen = Orbit Prediction Arc length (hours)
         -r --eopf    = Earth Orientation Paramaeter (EOP) values file
@@ -335,12 +333,11 @@ This returns:
     
     Examples:
     
-            ../../bin/pod -m 1 -q 1 -k 1 -w 0 -s igs16403.sp3 -o igs16403.sp3 
-            ../../bin/pod -m 2 -q 1 -k 1 -w 0 -s igs16403.sp3 -e EQMx.in -v VEQx.in -p 12
+            ../../bin/pod -m 1 -q 1 -k 1 -w 0 -s igs16403.sp3 -o igs16403.sp3 -y ex1.yaml
+            ../../bin/pod -m 2 -q 1 -k 1 -w 0 -s igs16403.sp3 -p 12 -y ex2.yaml
     
     For orbit updates using Parameter Estimation Algorithm (PEA):
-            ../../bin/pod -m 4 -q 2 -k 1 -w 0 -s igs16403.sp3 -o igs16403.sp3
-
+            ../../bin/pod -m 4 -q 2 -k 1 -w 0 -s igs16403.sp3 -o igs16403.sp3 -y ex3.yaml
 
 
 
