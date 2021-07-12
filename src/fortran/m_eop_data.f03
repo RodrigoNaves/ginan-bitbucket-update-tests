@@ -68,7 +68,7 @@ SUBROUTINE eop_data (mjd, EOP_fname, EOP_sol, n_interp , EOP_days)
 ! ----------------------------------------------------------------------
 ! IN
       REAL (KIND = prec_d), INTENT(IN) :: mjd
-      CHARACTER (LEN=50), INTENT(IN) :: EOP_fname
+      CHARACTER (LEN=512), INTENT(IN) :: EOP_fname
       INTEGER (KIND = prec_int4), INTENT(IN) :: n_interp
       INTEGER (KIND = prec_int1), INTENT(IN) :: EOP_sol
 ! OUT

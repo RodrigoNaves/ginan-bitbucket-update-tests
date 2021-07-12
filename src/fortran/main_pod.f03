@@ -72,11 +72,11 @@
       INTEGER (KIND = prec_int2) :: sp3_velocity_cfg, partials_velocity_cfg
 	  CHARACTER (LEN=3) :: PRN_isat
 	  INTEGER :: ios
-      CHARACTER (LEN=100) :: orbits_fname, orbits_partials_fname				
+      CHARACTER (LEN=512) :: orbits_fname, orbits_partials_fname				
       CHARACTER (LEN=100) :: fname_write				
-      CHARACTER (LEN=100) :: filename				
+      CHARACTER (LEN=512) :: filename				
 ! ----------------------------------------------------------------------
-      CHARACTER (LEN=300) :: fname_sp3, ORBpseudobs_fname, ORBEXT_fname				
+      CHARACTER (LEN=512) :: fname_sp3, ORBpseudobs_fname, ORBEXT_fname				
 	  INTEGER :: year, month, day
 	  INTEGER :: Iyear, Imonth, Iday
       REAL (KIND = prec_d) :: Sec_00 	    
@@ -86,7 +86,7 @@
       CHARACTER (LEN=500) :: param_value				
       REAL (KIND = prec_d) :: Zo(6) 
 ! ----------------------------------------------------------------------
-      CHARACTER (LEN=100) :: ORB2sp3_fname				
+      CHARACTER (LEN=512) :: ORB2sp3_fname				
 ! ----------------------------------------------------------------------
       REAL (KIND = prec_d), DIMENSION(:,:), ALLOCATABLE :: orbit_resR  
       REAL (KIND = prec_d), DIMENSION(:,:), ALLOCATABLE :: orbit_resT  
@@ -112,7 +112,7 @@
 	  CHARACTER (LEN=100) :: pgm_name
 ! ----------------------------------------------------------------------
       CHARACTER (len=300) :: str
-      INTEGER (KIND = prec_int2) :: j
+      INTEGER (KIND = prec_int2) :: j, k
       CHARACTER (len=9) :: POD_version
       REAL (KIND = prec_q), DIMENSION(:,:,:), ALLOCATABLE :: CLKmatrix, CLKmatrix_initial 
       CHARACTER (LEN=300) :: CLKfname
@@ -153,6 +153,8 @@ PODfname = 'POD.in'
 ! Read command line to see if non default master configuration file given
 CALL read_cmdline
 
+!only check for default config file if yaml not specified on command line
+if (trim(yaml_config) .eq. '') then
 ! Check if non-default config file given on the command line
 If ( trim(POD_fname_cfg) .ne. 'DEFAULT' ) then
 	PODfname = trim(POD_fname_cfg)
@@ -169,6 +171,9 @@ If ( .not. pod_config_exists) then
     write(*,'(3a)') 'If using a non-default config.filename - Type: ',trim(pgm_name),' -c config.filename'
 	STOP
 End If
+else
+pgm_name = 'pod'
+end if
 
 !call get_command_argument(yaml_config)
 if (trim(yaml_config) .ne. "") then
@@ -221,7 +226,6 @@ if (.not.yaml_found) then
 param_id = 'POD_MODE_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_pod_mode
-end if
 ! ----------------------------------------------------------------------
 
 ! ----------------------------------------------------------------------
@@ -230,11 +234,9 @@ end if
 ! 1. Input a-priori orbit in sp3 format (applied as pseudo-observations)
 ! 2. Input file with Initial Conditions (State Vector and Parameters at initial epoch per satellite) 
 ! ----------------------------------------------------------------------
-if (.not. yaml_found) then
 param_id = 'IC_input'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_ic_input_format
-end if
 
 ! Initial Conditions reference frame
 param_id = 'IC_refsys'
@@ -242,11 +244,9 @@ CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) IC_REF_cfg
 
 ! Initial Conditions file name
-if (.not. yaml_found) then
 param_id = 'IC_filename_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_ic_filename
-end if
 
 ! ----------------------------------------------------------------------
 !print *,"IC_MODE_cfg, IC_REF_cfg", IC_MODE_cfg, IC_REF_cfg
@@ -271,7 +271,6 @@ READ ( param_value, FMT = * , IOSTAT=ios_key ) VEQ_fname_cfg
 ! ----------------------------------------------------------------------
 ! A-priori orbit sp3 as pseudo-observations :: sp3 file name
 ! ----------------------------------------------------------------------
-if (.not. yaml_found) then
 param_id = 'pseudobs_orbit_filename_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_orbit_filename
@@ -312,7 +311,6 @@ CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_orbit_arc_backwards
 ! ----------------------------------------------------------------------
 
-end if
 
 ! ---------------------------------------------------------------------------
 ! Earth Orientation Parameters (EOP)
@@ -321,36 +319,24 @@ end if
 ! 1. IERS C04 										: EOP_sol=1
 ! 2. IERS RS/PC Daily 								: EOP_sol=2
 ! 3. IGS ultra-rapid ERP + IERS RS/PC Daily (dX,dY)	: EOP_sol=3
-if (.not. yaml_found) then
 param_id = 'EOP_solution_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_eop_option
-end if
 
 ! EOP filename by IERS EOP :: Solutions 1 and 2
-if (.not. yaml_found) then
 param_id = 'EOP_fname_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) EOP_fname_cfg 
-else
-    EOP_fname_cfg = yml_eop_filename
-end if
 
 ! ERP filename (Earth Rotation Parameters by IGS) :: Solution 3
-if (.not. yaml_found) then
 param_id = 'ERP_fname_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) ERP_fname_cfg 
-else
-    ERP_fname_cfg = yml_erp_filename
-end if
 
-if (.not. yaml_found) then
 ! EOP data interpolation number of points	  
 param_id = 'EOP_Nint_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_eop_int_points
-end if
 ! ---------------------------------------------------------------------------
 
 ! ---------------------------------------------------------------------------
@@ -358,22 +344,18 @@ end if
 ! ---------------------------------------------------------------------------
 ! 1. IAU2000A:		iau_pn_model = 2000
 ! 2. IAU2006/2000A:	iau_pn_model = 2006
-if (.not. yaml_found) then
 param_id = 'iau_model_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_iau_model
-end if
 ! ---------------------------------------------------------------------------
 
 ! ---------------------------------------------------------------------------
 ! Orbit Parameter Estimation
 ! ---------------------------------------------------------------------------
 ! Number of iterations
-if (.not. yaml_found) then
 param_id = 'Estimator_Iterations_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_estimator_iterations
-endif
 ! ---------------------------------------------------------------------------
 
 ! ----------------------------------------------------------------------
@@ -381,7 +363,6 @@ endif
 ! ----------------------------------------------------------------------
 ! 0. sat_vel = 0 :: Do not write Velocity vector to sp3 orbit
 ! 1. sat_vel > 0 :: Write Velocity vector to sp3 orbit
-if (.not. yaml_found) then
 param_id = 'sp3_velocity_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) sp3_velocity_cfg 
@@ -397,37 +378,30 @@ param_id = 'partials_velocity_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) partials_velocity_cfg 
 if (partials_velocity_cfg > 0) yml_write_partial_velocities = .true.
-end if
 ! ----------------------------------------------------------------------
 
 ! ----------------------------------------------------------------------
 ! Leap Second file name:
 ! ----------------------------------------------------------------------
-if (.not. yaml_found) then
 param_id = 'leapsec_filename_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_leapsecond_filename
-end if
 ! ----------------------------------------------------------------------
 
 ! Read Satellite infromation from SINEX file
 ! ----------------------------------------------------------------------
-if (.not. yaml_found) then
 param_id = 'satsinex_filename_cfg'
 Call readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_satsinex_filename
 PRINT*,'satsinex_filename =', yml_satsinex_filename
-end if
 
 !----------------------------------------------------------------------
 
-if (.not. yaml_found) then
 ! Flag of different models for A priori SRP value 
 ! ---------------------------------------------------------------------
 param_id = 'SRP_MOD_arp'
 Call readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_apriori_srp
-end if
 IF (yml_apriori_srp == SRP_NONE) PRINT*,'no a priori SRP model'
 IF (yml_apriori_srp == SRP_CANNONBALL) PRINT*,'use cannonball f0 model as a priori SRP model'
 IF (yml_apriori_srp == SRP_SIMPLE_BW) PRINT*,'use simple box-wing model as a priori SRP model'
@@ -441,7 +415,6 @@ IF (yml_apriori_srp == SRP_FULL_BW) PRINT*,'use box-wing model from repro3 routi
 ! ECOM_param = 3 (SBOXW), forces estimated in D,Y,B,X,Z directions
 ! ECOM_param = 0, no parameters are estimated
 
-if (.not. yaml_found) then
 param_id = 'ECOM_param'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_ECOM_mode
@@ -455,7 +428,6 @@ param_id = 'EMP_param'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) EMP_param
     yml_EMP_mode = (EMP_param > 0)
-end if
 
 
 ! ----------------------------------------------------------------------
@@ -464,7 +436,6 @@ end if
 ! 1. Celestial Reference System :: ICRS
 ! 2. Terrestrial Reference System :: ITRS
 ! ----------------------------------------------------------------------
-if (.not. yaml_found) then
 param_id = 'VEQ_REFSYS_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT ='(A4)', IOSTAT=ios_key ) VEQ_REFSYS_cfg 
@@ -474,11 +445,9 @@ if (yml_veq_refsys == NO_REFSYS) then
     print *, "Could not interpret ", trim(VEQ_REFSYS_cfg), " as a reference system"
     STOP
 end if
-end if
 ! ----------------------------------------------------------------------
 
 
-if (.not. yaml_found) then
 ! ----------------------------------------------------------------------
 ! Pseudo-Stochastic pulses 
 ! ----------------------------------------------------------------------
@@ -544,9 +513,12 @@ READ ( param_value, FMT =*, IOSTAT=ios_key ) yml_pulse_interval
 param_id = 'PULSES_offset'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT =*, IOSTAT=ios_key ) yml_pulse_offset
-end if
 ! ----------------------------------------------------------------------
 
+else
+    EOP_fname_cfg = yml_eop_filename
+    ERP_fname_cfg = yml_erp_filename
+end if
 
 ! ----------------------------------------------------------------------
 ! End :: Read major configuration file POD.in
@@ -809,7 +781,8 @@ GPS_day = ( GPS_wsec/86400.0D0 )
 ! Write satellite orbits and partial derivatives to one .orb output file (internal format)
 ! ----------------------------------------------------------------------
 !orbits_partials_fname = 'orbits_partials_icrf.orb'
-write (orbits_partials_fname, FMT='(A3,I4,I1,A20)') 'gag', (GPS_week), INT(GPS_day) ,'_orbits_partials.out'
+write (orbits_partials_fname, FMT='(A,A,A3,I4,I1,A20)') trim(yml_output_dir), "/", 'gag', (GPS_week), &
+        INT(GPS_day) ,'_orbits_partials.out'
 !CALL writeorbit_multi (orbits_partials_icrf, PRNmatrix, orbits_partials_fname)
 CALL writeorbit_multi (orbits_partials_icrf, orbits_partials_itrf, orbits_ics_icrf, PRNmatrix, orbpara_sigma, & 
                        orbits_partials_fname, EQMfname, VEQfname, POD_version)
@@ -819,7 +792,8 @@ CALL writeorbit_multi (orbits_partials_icrf, orbits_partials_itrf, orbits_ics_ic
 ! Write satellite orbits to sp3 format
 ! ----------------------------------------------------------------------
 ! Orbit sp3 filename
-write (ORB2sp3_fname, FMT='(A3,I4,I1,A4)') 'gag', (GPS_week), INT(GPS_day) ,'.sp3'
+write (ORB2sp3_fname, FMT='(A,A,A3,I4,I1,A4)') trim(yml_output_dir), "/", 'gag', (GPS_week), &
+        INT(GPS_day) ,'.sp3'
 ! ICRF
 !CALL write_orb2sp3 (orbits_partials_icrf, PRNmatrix, ORB2sp3_fname, sat_vel, CLKmatrix)
 ! ITRF
@@ -832,24 +806,29 @@ CALL write_orb2sp3 (orbits_partials_itrf, PRNmatrix, ORB2sp3_fname, yml_write_sp
 ! ----------------------------------------------------------------------
 str = trim(adjustl(yml_orbit_filename))
 i = index(str, '.sp3')
-j = len(str(1:i-1))
+k = index(str, '/', .true.) + 1
+j = len(str(k:i-1))
 
 if (yml_ext_orbit_opt > TYPE_NONE) then
 ! ----------------------------------------------------------------------
 ! Write Orbit residuals
 ! ----------------------------------------------------------------------
 ! Radial
-write (filename, FMT='(A3,I4,I1,a1,a,A16)') 'gag', (GPS_week), INT(GPS_day), '_', str(1:j), '_orbitstat_R.out'
+write (filename, FMT='(A,A,A3,I4,I1,a1,a,A16)') trim(yml_output_dir), "/", 'gag', (GPS_week), INT(GPS_day), '_', &
+        str(k:k+j-1), '_orbitstat_R.out'
 Call writearray (orbit_resR, filename)
 ! Transverse
-write (filename, FMT='(A3,I4,I1,a1,a,A16)') 'gag', (GPS_week), INT(GPS_day), '_', str(1:j) ,'_orbitstat_T.out'
+write (filename, FMT='(A,A,A3,I4,I1,a1,a,A16)') trim(yml_output_dir), "/", 'gag', (GPS_week), INT(GPS_day), '_', &
+        str(k:k+j-1) ,'_orbitstat_T.out'
 Call writearray (orbit_resT, filename)
 ! Normal
-write (filename, FMT='(A3,I4,I1,a1,a,A16)') 'gag', (GPS_week), INT(GPS_day), '_', str(1:j) ,'_orbitstat_N.out'
+write (filename, FMT='(A,A,A3,I4,I1,a1,a,A16)') trim(yml_output_dir), "/", 'gag', (GPS_week), INT(GPS_day), '_', &
+        str(k:k+j-1) ,'_orbitstat_N.out'
 Call writearray (orbit_resN, filename)
 ! ----------------------------------------------------------------------
 ! Write combined orbit residuals file (RTN)
-write (filename, FMT='(A3,I4,I1,a1,a,A16)') 'gag', (GPS_week), INT(GPS_day), '_', str(1:j) ,'_orbdiff_rtn.out'
+write (filename, FMT='(A,A,A3,I4,I1,a1,a,A16)') trim(yml_output_dir), "/", 'gag', (GPS_week), INT(GPS_day), '_', &
+        str(k:k+j-1) ,'_orbdiff_rtn.out'
 Call write_orbres (orbdiff2, filename)
 ! ----------------------------------------------------------------------
 end if
@@ -867,12 +846,12 @@ CALL attitude_orb (orbits_partials_itrf, orbits_partials_icrf, PRNmatrix, BLOCK_
 
 ! Write satellite attitude to orbex format
 ! Orbex filename
-write (ORBEX_fname, FMT='(A3,I4,I1,A4)') 'gag', (GPS_week), INT(GPS_day) ,'.obx'
+write (ORBEX_fname, FMT='(A,A,A3,I4,I1,A4)') trim(yml_output_dir), "/", 'gag', (GPS_week), INT(GPS_day) ,'.obx'
 ! Write attitude matrix to orbex format
 CALL write_orbex (attitude_array, PRNmatrix, ORBEX_fname)
 
 ! Write satellite attitude per epoch to out ascii file 
-write (filename, FMT='(A3,I4,I1,A13)') 'gag', (GPS_week), INT(GPS_day), '_attitude.out'
+write (filename, FMT='(A,A,A3,I4,I1,A13)') trim(yml_output_dir), "/", 'gag', (GPS_week), INT(GPS_day), '_attitude.out'
 Call writearray2 (attitude_array, filename)
 ! ----------------------------------------------------------------------
 

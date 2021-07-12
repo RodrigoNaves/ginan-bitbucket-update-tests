@@ -33,7 +33,7 @@ SUBROUTINE eom_iers2 (filename)
 ! Dummy arguments declaration
 ! ----------------------------------------------------------------------
 ! IN
-      CHARACTER (LEN=50), INTENT(IN) :: filename
+      CHARACTER (LEN=512), INTENT(IN) :: filename
 ! OUT
 !      REAL (KIND = prec_d), INTENT(OUT) :: eom(10)
 ! ----------------------------------------------------------------------

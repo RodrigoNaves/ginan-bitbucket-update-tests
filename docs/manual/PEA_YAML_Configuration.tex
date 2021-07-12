@@ -70,6 +70,11 @@ station_data:
 As shown in listing:~\ref{lst:pea-yaml-realtime-single-station}, the caster url, username and password are specified within double quotes with the \emph{stream\_root} tag. In this example the streams are being obtained from the auscors caster run by Geoscience Australia. 
 The broadcast information is being obtained from the stream \emph{BCEP00BKG0} being supplied by BKG, and corrections to the utlra-rapid predicted orbit are being obtained from the stream \emph{SSRA00CNE0}. 
 The real-time data being processed is for the continuous GNSS station located at Mount Stromlo obtained from the stream \emph{STR100AUS0}.
+
+You can test your username and password is working correctly by running the curl command:
+\begin{lstlisting}[language=bash]
+curl https://ntrip.data.gnss.ga.gov.au/ALIC00AUS0 -H "Ntrip-Version: NTRIP/2.0" -i  --output - -u <user>
+\end{lstlisting}
 %
 \section{output files}
 \begin{lstlisting}[language=xml,caption=yaml input files configuration example]

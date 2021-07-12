@@ -47,7 +47,7 @@ SUBROUTINE tides_fes2004(FESxxfname)
 ! Dummy arguments declaration
 ! ----------------------------------------------------------------------
 ! IN
-      CHARACTER (LEN=50), INTENT(IN) :: FESxxfname
+      CHARACTER (LEN=512), INTENT(IN) :: FESxxfname
 ! OUT
 ! mdl_tides.f90 : Allocatable arrays : Delaunay_FES, dCnm_p,dSnm_p, dCnm_m,dSnm_m
 ! ----------------------------------------------------------------------

@@ -40,7 +40,7 @@ SUBROUTINE erp_igu (filename,mjd_t , erp, igu_flag)
 ! ----------------------------------------------------------------------
 ! IN
       REAL (KIND = prec_d), INTENT(IN) :: mjd_t
-      CHARACTER (LEN=50), INTENT(IN) :: filename
+      CHARACTER (LEN=512), INTENT(IN) :: filename
 ! OUT
       REAL (KIND = prec_d), INTENT(OUT) :: erp(2,5)
       LOGICAL :: igu_flag

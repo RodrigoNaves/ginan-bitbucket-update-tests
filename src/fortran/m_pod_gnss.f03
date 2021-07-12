@@ -161,7 +161,7 @@ SUBROUTINE pod_gnss (EQMfname, VEQfname, PRNmatrix, orbpara_sigma, orbits_partia
       REAL (KIND = prec_d), DIMENSION(:,:), ALLOCATABLE :: orbdiff
       REAL (KIND = prec_d), DIMENSION(:,:,:), ALLOCATABLE :: orbdiff2
 ! ----------------------------------------------------------------------
-      CHARACTER (LEN=100) :: EQMfname_PRN, VEQfname_PRN				
+      CHARACTER (LEN=512) :: EQMfname_PRN, VEQfname_PRN				
       CHARACTER (LEN=100) :: mesg
 
       INTEGER (KIND = prec_int4) :: J

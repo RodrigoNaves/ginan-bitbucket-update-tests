@@ -50,7 +50,7 @@ SUBROUTINE write_orb2sp3 (ORBmatrix, PRNmatrix, sp3_fname, sat_vel, CLKmatrix)
 ! IN
       REAL (KIND = prec_q), INTENT(IN), DIMENSION(:,:,:), ALLOCATABLE :: ORBmatrix, CLKmatrix 
 	  CHARACTER (LEN=3), ALLOCATABLE, INTENT(IN) :: PRNmatrix(:)
-      CHARACTER (LEN=100), INTENT(IN) :: sp3_fname
+      CHARACTER (*), INTENT(IN) :: sp3_fname
       logical, INTENT(IN) :: sat_vel	  
 ! OUT
 ! ----------------------------------------------------------------------
