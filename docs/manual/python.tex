@@ -1,307 +1,4 @@
 
-%\subsubsection{Build}\label{build}
-%
-%To build the PEA Precise Estimation Algorithm\ldots{}
-%
-%We suggest using the following directory structure when installing the
-%ACS toolkit. It will be created by following this guide.
-%
-%\begin{verbatim}
-%/data/
-%└── acs/
-%    ├── pea/
-%    └── pod/
-%\end{verbatim}
-%
-%The following is an example procedure to install the dependencies
-%necessary to run the \texttt{pea} on a base ubuntu linux distribution
-%
-%Update the base operating system:
-%
-%\begin{verbatim}
-%$ sudo apt update
-%$ sudo apt upgrade
-%\end{verbatim}
-%
-%Install base utilities gcc, gfortran, git, openssl, blas, lapack, etc
-%
-%\begin{verbatim}
-%$ sudo apt install -y git gobjc gobjc++ gfortran libopenblas-dev openssl curl net-tools openssh-server cmake make \
-%liblapack-dev gzip vim libssl1.0-dev python3-cartopy python3-scipy python3-matplotlib python3-mpltoolkits.basemap
-%\end{verbatim}
-%
-%Create a temporary directory structure to make the dependencies in:
-%
-%\begin{verbatim}
-%$ sudo mkdir -p /data/tmp
-%$ cd /data/tmp
-%\end{verbatim}
-%
-%\subparagraph{YAML}\label{yaml}
-%
-%We are using the YAML library to parse the configuration files used to
-%run many of the programs found in this library
-%(https://github.com/jbeder/yaml-cpp). Here is an example of how we have
-%installed the yaml library from source:
-%
-%\begin{verbatim}
-%$ cd /data/tmp
-%$ sudo git clone https://github.com/jbeder/yaml-cpp.git
-%$ cd yaml-cpp
-%$ sudo mkdir cmake-build
-%$ cd cmake-build
-%$ sudo cmake .. -DCMAKE\_INSTALL\_PREFIX=/usr/local/ -DYAML\_CPP\_BUILD\_TESTS=OFF
-%$ sudo make install yaml-cpp
-%$ cd ../..
-%$ sudo rm -fr yaml-cpp
-%\end{verbatim}
-%
-%\paragraph{Boost}\label{boost}
-%
-%We rely on a number of the utilities provided by boost
-%(https://www.boost.org/), such as their time and logging libraries.
-%
-%\begin{verbatim}
-%$ cd /data/tmp/
-%$ sudo wget -c https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.tar.gz
-%$ sudo gunzip boost_1_73_0.tar.gz
-%$ sudo tar xvf boost_1_73_0.tar
-%$ cd boost_1_73_0/
-%$ sudo ./bootstrap.sh
-%$ sudo ./b2 install
-%$ cd ..
-%$ sudo rm -fr boost_1_73_0/ boost_1_73_0.tar
-%\end{verbatim}
-%
-%\paragraph{Eigen3}\label{eigen3}
-%
-%Eigen3 is used for performing matrix calculations, and has a very nice
-%API.
-%
-%\begin{verbatim}
-%$ cd /data/tmp/
-%$ sudo git clone https://gitlab.com/libeigen/eigen.git
-%$ cd eigen
-%$ sudo mkdir cmake-build
-%$ cd cmake-build
-%$ sudo cmake ..
-%$ sudo make install
-%$ cd ../..
-%$ sudo rm -rf eigen
-%\end{verbatim}
-%
-%\paragraph{Mongo-db}\label{mongo-db}
-%
-%\begin{verbatim}
-%$ wget https://github.com/mongodb/mongo-c-driver/releases/download/1.17.1/mongo-c-driver-1.17.1.tar.gz
-%$ tar -xvf mongo-c-driver-1.17.1.tar.gz
-%
-%$ cd mongo-c-driver-1.17.1/
-%$ mkdir cmakebuild
-%$ cd cmakebuild/
-%$ cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF ..
-%$ cmake --build .
-%$ sudo cmake --build . --target install
-%
-%$ cd ../../
-%$ curl -OL https://github.com/mongodb/mongo-cxx-driver/releases/download/r3.6.0/mongo-cxx-driver-r3.6.0.tar.gz
-%$ tar -xzf mongo-cxx-driver-r3.6.0.tar.gz
-%
-%$ cd mongo-cxx-driver-r3.6.0/
-%
-%$ cd build/
-%$ cmake ..                                    -DCMAKE_BUILD_TYPE=Release              -DCMAKE_INSTALL_PREFIX=/usr/local
-%$ sudo cmake --build . --target EP_mnmlstc_core
-%$ cmake --build .
-%$ sudo cmake --build . --target install
-%
-%$ wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
-%$ echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
-%$ echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
-%
-%$ sudo apt update
-%$ sudo apt install mongodb-org
-%
-%If you are using WSL see the notes below and skip this next section:
-%
-%$ sudo systemctl start mongod
-%$ sudo systemctl status mongod
-%$ mongod
-%
-%
-%For WSL:
-%Even though the documentation on MongoBB says that WSL is not supportedm it is still possible to install.
-%In order to run mongod as a service on WSL you will need to:
-%
-%Copy the script from : https://raw.githubusercontent.com/mongodb/mongo/master/debian/init.d
-%to /etc/init.d/mongod
-%
-%Make the script executable:
-%$ sudo chmod a+x /etc/init.d/mongod
-%
-%Now you can start it as a service by:
-%$ sudo service mongod start
-%\end{verbatim}
-%
-%\paragraph{netcdf4}\label{netcdf4}
-%
-%\begin{verbatim}
-%$ apt -y install libnetcdf-dev libnetcdf-c++4-dev
-%\end{verbatim}
-%
-%\subsubsection{Installing PEA}\label{installing-pea}
-%
-%\paragraph{PEA Executable}\label{pea-executable}
-%
-%\begin{verbatim}
-%$ cd /data/acs/
-%\end{verbatim}
-%
-%Clone the repository via https:
-%
-%\begin{verbatim}
-%$ git clone https://bitbucket.org/geoscienceaustralia/pea.git
-%\end{verbatim}
-%
-%You should now have\ldots{}
-%
-%\begin{verbatim}
-%pea
-%├── INSTALL.md
-%├── LICENSE.md
-%├── README.md
-%├── aws/                - for automated builds in aws
-%├── config/
-%│   ├── Ex00-UnitTest.yaml
-%│   ├── Ex01-PPP.yaml
-%│   ├── Ex02-Network.yaml
-%│   ├── Ex03-Network_Orbits.yaml
-%│   ├── Ex04-Ionosphere.yaml
-%│   ├── Ex05-Realtime.yaml
-%│   ├── iontest_20115w.yaml
-%│   └── PPP-iontest.yaml
-%├── cpp/
-%│   ├── CMakeLists.txt
-%│   ├── cmake           - files to help cmake find dependencies
-%│   ├── docs            - automatic code documentation configuration
-%│   └── src/
-%│       ├── 3rdparty/   - see ACKNOWLEDGEMENTS in README.md
-%│       ├── common/     - libraries used by the pea
-%│       ├── iono/       - routines for ionosphere modelling
-%│       ├── pea/        - main for `pea`
-%│       └── rtklib/     - subset of modified routines from RTKlib see ACKNOWLEDGEMENTS in README.md
-%└── python
-%    ├── config
-%    ├── README.md
-%    └── source
-%        ├── download_examples.py
-%        ├── install_examples.py
-%        └── other helper programs
-%\end{verbatim}
-%
-%Prepare a directory to build in, its better practise to keep this
-%seperated from the source code.
-%
-%\begin{verbatim}
-%$ cd pea/cpp
-%$ mkdir -p build
-%$ cd build
-%\end{verbatim}
-%
-%Run cmake to find the build dependencies and create the make file:
-%
-%\begin{verbatim}
-%$ cmake ..
-%\end{verbatim}
-%
-%If you wish to enable the optional MONGO DB utilities you will need to
-%add the flag:
-%
-%\begin{verbatim}
-%$ cmake -DENABLE_MONGODB=TRUE ..
-%\end{verbatim}
-%
-%If you wish to compile an optimised version, typically this version will
-%run 3 times faster but you may run into compile problems depending on
-%your system, add the -DOPTIMISATION=TRUE flag:
-%
-%\begin{verbatim}
-%$ cmake -DENABLE_MONGODB=TRUE -DOPTIMISATION=TRUE .. 
-%\end{verbatim}
-%
-%Now build the \texttt{pea}
-%
-%\begin{verbatim}
-%$ cmake --build $PWD --target pea
-%\end{verbatim}
-%
-%To change to build location substitue your preferred destination for
-%\texttt{\$PWD} , e.g \texttt{/usr/local/bin}
-%
-%Alternatively to the command above you can make the code in parallel
-%using:
-%
-%\$ make -j 5 all
-%
-%where the -j flag controls how many jobs can be run at the same time.
-%
-%Check to see if you can execute the \texttt{pea}:
-%
-%\begin{verbatim}
-%$ ./pea
-%\end{verbatim}
-%
-%and you should see something similar to:
-%
-%\begin{verbatim}
-%PEA starting...
-%Options:
-%  --help                      Help
-%  --verbose                   More output
-%  --quiet                     Less output
-%  --config arg                Configuration file
-%  --trace_level arg           Trace level
-%  --antenna arg               ANTEX file
-%  --navigation arg            Navigation file
-%  --sinex arg                 SINEX file
-%  --sp3file arg               Orbit (SP3) file
-%  --clkfile arg               Clock (CLK) file
-%  --dcbfile arg               Code Bias (DCB) file
-%  --ionfile arg               Ionosphere (IONEX) file
-%  --podfile arg               Orbits (POD) file
-%  --blqfile arg               BLQ (Ocean loading) file
-%  --erpfile arg               ERP file
-%  --elevation_mask arg        Elevation Mask
-%  --max_epochs arg            Maximum Epochs
-%  --epoch_interval arg        Epoch Interval
-%  --rnx arg                   RINEX station file
-%  --root_input_dir arg        Directory containg the input data
-%  --root_output_directory arg Output directory
-%  --start_epoch arg           Start date/time
-%  --end_epoch arg             Stop date/time
-%  --dump-config-only          Dump the configuration and exit
-%PEA finished
-%\end{verbatim}
-%
-%\paragraph{PEA Documentation}\label{pea-documentation}
-%
-%The documentation for the pea can be generated similarly using
-%\texttt{doxygen} if it is installed.
-%
-%\begin{verbatim}
-%$ sudo apt-get install doxygen
-%
-%$ cd pea/cpp/build
-%$ make doc_doxygen
-%\end{verbatim}
-%
-%The docs can then be found at \texttt{doc\_doxygen/html/index.html}
-%
-%\subsubsection{Ready}\label{ready}
-%
-%You are now ready to trial the examples in the \texttt{README.md} file
-%and the examples in \texttt{Overview.pdf}
-
 \chapter{Python}
 \section{Python Installation for Plotting, Processing,
 etc.}\label{python-installation-for-plotting-processing-etc.}
@@ -394,6 +91,71 @@ files. The date and time is then selected based on this, allowing us to
 \_ \_ for the start and end times\\
 - \texttt{-plt\_m\_r} will plot the ZTD and XYZ results as \texttt{.png}
 files and place in a \texttt{plots} directory
+
+
+\section{Site metadata utility}\label{log2snx}
+
+Proper geodetic processing requires knowing of the site's receiver and antenna information. PEA extracts this information from the input sinex file or a set of sinex files. In addition, user can download \href{ftp://igs.ensg.ign.fr/pub/igs/igscb/station/general/igs.snx}{igs.snx} file that contains historical records of $\sim$500 sites and is regenerated daily from the logfiles available at \url{ftp://ftp.igs.org/pub/station/log/}. We developed a similar tool, log2snx.py, that does parsing of available igs logfiles and produces a sinex file as needed by PEA.
+
+\begin{lstlisting}[caption=log2snx.py help message]
+$ python3 scripts/log2snx.py  -h
+  usage: log2snx.py [-h] [-l LOGGLOB] [-r RNXGLOB [RNXGLOB ...]] [-o OUTFILE]
+  [-fs FRAME_SNX] [-fd FRAME_DIS] [-fp FRAME_PSD]
+  [-d DATETIME] [-n NUM_THREADS]
+
+IGS log files parsing utility. Globs over log files using LOGGLOB expression
+and outputs SINEX metadata file. If provided with frame and frame
+discontinuity files (soln), will project the selected stations present in the
+frame to the datetime specified. How to get the logfiles: rclone sync
+igs:pub/sitelogs/ /data/station_logs/station_logs_IGS -vv How to get the frame
+files: rclone sync itrf:pub/itrf/itrf2014 /data/ITRF/itrf2014/ -vv --include
+"*{gnss,IGS-TRF}*" --transfers=10 rclone sync igs:pub/ /data/TRF/ -vv
+--include "{IGS14,IGb14,IGb08,IGS08}/*" see rclone config options inside this
+script file Alternatively, use s3 bucket link to download all the files needed
+s3://peanpod/aux/
+
+optional arguments:
+-h, --help            show this help message and exit
+-l LOGGLOB, --logglob LOGGLOB
+        logs glob path (required)
+-r RNXGLOB [RNXGLOB ...], --rnxglob RNXGLOB [RNXGLOB ...]
+        rinex glob path (optional)
+-o OUTFILE, --outfile OUTFILE
+        output file path (optional)
+-fs FRAME_SNX, --frame_snx FRAME_SNX
+        frame sinex file path (optional)
+-fd FRAME_DIS, --frame_dis FRAME_DIS
+        frame discontinuities file path (required with
+        --frame_snx)
+-fp FRAME_PSD, --frame_psd FRAME_PSD
+        frame psd file path (optional)
+-d DATETIME, --datetime DATETIME
+        date to which project frame coordinates, default is
+        today (optional)
+-n NUM_THREADS, --num_threads NUM_THREADS
+        number of threads to run in parallel
+\end{lstlisting}
+
+\section{Sinex preview utility}\label{snx2map}
+
+To quickly visualise and compare networks, a fast sinex preview utility has been developed - snx2map.py. It accepts any number of sinex files, extract estimated coordinates of the sites present and outputs a map in the form of html page.
+
+\begin{lstlisting}[caption=snx2map.py help message]
+$ python3 scripts/snx2map.py  -h
+usage: snx2map.py [-h] [-i SNXPATH [SNXPATH ...]] [-o OUTDIR]
+
+Parse sinex SITE/ID block and create html map.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i SNXPATH [SNXPATH ...], --snxpath SNXPATH [SNXPATH ...]
+                        path to sinex file (.snx/.ssc). Can be compressed with
+                        LZW (.Z)
+  -o OUTDIR, --outdir OUTDIR
+                        path to output dir
+\end{lstlisting}
+
+
 
 \section{Latency Tool}\label{latency-tool}
 
