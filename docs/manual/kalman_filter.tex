@@ -1,14 +1,10 @@
 \chapter{Kalman Filtering}
 \label{ch:kalman_filter}
 %
-%
-\begin{fullwidth}
 The Kalman filter is over 50 years old but is still one of the most important and common data fusion algorithms in use today. 
 Named after Rudolf E.Kálmán, the great success of the Kalman filter is due to its small computational requirement, elegant recursive properties, and its status as the optimal estimator for one-dimensional linear systems with Gaussian error statistics. 
 Typical uses of the Kalman filter include smoothing noisy data and providing estimates of parameters of interest. 
 Kalman filtering is used in a wide range of applications include global positioning system receivers, in control systems, through to the smoothing the output from laptop trackpads, and many more.
-%
-\end{fullwidth}
 
 \section{Overview of Kalman Filtering}
 
@@ -128,13 +124,13 @@ That way we could keep the same:
 
 A nice value for using VMF as an apriori value is 0.1mm /sqrt(s)
 %
-\begin{verbatim}
+\begin{lstlisting}
 trop:
-estimated:          true
-sigma:              [0.1]
-proc_noise:         [0.01]
-proc_noise_dt:      hour
-\end{verbatim}
+    estimated:          true
+    sigma:              [0.1]
+    proc_noise:         [0.01]
+    proc_noise_dt:      hour
+\end{lstlisting}
 
 
 

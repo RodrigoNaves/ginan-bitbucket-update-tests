@@ -2,7 +2,7 @@
 
 \label{ch:pea_yaml_configuration}
 
-\section{PEA processing options=}
+\section{PEA processing options}
 %
 %
 \section{Input File Options}
@@ -34,17 +34,17 @@ station_data:
 
 	rnxfiles:
 		- ALIC00AUS_R_20191990000_01D_30S_MO.rnx                          
-\end{lstlisting}\label{lst:pea-yaml-single-station}
+\end{lstlisting}
 %
 To process one RINEX file, you need to first specify the root dircetory of where the data is being stored in \emph{root\_stations\_directory}, and then the name of the RINEX file as a single entry under \emph{rnxfiles:}, as shown in the listing~ref{lst:pea-yaml-single-station}. 
 %
 \begin{lstlisting}[language=bash,caption=Example showing how to add a RINEX file to the processing list form the command line]
 $ pea --rnx CAS100ATA_R_20191990000_01D_30S_MO.rnx
-\end{lstlisting}\label{lst:pea-cmd-single-station}
+\end{lstlisting}
 %
 If you wanted to process another file, located in the same \emph{root\_stations\_directory}, this can be achieved at the command line using the \emph{-rnx <rnxfilename} flag, see listing~ref{lst:pea-yaml-add-station}.
 %
-\begin{lstlisting}[language=xml,caption=yaml input files configuration example]
+\begin{lstlisting}[language=yaml,caption=yaml input files configuration example]
 station_data:
 
 root_stations_directory: /data/acs/pea/proc/exs/data
@@ -56,9 +56,11 @@ rnxfiles:
 \section{Real-time streams}
 To process data in real-time you will need to set up the location, username annd password for the caster that you will be obtaining the input data streams from in the configuration file.
 
-The pea supports obtaining streams from casters that use NTRIP 2.0 over http and https. 
+The pea supports obtaining streams from casters that use NTRIP 2.0 over http and https.
+
 %TODO check I believe we can do multiple casters for input At the moment the pea is able to connect to one caster for input data streams, and a different caster for the output of correction messages.
-\begin{lstlisting}[language=xml,caption=yaml input files configuration example]
+
+\begin{lstlisting}[language=yaml,caption=yaml input files configuration example]
 station_data:
 
 	stream_root: "http://<usedname>:<password>@auscors.ga.gov.au:2101/"
@@ -67,7 +69,7 @@ station_data:
 		- BCEP00BKG0
 		- SSRA00CNE0
 		- STR100AUS0
-\end{lstlisting}\label{lst:pea-yaml-realtime-single-station}
+\end{lstlisting}
 %
 As shown in listing:~\ref{lst:pea-yaml-realtime-single-station}, the caster url, username and password are specified within double quotes with the \emph{stream\_root} tag. In this example the streams are being obtained from the auscors caster run by Geoscience Australia. 
 The broadcast information is being obtained from the stream \emph{BCEP00BKG0} being supplied by BKG, and corrections to the utlra-rapid predicted orbit are being obtained from the stream \emph{SSRA00CNE0}. 

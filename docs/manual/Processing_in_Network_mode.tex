@@ -5,23 +5,23 @@ In this example 24 hours of data from a small global network of 87 stations is p
 Check that the paths in the configuration file for the products and RINEX files are correct for your system. If you have followed the convention layed out in the INSTALL.md document you should not need to amend anything.
 
 To start the processing use the command:
-\begin{verbatim}
+\begin{lstlisting}
 $ ./pea --config ../../config/Ex02-Network.yaml
-\end{verbatim}
+\end{lstlisting}
 The process will take approximatelly 2-3 hours to complete depending on CPU performance. The log files and processing results can be found in /data/acs/pea/output/examples/Ex02, or the alternative directory you have specified in the configuration file.
 
 Change into your output directory. You should find a .TRACE file for each station processed, and a PEA.SUM file.
-\begin{verbatim}
+\begin{lstlisting}
 $ cd /data/acs/pea/output/examples/Ex02
-\end{verbatim}
+\end{lstlisting}
 To verify your solution, first grep for the xp values:
-\begin{verbatim}
+\begin{lstlisting}
 $ grep 'network xp' netprocessing.out > xp_test.txt
-\end{verbatim}
+\end{lstlisting}
 and then run:
-\begin{verbatim}
+\begin{lstlisting}
 $ python3 /data/acs/pea/python/src/comprun.py --test /data/acs/output/xp_test.txt --standard /data/acs/pea/example/EX02/standard/xp_standard.txt
-\end{verbatim}
+\end{lstlisting}
 This will produce the plots Posdiff.png, recclk.png, satclk.png, and zwd.png.
 
 \section{Example 03 Processing a Global Network to obtain the orbit and clock products}
@@ -30,29 +30,29 @@ In this example 24 hours of data from a small global network of 87 stations is p
 Check that the paths in the configuration file for the products and RINEX files are correct for your system. If you have followed the convention layed out in the INSTALL.md document you should not need to amend anything.
 
 To start the processing use the command:
-\begin{verbatim}
+\begin{lstlisting}
 $ ./pea --config ../../config/Ex03-Network_Orbits.yaml
-\end{verbatim}
+\end{lstlisting}
 The process will take approximatelly 2-3 hours to complete depending on CPU performance. The log files and processing results can be found in /data/acs/pea/output/examples/Ex03, or the alternative directory you have specified in the configuration file.
 
 Change into your output directory. You should find a .TRACE file for each station processed, and a PEA.SUM file.
-\begin{verbatim}
+\begin{lstlisting}
 $ cd /data/acs/pea/output/examples/Ex03
-\end{verbatim}
+\end{lstlisting}
 To verify your solution, first grep for the xp values:
-\begin{verbatim}
+\begin{lstlisting}
 $ grep 'network xp' netprocessing.out > xp_test.txt
-\end{verbatim}
+\end{lstlisting}
 and then run:
-\begin{verbatim}
+\begin{lstlisting}
 $ python3 /data/acs/pea/python/src/comprun.py --test /data/acs/output/xp_test --standard /data/acs/pea/example/EX03/standard/xp_standard.txt
-\end{verbatim}
+\end{lstlisting}
 This will produce the plots Posdiff.png, recclk.png, satclk.png, and zwd.png.
 
 To compare the satellite clocks run:
-\begin{verbatim}
+\begin{lstlisting}
 $ python3 /data/acs/pea/python/src/compareclk.py --standard /data/acs/pea/example/EX03/standard/aus20624.clk  --test ./aus20624.clk
-\end{verbatim}
+\end{lstlisting}
 This will produce plots for the differences in satellite clocks G02 through to G32 as well as calculating the RMS and standard deviation with respect to the standard. G01.png does not exists at this has been used as the pivot satellite clock that we use to remove the bias from.
 
 \section{Example 04 Processing a Global Network to obtain Ionospheric Vertical Total Electron Content (VTEC) Maps}
@@ -64,9 +64,9 @@ Check that the paths in the configuration file for the products and RINEX files 
 If you have followed the convention layed out in the INSTALL.md document you should not need to amend anything.
 
 To start the processing use the command:
-\begin{verbatim}
+\begin{lstlisting}
 $ ./pea --config <installation directory>/pea/config/Ex04-Ionosphere.yaml
-\end{verbatim}
+\end{lstlisting}
 
 The process will take approximatelly 1-2 hours to complete depending on CPU performance and setting specifications.
 
