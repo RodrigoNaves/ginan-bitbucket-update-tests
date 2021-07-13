@@ -1,5 +1,7 @@
 % This is a modified version of the tufte-latex book example in which the title page and the contents page resemble Tufte's VDQI book, using Kevin Godby's code from this thread at https://groups.google.com/forum/#!topic/tufte-latex/ujdzrktC1BQ.
 \documentclass[nohyper,nobib]{tufte-book}
+
+
 \usepackage{nameref}
 %\hypersetup{colorlinks}% uncomment this line if you prefer colored hyperlinks (e.g., for onscreen viewing)
 
@@ -50,9 +52,9 @@
 
 %%
 % Book metadata
-\title{Ginarn}
-\date{Version 0.0}
-\author[The Ginarn team]{
+\title{Ginan}
+\date{Version 1.0-alpha}
+\author[The Ginan team]{
 Sebastien Allegyer,
 Rupert Brown,
 John Donovan,
@@ -65,7 +67,8 @@ Bogdan Matviichuk,
 Simon McClusky,
 Michael Moore,
 Thomas Papanikolaou,
-Tzupang Tseng
+Tzupang Tseng,
+Umma Zannat
 }
 \publisher{Geoscience Australia and Frontier-SI}
 
@@ -247,7 +250,7 @@ Tzupang Tseng
     {\qquad\thecontentspage}% filler and page (leaders and page num)
     [\vspace*{0.5\baselineskip}]% after
 %%%% End additional code by Kevin Godby
-
+\usepackage{showframe}
 \begin{document}
 
 % Front matter
@@ -286,9 +289,9 @@ under the License.\index{license}
 %
 \include{welcome}
 \newthought{This manual} is divided into three major sections: the preliminary matter which gives a quick overview on how to install and use the software with examples. 
-The next part contains the background theory on the models that have been implemented into Ginarn. 
+The next part contains the background theory on the models that have been implemented into Ginan. 
 The back matter contains information about configuration files, and file formats used by the software.
-This manual is far from complete, and we will be adding to it as we continue our development work on Ginarn. Our intention is to provide examples on how to use the tool kit , and then to provide the background theory as we can.
+This manual is far from complete, and we will be adding to it as we continue our development work on Ginan. Our intention is to provide examples on how to use the tool kit , and then to provide the background theory as we can.
 %
 \listoffigures
 %

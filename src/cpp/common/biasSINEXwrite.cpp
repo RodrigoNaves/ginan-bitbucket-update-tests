@@ -83,7 +83,7 @@ void write_bSINEX_head(
 	tracepdeex(0, trace, " DESCRIPTION       AUS, Position Australia, Geoscience Australia\n");			//todo aaron, get name from config
 	tracepdeex(0, trace, " OUTPUT            AUS %s estimates for day %3d, %4d\n", mode.c_str(), yds0[1], yds0[0]);
 	tracepdeex(0, trace, " CONTACT           ken.harima@ga.gov.au\n");
-	tracepdeex(0, trace, " SOFTWARE          GINARN\n");
+	tracepdeex(0, trace, " SOFTWARE          Ginan\n");
 	tracepdeex(0, trace, " INPUT             Daily 30-sec observations from IGS stations\n");
 	tracepdeex(0, trace, "-FILE/REFERENCE\n");
 	tracepdeex(0, trace, "*-------------------------------------------------------------------------------\n");
