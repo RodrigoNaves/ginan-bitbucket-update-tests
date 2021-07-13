@@ -1,28 +1,53 @@
 % This is a modified version of the tufte-latex book example in which the title page and the contents page resemble Tufte's VDQI book, using Kevin Godby's code from this thread at https://groups.google.com/forum/#!topic/tufte-latex/ujdzrktC1BQ.
-\documentclass[nohyper,nobib]{tufte-book}
+\documentclass[]{tufte-book}
 \usepackage{nameref}
-%\hypersetup{colorlinks}% uncomment this line if you prefer colored hyperlinks (e.g., for onscreen viewing)
+% \hypersetup{colorlinks}% uncomment this line if you prefer colored hyperlinks (e.g., for onscreen viewing)
 
 % \usepackage{hyphenat}
 \usepackage{url}
-\usepackage[backend=biber, natbib=true, style=numeric]{biblatex}
-
-% see https://www.overleaf.com/learn/latex/Glossaries
-% make glossaries must be written before the first glossary entry
-\usepackage[utf8]{inputenc}
-\usepackage[acronym, toc]{glossaries}
-
-\loadglsentries{glossary.tex}
-\makeglossaries
-
 \usepackage{listings}
-%New colors defined below
 \usepackage{xcolor}
+\newcommand\YAMLcolonstyle{\color{red}\mdseries}
+\newcommand\YAMLkeystyle{\color{black}\linespread{0.8}\ttfamily}
+\newcommand\YAMLvaluestyle{\color{blue}\ttfamily}
+
+\makeatletter
+
+% here is a macro expanding to the name of the language
+% (handy if you decide to change it further down the road)
+\newcommand\language@yaml{yaml}
+
+\expandafter\expandafter\expandafter\lstdefinelanguage
+\expandafter{\language@yaml}
+{
+	keywords={true,false,null,y,n},
+	keywordstyle=\color{darkgray}\bfseries,
+	basicstyle=\YAMLkeystyle,                                 % assuming a key comes first
+	sensitive=false,
+	comment=[l]{\#},
+	morecomment=[s]{/*}{*/},
+	commentstyle=\color{purple}\ttfamily,
+	stringstyle=\YAMLvaluestyle\ttfamily,
+	moredelim=[l][\color{orange}]{\&},
+	moredelim=[l][\color{magenta}]{*},
+	moredelim=**[il][\YAMLcolonstyle{:}\YAMLvaluestyle]{:},   % switch to value style at :
+	morestring=[b]',
+	morestring=[b]",
+}
+
+% switch to key style at EOL
+\lst@AddToHook{EveryLine}{\ifx\lst@language\language@yaml\YAMLkeystyle\fi}
+\makeatother
+
+
+
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
-\lstdefinestyle{mystyle}{
+
+\lstdefinestyle{mystyle}
+{
 	backgroundcolor=\color{backcolour},   
 	commentstyle=\color{codegreen},
 	keywordstyle=\color{magenta},
@@ -38,11 +63,11 @@
 	showspaces=false,                
 	showstringspaces=false,
 	showtabs=false,                  
-	tabsize=2
+	tabsize=4,
 }
+
 \lstset{style=mystyle}
 
-%
 %\usepackage[backend=biber, natbib=true, style=numeric]{biblatex}
 %\addbibresource{sample-handout.bib}
 \usepackage{xargs}
@@ -50,30 +75,31 @@
 
 %%
 % Book metadata
-\title{Ginarn}
+\title{Ginan}
 \date{Version 0.0}
-\author[The Ginarn team]{
-Sebastien Allegyer,
-Rupert Brown,
-John Donovan,
-Ken Harima,
-Aaron Hammond,
-Lavanya Kumarappan,
-Tao Li,
-Ronald Maj,
-Bogdan Matviichuk,
-Simon McClusky,
-Michael Moore,
-Thomas Papanikolaou,
-Tzupang Tseng
+\author[The Ginan team]{
+	Sebastien Allegyer,
+	Rupert Brown,
+	John Donovan,
+	Ken Harima,
+	Aaron Hammond,
+	Lavanya Kumarappan,
+	Tao Li,
+	Ronald Maj,
+	Bogdan Matviichuk,
+	Simon McClusky,
+	Chris Morgan,
+	Michael Moore,
+	Thomas Papanikolaou,
+	Tzupang Tseng
 }
 \publisher{Geoscience Australia and Frontier-SI}
 
 %%
 % If they're installed, use Bergamo and Chantilly from www.fontsite.com.
 % They're clones of Bembo and Gill Sans, respectively.
-\IfFileExists{bergamo.sty}{\usepackage[osf]{bergamo}}{}% Bembo
-\IfFileExists{chantill.sty}{\usepackage{chantill}}{}% Gill Sans
+%\IfFileExists{bergamo.sty}{\usepackage[osf]{bergamo}}{}% Bembo
+%\IfFileExists{chantill.sty}{\usepackage{chantill}}{}% Gill Sans
 
 %\usepackage{microtype}
 
@@ -115,40 +141,40 @@ Tzupang Tseng
 \usepackage{xspace}
 
 \usepackage{amsmath}
-\usepackage[colorlinks]{hyperref}
+\usepackage{hyperref}
 %%
 % Some shortcuts for Tufte's book titles.  The lowercase commands will
 % produce the initials of the book title in italics.  The all-caps commands
 % will print out the full title of the book in italics.
-%\newcommand{\vdqi}{\textit{VDQI}\xspace}
-%\newcommand{\ei}{\textit{EI}\xspace}
-%\newcommand{\ve}{\textit{VE}\xspace}
-%\newcommand{\be}{\textit{BE}\xspace}
-%\newcommand{\VDQI}{\textit{The Visual Display of Quantitative Information}\xspace}
-%\newcommand{\EI}{\textit{Envisioning Information}\xspace}
-%\newcommand{\VE}{\textit{Visual Explanations}\xspace}
-%\newcommand{\BE}{\textit{Beautiful Evidence}\xspace}
+\newcommand{\vdqi}{\textit{VDQI}\xspace}
+\newcommand{\ei}{\textit{EI}\xspace}
+\newcommand{\ve}{\textit{VE}\xspace}
+\newcommand{\be}{\textit{BE}\xspace}
+\newcommand{\VDQI}{\textit{The Visual Display of Quantitative Information}\xspace}
+\newcommand{\EI}{\textit{Envisioning Information}\xspace}
+\newcommand{\VE}{\textit{Visual Explanations}\xspace}
+\newcommand{\BE}{\textit{Beautiful Evidence}\xspace}
 
 \newcommand{\TL}{Tufte-\LaTeX\xspace}
 
 % Prints the month name (e.g., January) and the year (e.g., 2008)
 \newcommand{\monthyear}{%
-  \ifcase\month\or January\or February\or March\or April\or May\or June\or
-  July\or August\or September\or October\or November\or
-  December\fi\space\number\year
+	\ifcase\month\or January\or February\or March\or April\or May\or June\or
+	July\or August\or September\or October\or November\or
+	December\fi\space\number\year
 }
 
 
 % Prints an epigraph and speaker in sans serif, all-caps type.
 \newcommand{\openepigraph}[2]{%
-  %\sffamily\fontsize{14}{16}\selectfont
-  \begin{fullwidth}
-  \sffamily\large
-  \begin{doublespace}
-  \noindent\allcaps{#1}\\% epigraph
-  \noindent\allcaps{#2}% author
-  \end{doublespace}
-  \end{fullwidth}
+	%\sffamily\fontsize{14}{16}\selectfont
+	\begin{fullwidth}
+		\sffamily\large
+		\begin{doublespace}
+			\noindent\allcaps{#1}\\% epigraph
+			\noindent\allcaps{#2}% author
+		\end{doublespace}
+	\end{fullwidth}
 }
 
 % Inserts a blank page
@@ -172,28 +198,28 @@ Tzupang Tseng
 \newcommand{\tXeLaTeX}{\XeLaTeX\index{XeLaTeX@\protect\XeLaTeX}}
 % \index{\texttt{\textbackslash xyz}@\hangleft{\texttt{\textbackslash}}\texttt{xyz}}
 \newcommand{\tuftebs}{\symbol{'134}}% a backslash in tt type in OT1/T1
-\newcommand{\doccmdnoindex}[2][]{\texttt{\tuftebs#2}}% command name -- adds backslash automatically (and doesn't add cmd to the index)
-\newcommand{\doccmddef}[2][]{%
-  \hlred{\texttt{\tuftebs#2}}\label{cmd:#2}%
-  \ifthenelse{\isempty{#1}}%
-    {% add the command to the index
-      \index{#2 command@\protect\hangleft{\texttt{\tuftebs}}\texttt{#2}}% command name
-    }%
-    {% add the command and package to the index
-      \index{#2 command@\protect\hangleft{\texttt{\tuftebs}}\texttt{#2} (\texttt{#1} package)}% command name
-      \index{#1 package@\texttt{#1} package}\index{packages!#1@\texttt{#1}}% package name
-    }%
-}% command name -- adds backslash automatically
+%\newcommand{\doccmdnoindex}[2][]{\texttt{\tuftebs#2}}% command name -- adds backslash automatically (and doesn't add cmd to the index)
+%\newcommand{\doccmddef}[2][]{%
+%\hlred{\texttt{\tuftebs#2}}\label{cmd:#2}%
+%\ifthenelse{\isempty{#1}}%
+% {% add the command to the index
+%  \index{#2 command@\protect\hangleft{\texttt{\tuftebs}}\texttt{#2}}% command name
+%}%
+%{% add the command and package to the index
+% \index{#2 command@\protect\hangleft{\texttt{\tuftebs}}\texttt{#2} (\texttt{#1} package)}% command name
+% \index{#1 package@\texttt{#1} package}\index{packages!#1@\texttt{#1}}% package name
+%}%
+%}% command name -- adds backslash automatically
 \newcommand{\doccmd}[2][]{%
-  \texttt{\tuftebs#2}%
-  \ifthenelse{\isempty{#1}}%
-    {% add the command to the index
-      \index{#2 command@\protect\hangleft{\texttt{\tuftebs}}\texttt{#2}}% command name
-    }%
-    {% add the command and package to the index
-      \index{#2 command@\protect\hangleft{\texttt{\tuftebs}}\texttt{#2} (\texttt{#1} package)}% command name
-      \index{#1 package@\texttt{#1} package}\index{packages!#1@\texttt{#1}}% package name
-    }%
+	\texttt{\tuftebs#2}%
+	\ifthenelse{\isempty{#1}}%
+	{% add the command to the index
+		\index{#2 command@\protect\hangleft{\texttt{\tuftebs}}\texttt{#2}}% command name
+	}%
+	{% add the command and package to the index
+		\index{#2 command@\protect\hangleft{\texttt{\tuftebs}}\texttt{#2} (\texttt{#1} package)}% command name
+		\index{#1 package@\texttt{#1} package}\index{packages!#1@\texttt{#1}}% package name
+	}%
 }% command name -- adds backslash automatically
 \newcommand{\docopt}[1]{\ensuremath{\langle}\textrm{\textit{#1}}\ensuremath{\rangle}}% optional command argument
 \newcommand{\docarg}[1]{\textrm{\textit{#1}}}% (required) command argument
@@ -215,153 +241,135 @@ Tzupang Tseng
 %%%% Kevin Godny's code for title page and contents from https://groups.google.com/forum/#!topic/tufte-latex/ujdzrktC1BQ
 \makeatletter
 \renewcommand{\maketitlepage}{%
-\begingroup%
-\setlength{\parindent}{0pt}
-
-{\fontsize{24}{24}\selectfont\textit{\@author}\par}
-
-\vspace{1.75in}{\fontsize{36}{54}\selectfont\@title\par}
-
-\vspace{0.5in}{\fontsize{14}{14}\selectfont\textsf{\smallcaps{\@date}}\par}
-
-\vfill{\fontsize{14}{14}\selectfont\textit{\@publisher}\par}
-
-\thispagestyle{empty}
-\endgroup
+	\begingroup%
+	\setlength{\parindent}{0pt}
+	
+	{\fontsize{24}{24}\selectfont\textit{\@author}\par}
+	
+	\vspace{1.75in}{\fontsize{36}{54}\selectfont\@title\par}
+	
+	\vspace{0.5in}{\fontsize{14}{14}\selectfont\textsf{\smallcaps{\@date}}\par}
+	
+	\vfill{\fontsize{14}{14}\selectfont\textit{\@publisher}\par}
+	
+	\thispagestyle{empty}
+	\endgroup
 }
 \makeatother
 
 \titlecontents{part}%
-    [0pt]% distance from left margin
-    {\addvspace{0.25\baselineskip}}% above (global formatting of entry)
-    {\allcaps{Part~\thecontentslabel}\allcaps}% before w/ label (label = ``Part I'')
-    {\allcaps{Part~\thecontentslabel}\allcaps}% before w/o label
-    {}% filler and page (leaders and page num)
-    [\vspace*{0.5\baselineskip}]% after
+[0pt]% distance from left margin
+{\addvspace{0.25\baselineskip}}% above (global formatting of entry)
+{\allcaps{Part~\thecontentslabel}\allcaps}% before w/ label (label = ``Part I'')
+{\allcaps{Part~\thecontentslabel}\allcaps}% before w/o label
+{}% filler and page (leaders and page num)
+[\vspace*{0.5\baselineskip}]% after
 
 \titlecontents{chapter}%
-    [4em]% distance from left margin
-    {}% above (global formatting of entry)
-    {\contentslabel{2em}\textit}% before w/ label (label = ``Chapter 1'')
-    {\hspace{0em}\textit}% before w/o label
-    {\qquad\thecontentspage}% filler and page (leaders and page num)
-    [\vspace*{0.5\baselineskip}]% after
+[4em]% distance from left margin
+{}% above (global formatting of entry)
+{\contentslabel{2em}\textit}% before w/ label (label = ``Chapter 1'')
+{\hspace{0em}\textit}% before w/o label
+{\qquad\thecontentspage}% filler and page (leaders and page num)
+[\vspace*{0.5\baselineskip}]% after
 %%%% End additional code by Kevin Godby
 
 \begin{document}
-
-% Front matter
-\frontmatter
-
-% r.3 full title page
-\maketitle
-
-
-% v.4 copyright page
-\newpage
-\begin{fullwidth}
-~\vfill
-\thispagestyle{empty}
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{\baselineskip}
-Copyright \copyright\ \the\year\ \thanklessauthor
-
-\par\smallcaps{Published by \thanklesspublisher}
-
-\par\smallcaps{tufte-latex.googlecode.com}
-
-\par Licensed under the Apache License, Version 2.0 (the ``License''); you may not
-use this file except in compliance with the License. You may obtain a copy
-of the License at \url{http://www.apache.org/licenses/LICENSE-2.0}. Unless
-required by applicable law or agreed to in writing, software distributed
-under the License is distributed on an \smallcaps{``AS IS'' BASIS, WITHOUT
-WARRANTIES OR CONDITIONS OF ANY KIND}, either express or implied. See the
-License for the specific language governing permissions and limitations
-under the License.\index{license}
-
-\par\textit{First printing, \monthyear}
-\end{fullwidth}
-% r.5 contents
-\tableofcontents
-%
-\include{welcome}
-\newthought{This manual} is divided into three major sections: the preliminary matter which gives a quick overview on how to install and use the software with examples. 
-The next part contains the background theory on the models that have been implemented into Ginarn. 
-The back matter contains information about configuration files, and file formats used by the software.
-This manual is far from complete, and we will be adding to it as we continue our development work on Ginarn. Our intention is to provide examples on how to use the tool kit , and then to provide the background theory as we can.
-%
-\listoffigures
-%
-\listoftables
-%
-
-% r.9 introduction
-\cleardoublepage
-%\part{Overview}
-%
-\include{introduction}
-%
-\include{installation}
-\include{docker}
-%
-\include{python}
-%\include{implementation overview of software}
-% block diagram from aaron
-%
-%\include{pea_examples}
-%\include{Processing_in_User_mode}
-%\include{Processing_in_Network_mode}
-%
-\include{pod_examples}
-%
-% Start the main matter (normal chapters)
-%\mainmatter
-%
-%\part{Background Theory}
-%\include{GNSSOverview}
-%
-%\include{observation_modelling}
-%
-%\include{kalman_filter}
-%
-%\include{orbit_modelling}
-%\include{ionosphere}
-%\include{ambiguity_resolution}
-%
-%
-%\include{styleguide}
-%%
-
-%\part{Using the software}
-\include{Processing_in_User_mode}
-%\include{Processing_in_Network_mode}
-%\include{Using_the_POD_module}
-%
-%\part is not working?
-%\chapter{Using the Source Code}
-\include{coding_standards}
-%\include{repositories}
-%\include{Overview_of_the_PEA}
-%\include{Overview_of_the_POD}
-\include{conventions}
-%
-%\clearpage
-%\printglossary[title=Terms Used, toctitle=List of Terms]
-%\printglossary[type=\acronymtype]
-% The back matter contains appendices, bibliographies, indices, glossaries, etc.
-\backmatter
-\printglossaries
-\printglossaries[type=\acronymtype]
-%
-%\part{YAML Configuration File Reference}
-%
-%\include{Examples in Detail}
-\include{PEA_YAML_Configuration}
-\include{POD_YAML_Configuration}
-\include{manual}
-\include{acknowledgements}
-% \include{lost_pages} % info on hidden options
-% \bibliography{sample-handout}
-\printindex
-\lstlistoflistings
+	
+	% Front matter
+	\frontmatter
+	
+	% r.3 full title page
+	\maketitle
+	
+	
+	% v.4 copyright page
+	\newpage
+	\begin{fullwidth}
+		~\vfill
+		\thispagestyle{empty}
+		\setlength{\parindent}{0pt}
+		\setlength{\parskip}{\baselineskip}
+		Copyright \copyright\ \the\year\ \thanklessauthor
+		
+		\par\smallcaps{Published by \thanklesspublisher}
+		
+		\par\smallcaps{tufte-latex.googlecode.com}
+		
+		\par Licensed under the Apache License, Version 2.0 (the ``License''); you may not
+		use this file except in compliance with the License. You may obtain a copy
+		of the License at \url{http://www.apache.org/licenses/LICENSE-2.0}. Unless
+		required by applicable law or agreed to in writing, software distributed
+		under the License is distributed on an \smallcaps{``AS IS'' BASIS, WITHOUT
+			WARRANTIES OR CONDITIONS OF ANY KIND}, either express or implied. See the
+		License for the specific language governing permissions and limitations
+		under the License.\index{license}
+		
+		\par\textit{First printing, \monthyear}
+	% r.5 contents
+	%\tableofcontents
+	%
+	\include{welcome}
+	\newthought{This manual} is divided into three major sections: the preliminary matter which gives a quick overview on how to install and use the software with examples. 
+	The next part contains the background theory on the models that have been implemented into Ginarn. 
+	The back matter contains information about configuration files, and file formats used by the software.
+	%
+	\listoffigures
+	%
+	\listoftables
+	%
+	% r.9 introduction
+	\cleardoublepage
+	\part{Overview}
+	%
+	\include{introduction}
+	%
+	\include{installation}
+	%
+	%\include{implementation overview of software}
+	% block diagram from aaron
+	%
+	\include{pea_examples}
+	%
+	\include{pod_examples}
+	%
+	% Start the main matter (normal chapters)
+	\mainmatter
+	%
+	\part{Background Theory}
+	\include{GNSSOverview}
+	%
+	\include{observation_modelling}
+	%
+	\include{kalman_filter}
+	%
+	\include{orbit_modelling}
+	\include{ionosphere}
+	\include{ambiguity_resolution}
+	%
+	%
+	%\include{styleguide}
+	%%
+	% The back matter contains appendices, bibliographies, indices, glossaries, etc.
+	\backmatter
+	\part{Using the software}
+	\include{Processing_in_User_mode}
+	\include{Processing_in_Network_mode}
+	\include{Using_the_POD_module}
+	%
+	\part{Using the Source Code}
+	\include{coding_standards}
+	\include{repositories}
+	\include{Overview_of_the_PEA}
+	\include{Overview_of_the_POD}
+	%
+	%\part{YAML Configuration File Reference}
+	%
+	%\include{Examples in Detail}
+	\include{PEA_YAML_Configuration}
+	%\include{POD_YAML_Configuration}
+	%\include{styleguide}
+	% \bibliography{sample-handout}
+	% \bibliographystyle{plainnat}
+	%\printindex
 \end{document}
