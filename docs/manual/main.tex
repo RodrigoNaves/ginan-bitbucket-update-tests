@@ -1,5 +1,7 @@
 % This is a modified version of the tufte-latex book example in which the title page and the contents page resemble Tufte's VDQI book, using Kevin Godby's code from this thread at https://groups.google.com/forum/#!topic/tufte-latex/ujdzrktC1BQ.
-\documentclass[]{tufte-book}
+\documentclass[nohyper,nobib]{tufte-book}
+
+
 \usepackage{nameref}
 % \hypersetup{colorlinks}% uncomment this line if you prefer colored hyperlinks (e.g., for onscreen viewing)
 
@@ -76,9 +78,9 @@
 %%
 % Book metadata
 \title{Ginan}
-\date{Version 0.0}
-\author[The Ginan team]
-{Sebastien Allegyer,
+\date{Version 1.0-alpha}
+\author[The Ginan team]{
+Sebastien Allegyer,
 Rupert Brown,
 John Donovan,
 Ken Harima,
@@ -91,7 +93,8 @@ Simon McClusky,
 Chris Morgan,
 Michael Moore,
 Thomas Papanikolaou,
-Tzupang Tseng
+Tzupang Tseng,
+Umma Zannat
 }
 \publisher{Geoscience Australia and Frontier-SI}
 
@@ -273,103 +276,121 @@ Tzupang Tseng
 {\qquad\thecontentspage}% filler and page (leaders and page num)
 [\vspace*{0.5\baselineskip}]% after
 %%%% End additional code by Kevin Godby
-
+\usepackage{showframe}
 \begin{document}
-	
-	% Front matter
-	\frontmatter
-	
-	% r.3 full title page
-	\maketitle
-	
-	
-	% v.4 copyright page
-	\newpage
-	\begin{fullwidth}
-		~\vfill
-		\thispagestyle{empty}
-		\setlength{\parindent}{0pt}
-		\setlength{\parskip}{\baselineskip}
-		Copyright \copyright\ \the\year\ \thanklessauthor
-		
-		\par\smallcaps{Published by \thanklesspublisher}
-		
-		\par\smallcaps{tufte-latex.googlecode.com}
-		
-		\par Licensed under the Apache License, Version 2.0 (the ``License''); you may not
-		use this file except in compliance with the License. You may obtain a copy
-		of the License at \url{http://www.apache.org/licenses/LICENSE-2.0}. Unless
-		required by applicable law or agreed to in writing, software distributed
-		under the License is distributed on an \smallcaps{``AS IS'' BASIS, WITHOUT
-			WARRANTIES OR CONDITIONS OF ANY KIND}, either express or implied. See the
-		License for the specific language governing permissions and limitations
-		under the License.\index{license}
-		
-		\par\textit{First printing, \monthyear}
-	% r.5 contents
-	%\tableofcontents
-	%
-	\include{welcome}
-	\newthought{This manual} is divided into three major sections: the preliminary matter which gives a quick overview on how to install and use the software with examples. 
-	The next part contains the background theory on the models that have been implemented into Ginarn. 
-	The back matter contains information about configuration files, and file formats used by the software.
-	%
-	\listoffigures
-	%
-	\listoftables
-	%
-	% r.9 introduction
-	\cleardoublepage
-	\part{Overview}
-	%
-	\include{introduction}
-	%
-	\include{installation}
-	%
-	%\include{implementation overview of software}
-	% block diagram from aaron
-	%
-	\include{pea_examples}
-	%
-	\include{pod_examples}
-	%
-	% Start the main matter (normal chapters)
-	\mainmatter
-	%
-	\part{Background Theory}
-	\include{GNSSOverview}
-	%
-	\include{observation_modelling}
-	%
-	\include{kalman_filter}
-	%
-	\include{orbit_modelling}
-	\include{ionosphere}
-	\include{ambiguity_resolution}
-	%
-	%
-	%\include{styleguide}
-	%%
-	% The back matter contains appendices, bibliographies, indices, glossaries, etc.
-	\backmatter
-	\part{Using the software}
-	\include{Processing_in_User_mode}
-	\include{Processing_in_Network_mode}
-	\include{Using_the_POD_module}
-	%
-	\part{Using the Source Code}
-	\include{coding_standards}
-	\include{repositories}
-	\include{Overview_of_the_PEA}
-	\include{Overview_of_the_POD}
-	%
-	%\part{YAML Configuration File Reference}
-	%
-	%\include{Examples in Detail}
-	\include{PEA_YAML_Configuration}
-	%\include{POD_YAML_Configuration}
-	%\include{styleguide}
-	% \bibliography{sample-handout}
-	% \bibliographystyle{plainnat}
-	%\printindex
+
+% Front matter
+\frontmatter
+
+% r.3 full title page
+\maketitle
+
+
+% v.4 copyright page
+\newpage
+\begin{fullwidth}
+~\vfill
+\thispagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{\baselineskip}
+Copyright \copyright\ \the\year\ \thanklessauthor
+
+\par\smallcaps{Published by \thanklesspublisher}
+
+\par\smallcaps{tufte-latex.googlecode.com}
+
+\par Licensed under the Apache License, Version 2.0 (the ``License''); you may not
+use this file except in compliance with the License. You may obtain a copy
+of the License at \url{http://www.apache.org/licenses/LICENSE-2.0}. Unless
+required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an \smallcaps{``AS IS'' BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND}, either express or implied. See the
+License for the specific language governing permissions and limitations
+under the License.\index{license}
+
+\par\textit{First printing, \monthyear}
+\end{fullwidth}
+% r.5 contents
+\tableofcontents
+%
+\include{welcome}
+\newthought{This manual} is divided into three major sections: the preliminary matter which gives a quick overview on how to install and use the software with examples. 
+The next part contains the background theory on the models that have been implemented into Ginan. 
+The back matter contains information about configuration files, and file formats used by the software.
+This manual is far from complete, and we will be adding to it as we continue our development work on Ginan. Our intention is to provide examples on how to use the tool kit , and then to provide the background theory as we can.
+%
+\listoffigures
+%
+\listoftables
+%
+
+% r.9 introduction
+\cleardoublepage
+%\part{Overview}
+%
+\include{introduction}
+%
+\include{installation}
+\include{docker}
+%
+\include{python}
+%\include{implementation overview of software}
+% block diagram from aaron
+%
+%\include{pea_examples}
+%\include{Processing_in_User_mode}
+%\include{Processing_in_Network_mode}
+%
+\include{pod_examples}
+%
+% Start the main matter (normal chapters)
+%\mainmatter
+%
+%\part{Background Theory}
+%\include{GNSSOverview}
+%
+%\include{observation_modelling}
+%
+%\include{kalman_filter}
+%
+%\include{orbit_modelling}
+%\include{ionosphere}
+%\include{ambiguity_resolution}
+%
+%
+%\include{styleguide}
+%%
+
+%\part{Using the software}
+\include{Processing_in_User_mode}
+%\include{Processing_in_Network_mode}
+%\include{Using_the_POD_module}
+%
+%\part is not working?
+%\chapter{Using the Source Code}
+\include{coding_standards}
+%\include{repositories}
+%\include{Overview_of_the_PEA}
+%\include{Overview_of_the_POD}
+\include{conventions}
+%
+%\clearpage
+%\printglossary[title=Terms Used, toctitle=List of Terms]
+%\printglossary[type=\acronymtype]
+% The back matter contains appendices, bibliographies, indices, glossaries, etc.
+\backmatter
+\printglossaries
+\printglossaries[type=\acronymtype]
+%
+%\part{YAML Configuration File Reference}
+%
+%\include{Examples in Detail}
+\include{PEA_YAML_Configuration}
+\include{POD_YAML_Configuration}
+\include{manual}
+\include{acknowledgements}
+% \include{lost_pages} % info on hidden options
+% \bibliography{sample-handout}
+\printindex
+\lstlistoflistings
 \end{document}
