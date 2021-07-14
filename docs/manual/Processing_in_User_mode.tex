@@ -1,23 +1,107 @@
-\chapter{Processing in Precise Point Positioning mode}
+\chapter{Processing in end user mode}
+When set to end user mode, the PEA component of Ginan will process each station separately. This mode will allow the estimation of parameters avaialable to users with single receivers. Expected application of this processing mode are
+\begin{itemize}
+	\item Estimate the position of a static point
+	\item Track the path of a moving vehicle
+	\item Monitor atmospheric conditions around the receiver
+	\item Sychronise a locak clock
+\end{itemize}
+The end user  mode of the PEA is based on precise point positioning technique
 
-\newthought{Precise Point Positioning}(PPP)
+\newthought{Precise Point Positioning}(PPP) is a GNSS positioning method, originally developed, for calculating location of autonomous receivers with high levels of accuracy and precision. PPP aims to calculate the end user position by rigorously modelling and/or estimating error sources in GNSS measurements. 
 
-\section{Pea PPP Processing examples}
-In this example we will process 24 hours of data from a permanent reference frame station. The algorithm that will be use an L1+L2 and L1+L5 ionosphere free combination. The log files and processing results can be found in /data/acs/pea/output/exs/EX01\_IF/.
 
+Parameters that can potentially be estimated in end user mode are:
+\begin{itemize}
+	\item Antenna position
+	\item Receiver clock offset
+	\item Tropospheric delay at receiver location
+	\item Ionospheric delay at the receiver location (not yet available)
+	\item Carrier phase ambiguities
+\end{itemize}
+
+\section{PEA PPP Processing examples}
+Examples of end user processing using the PEA follows. GINAN applications use YAML format to define configuration files. After installing the dependencies and compiling building the PEA application, the PEA processing can be started by typing the command 
 \begin{verbatim}
-$ ./pea --config ../../config/Ex01-IF-PPP.yaml
-$ grep "\$POS" /data/acs/pea/output/exs/EX01_IF/EX01_IF-ALIC.TRACE
+$ ./pea --config <path_to_config_file>
 \end{verbatim}
 
-And you should see the following: 
-\begin{verbatim}
-<snip> $POS,2062,431940.000,0,-4052052.7956,4212836.0144,-2545104.6423,0.00000043966020,0.00000039738502,0.00000013421476 $POS,2062,431970.000,0,-4052052.7956,4212836.0144,-2545104.6423,0.00000043965772,0.00000039738393,0.00000013421667
+Details on the configuration parameters included in YAML files can be found in chapter \ref{pea_yaml_configuration}. The processing results for each receiver can be found on the trace files. The name of these output files can be set by the user, in the examples below they will typically be *.TRACE files.
+
+\textbf{Receiver position}  results are preceded by the "\$POS" label and thus, in Linux, can be extracted using the command:
+ \begin{verbatim}
+$ grep "$POS" <path_to_trace_file>
 \end{verbatim}
+the output line for the for receiver position will have 10 comma separated fields with the following format:
+\begin{verbatim}
+$POS,2166,278015.000,6,-4052053.0060,4212836.8682,-2545105.0796,0.0245227,0.0231919,0.0163678
+\end{verbatim}
+the fields represent, from left to right:
+\begin{enumerate}
+	\item  "\$POS" label
+	\item  GPS week
+	\item  GPS TOW in seconds
+	\item  Solution type (6 for float PPP, 1 for ambiguity fixed PPP)
+	\item  Receiver ECEF X position in meters
+	\item  Receiver ECEF Y position in meters
+	\item  Receiver ECEF Z position in meters
+	\item  Standard deviation of ECEF X positions in meters
+	\item  Standard deviation of ECEF X positions in meters
+	\item  Standard deviation of ECEF X positions in meters
+\end{enumerate}
+
+\textbf{Receiver clock} offset results are preceded by the "\$CLK" label and thus, in Linux, can be extracted using the command:
+ \begin{verbatim}
+$ grep "$CLK" <path_to_trace_file>
+\end{verbatim}
+the output line for the for receiver position will have 13 comma separated fields with the following format:
+\begin{verbatim}
+$CLK,2166,278015.000,6,14,3.1902,0.0000,1.1924,0.0000,0.0860,0.0000,0.0953,0.0000
+\end{verbatim}
+the fields represent, from left to right:
+\begin{enumerate}
+	\item  "\$CLK" label
+	\item  GPS week
+	\item  GPS TOW in seconds
+	\item  Solution type (6 for float PPP, 1 for ambiguity fixed PPP)
+	\item  Number of satellites used in the solution
+	\item  Receiver clock offset for with respect to GPS clock, in nanoseconds
+	\item  Receiver clock offset for with respect to GLONASS clock, in nanoseconds
+	\item  Receiver clock offset for with respect to Galileo clock, in nanoseconds
+	\item  Receiver clock offset for with respect to Beidou clock, in nanoseconds	
+	\item  Standard deviation of clock offset wrt. GPS, in nanoseconds
+	\item  Standard deviation of clock offset wrt. GLONASS, in nanoseconds
+	\item  Standard deviation of clock offset wrt. Galileo, in nanoseconds
+	\item  Standard deviation of clock offset wrt. Beidou, in nanoseconds	
+\end{enumerate}
+If clock offsets for a particular constellation are not available both the offset and its variance will be set to 0.
 
 
-\subsection{Using the Ionosphere-free observable to process a static data set - the float solution}
+\textbf{Tropospheric delays} at the receiver position are preceded by the "\$TROP" label and thus, in Linux, can be extracted using the command:
+ \begin{verbatim}
+$ grep "$TROP" <path_to_trace_file>
+\end{verbatim}
+the tropospheric delay solutions will be represented to either a single line, with the "\$TROP" or three lines, as follows:
+\begin{verbatim}
+$TROP,2166,278015.000,6,14,2.294950,0.0030977
+$TROP_N,2166,278015.000,6,14,-0.174797,0.0181385
+$TROP_E,2166,278015.000,6,14,-0.223868,0.0250276
+\end{verbatim}
+each of the troposphere output line will contain 7 comma separated field, of which the first five are:
+\begin{enumerate}
+	\item  Label, "\$TROP", "\$TROP\_N" or "\$TROP\_E"
+	\item  GPS week
+	\item  GPS TOW in seconds
+	\item  Solution type (6 for float PPP, 1 for ambiguity fixed PPP)
+	\item  Number of satellites used in the solution
+\end{enumerate}
+The line starting with "\$TROP" contain the Zenith Tropospheric Delay (ZTD) and its standards deviation, both in meters, as their last two fields.  The line starting with "\$TROP\_N" contains the tropospheric delay gradient in north-south direction, and  the line starting with "\$TROP\_E" contains the tropospheric delay gradient in east-west direction.
 
+Configuration files for specific examples have been added to the \textit{examples} folder in the repository. Examples corresponding to end user processing are explained bellow.
+
+\subsection{Post processed PPP solutions with floating ambiguities using IF combination}
+The configuration file named \textit{examples/ex11_pea_pp_user_gps.yaml} sets the PEA to calculate a post-process end user solution for a static receiver. 
+ 
 In this example we will process 24 hours of data from a permanent reference frame station. The algorithm will use an L1+L2 and L1+L5 ionosphere-free combination.
 The log files and processing results can be found in `<path to pea>/output/exs/EX01\_IF/`.
 \begin{verbatim}

@@ -79,7 +79,9 @@ void pppos(
 void pppoutstat(
 	Trace&		trace,
 	KFState&	kfState,
-	bool		rts = false);
+	bool		rts = false,
+	int			stat= 0,
+	int			nsat= 0);
 
 void pppomc(
 	Trace&		trace,

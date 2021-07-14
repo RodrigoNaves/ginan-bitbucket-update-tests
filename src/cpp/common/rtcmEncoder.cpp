@@ -64,7 +64,8 @@ void RtcmEncoder::SSREncoder::encodeSsrComb(
 	
 	for (auto& [satId, satNav] : nav.satNavMap)
 	{
-		SatSys Sat(satId);
+		SatSys Sat;
+		Sat.fromHash(satId);
 		
 		if (Sat.sys != targetSys)
 			continue;
@@ -96,7 +97,8 @@ void RtcmEncoder::SSREncoder::encodeSsrComb(
 	
 	for (auto& [satId, satNav] : nav.satNavMap)
 	{
-		SatSys Sat(satId);
+		SatSys Sat;
+		Sat.fromHash(satId);
 		
 		if (Sat.sys != targetSys)
 			continue;
@@ -279,7 +281,8 @@ void RtcmEncoder::SSREncoder::encodeSsrPhase(
 	
 	for (auto& [satId, satNav] : nav.satNavMap)
 	{
-		SatSys Sat(satId);
+		SatSys Sat;
+		Sat.fromHash(satId);
 		if (Sat.sys != targetSys)
 			continue;
 			
@@ -427,7 +430,8 @@ void RtcmEncoder::SSREncoder::encodeSsrCode(
 	
 	for (auto& [satId, satNav] : nav.satNavMap)
 	{
-		SatSys Sat(satId);
+		SatSys Sat;
+		Sat.fromHash(satId);
 		if	(Sat.sys != targetSys)
 			continue;
 		

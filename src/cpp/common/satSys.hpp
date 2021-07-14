@@ -130,7 +130,7 @@ struct SatSys
 
 	/** Constructs a SatSys object from it's hash uid
 	*/
-	SatSys(int intval)
+	void fromHash(int intval)
 	{
 		sys = E_Sys::_from_integral((intval >> 16)	& 0xFF);
 		prn = 						(intval >> 8)	& 0xFF;

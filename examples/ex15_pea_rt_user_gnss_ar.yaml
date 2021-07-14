@@ -14,14 +14,14 @@ input_files:
 station_data:
 
     stream_root: "http://user:pass@auscors.ga.gov.au:2101/"
-         
+        
     nav_streams:
         - SSRA00CNE0 #orbits, clocks and bias
         - BCEP00BKG0
 
     obs_streams:
-        # - ALIC00AUS0
-        - WALH00AUS0
+         - ALIC00AUS0
+        # - WALH00AUS0
         # - HARB00ZAF0
 
 output_files:
@@ -67,7 +67,7 @@ processing_options:
 
     #start_epoch:               2019-07-18 23:39:00
     #end_epoch:                 2017-03-29 23:59:30
-    max_epochs:                 660        #0 is infinite
+    #max_epochs:                 660        #0 is infinite
     epoch_interval:             1          #seconds
     wait_next_epoch:            31
     wait_all_stations:          1
