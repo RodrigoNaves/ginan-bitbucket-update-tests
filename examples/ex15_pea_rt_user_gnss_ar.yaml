@@ -4,32 +4,32 @@
 
 input_files:
 
-    root_input_directory: products/
+    root_input_directory: /data/acs/pea/proc/exs/products/
 
-    atxfiles:   [ igs14_2045_plus.atx                                     ]    # required
-    snxfiles:   [ /data/meta_gather.snx, cod21620.snx                               ]    # required
+    atxfiles:   [ igs14_2045_plus.atx                           ]    # required
+    snxfiles:   [ meta_gather.snx                               ]    # required
     blqfiles:   [ OLOAD_GO.BLQ                                  ]    # required if ocean loading is applied
 
 
 station_data:
 
     stream_root: "http://user:pass@auscors.ga.gov.au:2101/"
-        
+         
     nav_streams:
         - SSRA00CNE0 #orbits, clocks and bias
         - BCEP00BKG0
 
     obs_streams:
-        - ALIC00AUS0
-        - LMMF00MTQ0
-        - HARB00ZAF0
+        # - ALIC00AUS0
+        - WALH00AUS0
+        # - HARB00ZAF0
 
 output_files:
 
-    root_output_directory:          <CONFIG>/
+    root_output_directory:          /data/acs/pea/output/exs/<CONFIG>/
 
     output_trace:                   true
-    trace_level:                    2
+    trace_level:                    3
     trace_directory:                ./
     trace_filename:                 <CONFIG>-<STATION>_<YYYY><DDD><HH>.TRACE
     trace_rotate_period:            1
@@ -70,7 +70,7 @@ processing_options:
     max_epochs:                 660        #0 is infinite
     epoch_interval:             1          #seconds
     wait_next_epoch:            31
-    wait_all_stations:          15
+    wait_all_stations:          1
 
     ppp_ephemeris:              ssr_apc     # broadcast  ssr_apc  ssr_com  precise
 

@@ -823,7 +823,7 @@ void RtcmDecoder::EphemerisDecoder::decodeEphemeris(uint8_t* data, unsigned int 
 	{
 		BOOST_LOG_TRIVIAL(error) << "Error: unrecognised sys in EphemerisDecoder::decode()";
 	}
-
+	
 	//check for iode, add if not found.
 	for (auto& eph_ : nav.ephMap[eph.Sat])
 	{
@@ -833,7 +833,7 @@ void RtcmDecoder::EphemerisDecoder::decodeEphemeris(uint8_t* data, unsigned int 
 			return;
 		}
 	}		
-	//tracepdeex(rtcmdeblvl,std::cout, "\n#RTCM_DEC BRCEPH %s %s %4d %16.9e %13.6e %10.3e ", eph.Sat.id(),eph.toc.to_string(2), eph.iode, eph.f0,eph.f1,eph.f2);
+	//tracepdeex(rtcmdeblvl,std::cout, "\n#RTCM_DEC BRCEPH %s %s %4d %16.9e %13.6e %10.3e, %d ", eph.Sat.id(),eph.toe.to_string(2), eph.iode, eph.f0,eph.f1,eph.f2, message_number);
 	//std::cout << "Adding ephemeris for " << eph.Sat.id() << std::endl;
 	nav.ephMap[eph.Sat].push_back(eph);
 	
@@ -1233,7 +1233,6 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 		inputStream.read((char*)message, message_length);
 		if (inputStream.fail())
 		{
-			//tracepdeex(rtcmdeblvl+1,std::cout, "\nSTR_%s bytes in buffer", station.name);
 			inputStream.clear();
 			inputStream.seekg(pos);
 			return;
@@ -1243,7 +1242,6 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 		inputStream.read((char*)&crcRead, 3);		
 		if (inputStream.fail())
 		{
-			//tracepdeex(rtcmdeblvl+1,std::cout, "\nSTR_%s leaving %d bytes in buffer", station.name, message_length);
 			inputStream.clear();
 			inputStream.seekg(pos);
 			return;
@@ -1271,7 +1269,7 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 		
 		
 
-		//tracepdeex(rtcmdeblvl+1,std::cout, "STR_%s : RTCM Message %4d\n", station.name, nmeass);
+		//tracepdeex(rtcmdeblvl+1,std::cout, "STR : RTCM Message %4d\n", nmeass);
 		
 		
 		auto message_type = RtcmDecoder::message_type((unsigned char*) message);
@@ -1321,7 +1319,6 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 			numFramesDecoded++;
 			ObsList obsList = decodeMSM7((uint8_t*) message,message_length,MSM7_lock_time);
 			
-			//SuperList.insert(SuperList.end(),obsList.begin(),obsList.end());
 			int i=54;
 			int multimessage = getbituInc(message, i,	1);
 			
