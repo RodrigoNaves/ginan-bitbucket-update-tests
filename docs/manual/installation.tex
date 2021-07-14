@@ -9,7 +9,7 @@ In this section we will describe how to install the PEA and POD from source. An 
 \subsection{PEA}
 
 
-\newthought{Dependencies} the following packages need to be installed with the minimum versions as shown below. This guide will outline the preferred method of installation.
+\textit{Dependencies} the following packages need to be installed with the minimum versions as shown below. This guide will outline the preferred method of installation.
 
 CMAKE  > 3.0 requires openssl-devel to be installed (requires openssl-devel)
 YAML   > 0.6
@@ -44,7 +44,7 @@ $ sudo mkdir -p /data/tmp
 $ cd /data/tmp
 \end{lstlisting}
 
-\newthought{YAML}
+\textit{YAML}
 We are using the YAML library to parse the configuration files used to run many of the programs found in this library (https://github.com/jbeder/yaml-cpp). Here is an example of how we have installed the yaml library from source:
 \begin{lstlisting}[language=bash]
 $ cd /data/tmp
@@ -58,7 +58,7 @@ $ cd ../..
 $ sudo rm -fr yaml-cpp
 \end{lstlisting}
 
-\newthought{Boost}
+\textit{Boost}
 We rely on a number of the utilities provided by boost (https://www.boost.org/), such as their time and logging libraries.
 \begin{lstlisting}[language=bash]
 $ cd /data/tmp/
@@ -73,7 +73,7 @@ $ sudo rm -fr boost_1_73_0/ boost_1_73_0.tar
 
 \end{lstlisting}
 
-\newthought{Eigen3} is used for performing matrix calculations, and has a very nice API.
+\textit{Eigen3} is used for performing matrix calculations, and has a very nice API.
 \begin{lstlisting}[language=bash]
 $ cd /data/tmp/
 $ sudo git clone https://gitlab.com/libeigen/eigen.git
@@ -195,7 +195,7 @@ Options:
 PEA finished
 \end{lstlisting}
 
-\newthought{The documentation} for the pea can be generated similarly using doxygen if it is installed.
+\textit{The documentation} for the pea can be generated similarly using doxygen if it is installed.
 
 \begin{lstlisting}[language=bash]
 $ sudo apt-get install doxygen

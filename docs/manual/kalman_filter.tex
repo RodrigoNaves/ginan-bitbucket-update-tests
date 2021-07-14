@@ -29,7 +29,7 @@ Covariance matrices
 
 The kalman filter processing is broken up into three main steps.
 
-\newthought{Prediction} {uses a process noise model} to 'predict' the parameters at the next data epoch, subscript is time quantity refrs to, where as the superscript refers to the time of the data:
+\textit{Prediction} {uses a process noise model} to 'predict' the parameters at the next data epoch, subscript is time quantity refrs to, where as the superscript refers to the time of the data:
 \begin{equation}
     \hat{x}_{t+1}^t = S_t \hat{x}_t^t
 \end{equation}
@@ -47,7 +47,7 @@ The state transition matrix $S$ projects the state vector (parameters) forward t
 \end{itemize}
 The second equation projects the covariance matrix of the state vector, $C$, forward in time. Contributions from the state transition and process noise ($W$ matrix). $W$ elements are 0 for deterministic parameters.
 %
-\newthought{The Kalman gain} {is the matrix} that allocates the differences between the observation at time t+1 and their predicted value at this time based on the current values of the state vector according to the noise in the measurements and the state vector noise.
+\textit{The Kalman gain} {is the matrix} that allocates the differences between the observation at time t+1 and their predicted value at this time based on the current values of the state vector according to the noise in the measurements and the state vector noise.
 
 \section{Comparison between Weighted Least Squares and Kalman Filtering}
 

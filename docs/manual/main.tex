@@ -4,6 +4,16 @@
 \usepackage{url}
 \usepackage{listings}
 \usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{imakeidx}
+\usepackage[margin=1in]{geometry}
+\usepackage{titlesec}
+\usepackage{booktabs} %python only so may be removed on update
+
+% see https://www.overleaf.com/learn/latex/Glossaries
+% make glossaries must be written before the first glossary entry
+\usepackage[utf8]{inputenc}
+\usepackage[acronym, toc]{glossaries}
 
 \newcommand{\publisher}[0]{Geoscience Australia and Frontier-SI}
 \newcommand{\authors}[0]{Sebastien Allegyer, Rupert Brown, John Donovan,
@@ -11,23 +21,23 @@ Ken Harima, Aaron Hammond, Lavanya Kumarappan, Tao Li, Ronald Maj,
 Bogdan Matviichuk, Simon McClusky, Michael Moore, Thomas Papanikolaou,
 Tzupang Tseng, Umma Zannat}
 
-\usepackage[margin=1in]{geometry}
-\usepackage{titlesec}
 
+% updating section formatting
 \titleformat{\section}
   {\normalfont\fontsize{12}{15}\bfseries}{\thesection}{1em}{}
 \titleformat{\subsection}
   {\normalfont\fontsize{10}{10}\bfseries}{\thesubsection}{1em}{}
-
 \titleformat{\chapter}[display]
   {\normalfont\bfseries}{}{0pt}{\Large}
 
+% simple environment to prevent hyphenation 
 \newenvironment{nohyphens}{%
   \hyphenpenalty=10000
   \exhyphenpenalty=10000
   \sloppy % Makes TeX obey margins by stretching inter word spaces
 }{\par}
 
+% code coloring here
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
@@ -87,7 +97,14 @@ Tzupang Tseng, Umma Zannat}
 \lst@AddToHook{EveryLine}{\ifx\lst@language\language@yaml\YAMLkeystyle\fi}
 \makeatother
 
-\makeindex
+
+
+% \makeindex
+\makeindex[intoc]
+
+\loadglsentries{glossary}
+\makeglossaries
+
 \begin{document}
 
 	\newgeometry{left=3cm}
@@ -116,54 +133,63 @@ Tzupang Tseng, Umma Zannat}
 
 	\include{welcome}
 	%
-	\include{introduction}
+	\part{Overview}
 	%
-	% \include{installation}
-	% %
+	\include{introduction}
+	\include{installation}
 	% %\include{implementation overview of software}
 	% % block diagram from aaron
-	% %
 	% \include{pea_examples}
-	% %
 	% \include{pod_examples}
 	% %
-	% % Start the main matter (normal chapters)
-	% \mainmatter
+	\part{Background Theory}
+	\include{GNSSOverview}
+	\include{observation_modelling}
+	\include{kalman_filter}
 	% %
-	% \part{Background Theory}
-	% \include{GNSSOverview}
+	\include{orbit_modelling}
+	\include{ionosphere}
+	\include{ambiguity_resolution}
+	% \include{rts_smoothing}
+	\include{minimum_constraints}
 	% %
-	% \include{observation_modelling}
-	% %
-	% \include{kalman_filter}
-	% %
-	% \include{orbit_modelling}
-	% \include{ionosphere}
-	% \include{ambiguity_resolution}
-	% %
-	% %
-	% %\include{styleguide}
+	\include{conventions}
+	\include{flexpower}
 	% %%
-	% % The back matter contains appendices, bibliographies, indices, glossaries, etc.
-	% \backmatter
-	% \part{Using the software}
-	% \include{Processing_in_User_mode}
-	% \include{Processing_in_Network_mode}
-	% \include{Using_the_POD_module}
+	\part{Using the software}
+	\include{Processing_in_User_mode}
+	\include{Processing_in_Network_mode}
+	\include{Using_the_POD_module}
 	% %
-	% \part{Using the Source Code}
-	% \include{coding_standards}
-	% \include{repositories}
-	% \include{Overview_of_the_PEA}
-	% \include{Overview_of_the_POD}
+	\part{Using the Source Code}
+	\include{coding_standards}
+	\include{repositories}
+	\include{Overview_of_the_PEA}
+	\include{Overview_of_the_POD}
+	\include{python}
+	\include{docker}
 	% %
-	% %\part{YAML Configuration File Reference}
-	% %
-	% %\include{Examples in Detail}
+	\part{YAML Configuration File Reference}
+	\include{Examples in Detail}
 	\include{PEA_YAML_Configuration}
-	% %\include{POD_YAML_Configuration}
-	% %\include{styleguide}
-	% % \bibliography{sample-handout}
-	% % \bibliographystyle{plainnat}
-	% %\printindex
+	\include{POD_YAML_Configuration}
+
+
+	\part{Backmatter}
+	\printglossary[title=Terms Used, toctitle=List of Terms]
+	\printglossary[type=\acronymtype]
+
+	\printglossaries
+	\glsaddallunused
+
+	
+
+
+	\include{manual}
+	\include{acknowledgements}
+	\include{lost_pages}
+	\bibliography{sample-handout}
+	\bibliographystyle{plainnat}
+	\printindex
+	\lstlistoflistings
 \end{document}
