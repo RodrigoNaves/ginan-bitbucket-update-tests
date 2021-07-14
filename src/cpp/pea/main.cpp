@@ -399,6 +399,7 @@ void createTracefiles(
 	string logtime = traceTime.to_string(0);
 	std::replace( logtime.begin(), logtime.end(), '/', '-');
 	
+	if (acsConfig.output_trace)
 	for (auto& [id, rec] : stationMap)
 	{
 		createNewTraceFile(id,		logtime, acsConfig.trace_filename,						rec.traceFilename,				"",					true, acsConfig.output_config);
@@ -1376,10 +1377,7 @@ int main(int argc, char **argv)
 		double ep[6];
 		time2epoch(tsync, ep);
 		
-		if (acsConfig.output_trace)
-		{
-			createTracefiles(stationMap, net);
-		}
+		createTracefiles(stationMap, net);
 		
 		//try to get svns of all used satellites
 		for (auto& [satUID, satNav] : nav.satNavMap)
