@@ -3,7 +3,7 @@
 # Ginan: software toolkit and service
 
 
-#### `Ginan v1.0.0 alpha release`
+#### `Ginan v1.0-alpha release`
 
 ## Overview
 
@@ -350,7 +350,11 @@ This returns:
 ***
 ## Documentation
 
-The documentation for Ginan can be generated using `doxygen` and `graphviz`. If not already installed, type as follows:
+Ginan documentation consists of two parts: a doxygen-generated documentation that shows the actual code infrastructure and a detailed manual, written in latex, that provides an overview of the software, a thoretical background, a detailed "how to" guide etc.
+Below, we explain on how to generate each bit of documentation:
+
+### Doxygen
+The Doxygen documentation for Ginan requires `doxygen` and `graphviz`. If not already installed, type as follows:
 
 	$ sudo apt -y install doxygen graphviz
 
@@ -360,6 +364,20 @@ On success, proceed to the build directory and call make with `doc_doxygen` targ
 	$ make doc_doxygen
 
 The docs can then be found at `docs/html/index.html`. Note that documentation is generated automatically if `make` is called without arguments and `doxygen` and `graphviz` dependencies are satisfied.
+
+### Latex
+A detailed Ginan manual is located in `docs/manual` and is in latex format. To compile Latex to pdf you will need a compiler, such as texlive:
+
+    $ sudo apt install texlive-full
+
+Now, go to `docs/manual` and generate the pdf:
+
+    $ cd docs/manual
+    $ pdflatex main.tex
+    $ makeglossaries main
+    $ pdflatex main.tex
+
+`main.pdf`file should now appear in the directory.
 ***
 ## Ready!
 Congratulations! You are now ready to trial the examples of PEA and POD from the examples directory. See Ginan's manual for detailed explanation of each example. Note that examples have relative paths to files in them and rely on the presence of `products`, `data` and `solutions` directories inside the `examples` directory. Make sure you've run `download_examples.py` from the **Download** step of this instruction.
