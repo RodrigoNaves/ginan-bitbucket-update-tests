@@ -157,7 +157,7 @@ CALL read_cmdline
 if (trim(yaml_config) .eq. '') then
 ! Check if non-default config file given on the command line
 If ( trim(POD_fname_cfg) .ne. 'DEFAULT' ) then
-    PODfname = trim(POD_fname_cfg)
+	PODfname = trim(POD_fname_cfg)
 End If
 
 ! Check for existance of POD config file
@@ -166,10 +166,10 @@ INQUIRE(FILE=PODfname, EXIST=pod_config_exists)
 
 pgm_name = 'pod'
 If ( .not. pod_config_exists) then
-    call get_command_argument( 0, pgm_name )
+	call get_command_argument( 0, pgm_name )
     write(*,'(3a)') 'No Default config file found (POD.in)  - Type: ',trim(pgm_name),' --help'
     write(*,'(3a)') 'If using a non-default config.filename - Type: ',trim(pgm_name),' -c config.filename'
-    STOP
+	STOP
 End If
 else
 pgm_name = 'pod'
@@ -226,7 +226,6 @@ if (.not.yaml_found) then
 param_id = 'POD_MODE_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_pod_mode
-end if
 ! ----------------------------------------------------------------------
 
 ! ----------------------------------------------------------------------
@@ -235,25 +234,19 @@ end if
 ! 1. Input a-priori orbit in sp3 format (applied as pseudo-observations)
 ! 2. Input file with Initial Conditions (State Vector and Parameters at initial epoch per satellite) 
 ! ----------------------------------------------------------------------
-if (.not. yaml_found) then
 param_id = 'IC_input'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_ic_input_format
-end if
 
 ! Initial Conditions reference frame
-if (.not. yaml_found) then
 param_id = 'IC_refsys'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) IC_REF_cfg
-end if
 
 ! Initial Conditions file name
-if (.not. yaml_found) then
 param_id = 'IC_filename_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_ic_filename
-end if
 
 ! ----------------------------------------------------------------------
 !print *,"IC_MODE_cfg, IC_REF_cfg", IC_MODE_cfg, IC_REF_cfg
@@ -263,7 +256,6 @@ end if
 ! Configuration files of Orbit modelling (2 Basic initial files):
 ! ----------------------------------------------------------------------
 ! Equation of Motion
-if (.not. yaml_found) then
 param_id = 'EQM_fname_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) EQM_fname_cfg 
@@ -272,7 +264,6 @@ READ ( param_value, FMT = * , IOSTAT=ios_key ) EQM_fname_cfg
 param_id = 'VEQ_fname_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) VEQ_fname_cfg 
-end if
 ! ----------------------------------------------------------------------
 
 ! ----------------------------------------------------------------------
@@ -280,7 +271,6 @@ end if
 ! ----------------------------------------------------------------------
 ! A-priori orbit sp3 as pseudo-observations :: sp3 file name
 ! ----------------------------------------------------------------------
-if (.not. yaml_found) then
 param_id = 'pseudobs_orbit_filename_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_orbit_filename
@@ -321,7 +311,6 @@ CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_orbit_arc_backwards
 ! ----------------------------------------------------------------------
 
-end if
 
 ! ---------------------------------------------------------------------------
 ! Earth Orientation Parameters (EOP)
@@ -330,36 +319,24 @@ end if
 ! 1. IERS C04 										: EOP_sol=1
 ! 2. IERS RS/PC Daily 								: EOP_sol=2
 ! 3. IGS ultra-rapid ERP + IERS RS/PC Daily (dX,dY)	: EOP_sol=3
-if (.not. yaml_found) then
 param_id = 'EOP_solution_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_eop_option
-end if
 
 ! EOP filename by IERS EOP :: Solutions 1 and 2
-if (.not. yaml_found) then
 param_id = 'EOP_fname_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) EOP_fname_cfg 
-else
-    EOP_fname_cfg = yml_eop_filename
-end if
 
 ! ERP filename (Earth Rotation Parameters by IGS) :: Solution 3
-if (.not. yaml_found) then
 param_id = 'ERP_fname_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) ERP_fname_cfg 
-else
-    ERP_fname_cfg = yml_erp_filename
-end if
 
-if (.not. yaml_found) then
 ! EOP data interpolation number of points	  
 param_id = 'EOP_Nint_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_eop_int_points
-end if
 ! ---------------------------------------------------------------------------
 
 ! ---------------------------------------------------------------------------
@@ -367,22 +344,18 @@ end if
 ! ---------------------------------------------------------------------------
 ! 1. IAU2000A:		iau_pn_model = 2000
 ! 2. IAU2006/2000A:	iau_pn_model = 2006
-if (.not. yaml_found) then
 param_id = 'iau_model_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_iau_model
-end if
 ! ---------------------------------------------------------------------------
 
 ! ---------------------------------------------------------------------------
 ! Orbit Parameter Estimation
 ! ---------------------------------------------------------------------------
 ! Number of iterations
-if (.not. yaml_found) then
 param_id = 'Estimator_Iterations_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_estimator_iterations
-endif
 ! ---------------------------------------------------------------------------
 
 ! ----------------------------------------------------------------------
@@ -390,7 +363,6 @@ endif
 ! ----------------------------------------------------------------------
 ! 0. sat_vel = 0 :: Do not write Velocity vector to sp3 orbit
 ! 1. sat_vel > 0 :: Write Velocity vector to sp3 orbit
-if (.not. yaml_found) then
 param_id = 'sp3_velocity_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) sp3_velocity_cfg 
@@ -406,37 +378,30 @@ param_id = 'partials_velocity_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) partials_velocity_cfg 
 if (partials_velocity_cfg > 0) yml_write_partial_velocities = .true.
-end if
 ! ----------------------------------------------------------------------
 
 ! ----------------------------------------------------------------------
 ! Leap Second file name:
 ! ----------------------------------------------------------------------
-if (.not. yaml_found) then
 param_id = 'leapsec_filename_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_leapsecond_filename
-end if
 ! ----------------------------------------------------------------------
 
 ! Read Satellite infromation from SINEX file
 ! ----------------------------------------------------------------------
-if (.not. yaml_found) then
 param_id = 'satsinex_filename_cfg'
 Call readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_satsinex_filename
 PRINT*,'satsinex_filename =', yml_satsinex_filename
-end if
 
 !----------------------------------------------------------------------
 
-if (.not. yaml_found) then
 ! Flag of different models for A priori SRP value 
 ! ---------------------------------------------------------------------
 param_id = 'SRP_MOD_arp'
 Call readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_apriori_srp
-end if
 IF (yml_apriori_srp == SRP_NONE) PRINT*,'no a priori SRP model'
 IF (yml_apriori_srp == SRP_CANNONBALL) PRINT*,'use cannonball f0 model as a priori SRP model'
 IF (yml_apriori_srp == SRP_SIMPLE_BW) PRINT*,'use simple box-wing model as a priori SRP model'
@@ -450,7 +415,6 @@ IF (yml_apriori_srp == SRP_FULL_BW) PRINT*,'use box-wing model from repro3 routi
 ! ECOM_param = 3 (SBOXW), forces estimated in D,Y,B,X,Z directions
 ! ECOM_param = 0, no parameters are estimated
 
-if (.not. yaml_found) then
 param_id = 'ECOM_param'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) yml_ECOM_mode
@@ -464,7 +428,6 @@ param_id = 'EMP_param'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT = * , IOSTAT=ios_key ) EMP_param
     yml_EMP_mode = (EMP_param > 0)
-end if
 
 
 ! ----------------------------------------------------------------------
@@ -473,7 +436,6 @@ end if
 ! 1. Celestial Reference System :: ICRS
 ! 2. Terrestrial Reference System :: ITRS
 ! ----------------------------------------------------------------------
-if (.not. yaml_found) then
 param_id = 'VEQ_REFSYS_cfg'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT ='(A4)', IOSTAT=ios_key ) VEQ_REFSYS_cfg 
@@ -483,11 +445,9 @@ if (yml_veq_refsys == NO_REFSYS) then
     print *, "Could not interpret ", trim(VEQ_REFSYS_cfg), " as a reference system"
     STOP
 end if
-end if
 ! ----------------------------------------------------------------------
 
 
-if (.not. yaml_found) then
 ! ----------------------------------------------------------------------
 ! Pseudo-Stochastic pulses 
 ! ----------------------------------------------------------------------
@@ -553,9 +513,12 @@ READ ( param_value, FMT =*, IOSTAT=ios_key ) yml_pulse_interval
 param_id = 'PULSES_offset'
 CALL readparam (PODfname, param_id, param_value)
 READ ( param_value, FMT =*, IOSTAT=ios_key ) yml_pulse_offset
-end if
 ! ----------------------------------------------------------------------
 
+else
+    EOP_fname_cfg = yml_eop_filename
+    ERP_fname_cfg = yml_erp_filename
+end if
 
 ! ----------------------------------------------------------------------
 ! End :: Read major configuration file POD.in

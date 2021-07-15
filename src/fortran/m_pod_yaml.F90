@@ -579,12 +579,12 @@ subroutine get_yaml(yaml_filepath)
 
    if (yml_ECOM_mode .eq. ECOM1) then
        show_mesg = .false.
-       if (BTEST(yml_veq_srp_parameters, ECOM_D_2_CPR)) then
+       if (BTEST(yml_veq_srp_parameters, ECOM_D_2_CPR - one)) then
                yml_veq_srp_parameters = yml_veq_srp_parameters - pow (2, ECOM_D_2_CPR - one)
                show_mesg = .true.
                yml_veq_ecomnum = yml_veq_ecomnum - 2
        endif 
-       if (BTEST(yml_veq_srp_parameters, ECOM_D_4_CPR)) then
+       if (BTEST(yml_veq_srp_parameters, ECOM_D_4_CPR - one)) then
                yml_veq_srp_parameters = yml_veq_srp_parameters - pow (2, ECOM_D_4_CPR - one)
                yml_veq_ecomnum = yml_veq_ecomnum - 2
                show_mesg = .true.
@@ -596,12 +596,12 @@ subroutine get_yaml(yaml_filepath)
 
    if (yml_ECOM_mode .eq. ECOM2) then
        show_mesg = .false.
-       if (BTEST(yml_veq_srp_parameters, ECOM_D_CPR)) then
+       if (BTEST(yml_veq_srp_parameters, ECOM_D_CPR - one)) then
                yml_veq_srp_parameters = yml_veq_srp_parameters - pow (2, ECOM_D_CPR - one)
                show_mesg = .true.
                yml_veq_ecomnum = yml_veq_ecomnum - 2
        endif 
-       if (BTEST(yml_veq_srp_parameters, ECOM_Y_CPR)) then
+       if (BTEST(yml_veq_srp_parameters, ECOM_Y_CPR - one)) then
                yml_veq_srp_parameters = yml_veq_srp_parameters - pow (2, ECOM_Y_CPR - one)
                yml_veq_ecomnum = yml_veq_ecomnum - 2
                show_mesg = .true.

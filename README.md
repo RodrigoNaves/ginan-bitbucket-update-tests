@@ -1,286 +1,411 @@
-# Analysis Centre Software - POD
+![gn_logo](https://raw.githubusercontent.com/GeoscienceAustralia/ginan/gh-pages/images/GinanLogo91.png)
+
+# Ginan: software toolkit and service
+
+
+#### `Ginan v1.0.0 alpha release`
 
 ## Overview
 
-The *Analysis Centre Software (ACS)* is a processing package being developed to processes GNSS observations for geodetic 
-applications.  
+Ginan is a processing package being developed to processes GNSS observations for geodetic applications.  
 
 We currently support the processing of:
 
-* the American Global Positioning System (`GPS`)
-* the Russian GLONASS system ('GLONASS')
-* The European Gallileo system ('Gallileo')
-* the Chinese Navigation Satellite System ('Beidou`); and
-* The Japanese QZSS develop system ('QZSS')
+* the United States' Global Positioning System (**GPS**);
+* the Russian GLONASS system (**GLONASS**)*;
+* the European Union's Galileo system (**Galileo**);
+* the Chinese Navigation Satellite System (**BeiDou**)*;
+* the Japanese QZSS develop system (**QZSS**)*.
+
+*\*precise orbit determination only with full support coming soon*
 
 We are actively developing the ACS to have the following capabilities and features:
 
-* Precise Orbit & Clock determination of GNSS satellites (GNSS POD).
-* Precise Point Positioning (PPP) of GNSS stations in network and individual mode.
-* Real-Time corrections for PPP users.
-* Analyse full, single and multi-frequency, multi-GNSS data.
-* Delivering atmospheric products such as ionosphere and troposphere models.
-* Servicing a wide range of users and receiver types.
-* Delivering outputs usable and accessible by non-experts.
-* Providing both a real-time and off-line processing capability.
-* Delivering both position and integrity information.
-* Routinely produce IGS final, rapid, ultra-rapid and real-time (RT) products. 
+* Precise Orbit & Clock determination of GNSS satellites (GNSS POD);
+* Precise Point Positioning (PPP) of GNSS stations in network and individual mode;
+* Real-Time corrections for PPP users;
+* Analyse full, single and multi-frequency, multi-GNSS data;
+* Delivering atmospheric products such as ionosphere and troposphere models;
+* Servicing a wide range of users and receiver types;
+* Delivering outputs usable and accessible by non-experts;
+* Providing both a real-time and off-line processing capability;
+* Delivering both position and integrity information;
+* Routinely produce IGS final, rapid, ultra-rapid and real-time (RT) products;
+* Model Ocean Tide Loading (OTL) displacements.
 
-The software is broken into two main components:
+The software consists of two main components: Network Parameter Estimation Algorithm (PEA) and Precise Orbit Determination (POD).
+***
+## Supported Platforms
 
-* the Network Parameter Estimation Algorithm (`PEA-N`); and 
-* the Precise Orbit Determination (`POD`).
+Ginan is supported on the following platforms
 
-## POD
+* Linux
+* MacOS
+***
+## Download
 
-The `ACS` Version 0.0.1 beta release supports:
+You can downlaod Ginan source from github using git clone:
 
-1. The `POD` 
+    $ git clone https://github.com/GeoscienceAustralia/ginan.git
+    
+Then download all of the example data using the python script provided:
 
+    $ python3 scripts/download_examples.py 
+***
 ## Directory Structure
 
-    pod/
-    ├── LICENSE.md
-    ├── INSTALL.md
-    ├── README.md
-    ├── src/
-    ├── bin/  (created)
-    ├── lib/  (created)
-    ├── config/
-    ├── tables/
-    ├── scripts/
+    ginan/
+    ├── README.md			! General README information
+    ├── LICENSE.md		    ! Software License information
+    ├── aws/		        ! Amazon Web Services config
+    ├── bin/		        ! Binary executables directory*
+    ├── CMakeLists.txt		! Cmake build file
+    ├── docs/			    ! Documentation directory
+    ├── examples/           ! Ginan examples directory
+    |   ├── data/           ! example dataset (rinex files)**
+    |   ├── products/       ! example products and aux files**
+    |   ├── solutions/      ! example solutions for QC**
+    |   --------------PEA examples--------------
+    |   ├── ex11            ! PEA example 1
+    |   ├── ex12            ! PEA example 2
+    |   ├── ex13            ! PEA example 3
+    |   ├── ex14            ! PEA example 4
+    |   ├── ex15            ! PEA example 5
+    |   ├── ex17            ! PEA example 7
+    |   ├── ex18            ! PEA example 8
+    |   --------------POD examples--------------
+    |   ├── ex21            ! POD example 1
+    |   ├── ex22            ! POD example 2
+    |   ├── ex23            ! POD example 3
+    |   ├── ex24            ! POD example 4
+    |   ├── ex25            ! POD example 5
+    |   └── ex26            ! POD example 6
+    |
+    ├── lib/		        ! Compiled objectlibrary directory*
+    ├── scripts/		    ! Auxillary Python and Shell scripts and libraries
+    └── src/		        ! Source code directory
+        ├── cpp/            ! PEA source code
+        ├── fortran/        ! POD source code
+        ├── cmake/   
+        ├── doc_templates/
+        ├── build/			! Cmake build directory*
+        └── CMakeLists.txt
 
-### Dependencies
+*\*created during installation process*
 
-1. The open basic linear algebra library (Openblas.x86_64,liblas-libs.x86_64) (You may need to run the command ln -s /usr/lib64/libopenblas.so.3 /usr/lib64/libopenblas.so)
-2. A working C compiler (gcc will do), a working C++ compiler (gcc-g++ will do) and a fortran compiler (we have used gfortran)
-3. Cmake (from cmake.org) at least version 2.8
-4. If the flags set in CMakeLists.txt do not work with your compiler please remove/replace the ones that don't
+*\*\*created by `download_examples.py` script*
+***
+## Dependencies
 
-### Build
+Ginan has several software dependencies:
 
-To build the `POD` ...
+* C/C++ and Fortran compiler. We use and recommend [gcc-g++ and gfortran](https://gcc.gnu.org)
+* BLAS and LAPACK linear algebra libraries. We use and recommend [OpenBlas](https://www.openblas.net/) as this contains both libraries required
+* CMAKE  > 3.0 
+* YAML   > 0.6
+* Boost  > 1.70
+* Eigen3
+* netCDF4
+* Python3 (tested on Python 3.7)
+***
+## Installing dependencies with Ubuntu
 
-    $ cd pod
-    $ mkdir build
+Update the base operating system:
+
+    $ sudo apt update
+    $ sudo apt upgrade
+
+Install base utilities `gcc`, `gfortran`, `git`, `openssl`, `openblas` etc:
+
+    $ sudo apt install -y git gobjc gobjc++ gfortran libopenblas-dev openssl curl net-tools openssh-server cmake make libssl1.0-dev
+***
+## Building additional dependencies 
+
+Depending on the user's installation choice: install PEA-only, POD-only or all software packages, a set of additional dependencies that need to be built may change. Below, we explain building all the additional dependencies:
+
+First, create a temporary directory structure to make the dependencies in, it can be removed after the installation process is done:
+
+    $ sudo mkdir -p /data/tmp
+    $ cd /data/tmp
+
+Note that `/data/tmp` is only used here as example and can be any directory
+
+### YAML
+We are using the [YAML](https://github.com/jbeder/yaml-cpp) library to parse the configuration files used to run many of the programs found in this library. Here is an example of how to install the yaml library from source:
+
+    $ cd /data/tmp
+    $ sudo git clone https://github.com/jbeder/yaml-cpp.git
+    $ cd yaml-cpp
+    $ sudo mkdir cmake-build
+    $ cd cmake-build
+    $ sudo cmake .. -DCMAKE\_INSTALL\_PREFIX=/usr/local/ -DYAML\_CPP\_BUILD\_TESTS=OFF
+    $ sudo make install yaml-cpp
+    $ cd ../..
+    $ sudo rm -fr yaml-cpp
+
+### Boost (PEA)
+PEA relies on a number of the utilities provided by [boost](https://www.boost.org/), such as their time and logging libraries.
+
+    $ cd /data/tmp/
+    $ sudo wget -c https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.tar.gz
+    $ sudo gunzip boost_1_73_0.tar.gz
+    $ sudo tar xvf boost_1_73_0.tar
+    $ cd boost_1_73_0/
+    $ sudo ./bootstrap.sh
+    $ sudo ./b2 install
+    $ cd ..
+    $ sudo rm -fr boost_1_73_0/ boost_1_73_0.tar
+
+### Eigen3 (PEA)
+Eigen3 is used for performing matrix calculations in PEA, and has a very nice API.
+
+    $ cd /data/tmp/
+    $ sudo git clone https://gitlab.com/libeigen/eigen.git
+    $ cd eigen
+    $ sudo mkdir cmake-build
+    $ cd cmake-build
+    $ sudo cmake ..
+    $ sudo make install
+    $ cd ../..
+    $ sudo rm -rf eigen
+
+
+### MongoDB (PEA, optional)
+Needed for realtime preview of the processed results (developers-only)
+
+    $ wget https://github.com/mongodb/mongo-c-driver/releases/download/1.17.1/mongo-c-driver-1.17.1.tar.gz
+    $ tar -xvf mongo-c-driver-1.17.1.tar.gz
+
+    $ cd mongo-c-driver-1.17.1/
+    $ mkdir cmakebuild
+    $ cd cmakebuild/
+    $ cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF ..
+    $ cmake --build .
+    $ sudo cmake --build . --target install
+
+    $ cd ../../
+    $ curl -OL https://github.com/mongodb/mongo-cxx-driver/releases/download/r3.6.0/mongo-cxx-driver-r3.6.0.tar.gz
+    $ tar -xzf mongo-cxx-driver-r3.6.0.tar.gz
+
+    $ cd mongo-cxx-driver-r3.6.0/
+
+    $ cd build/
+    $ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..
+    $ sudo cmake --build . --target EP_mnmlstc_core
+    $ cmake --build .
+    $ sudo cmake --build . --target install
+
+    $ wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+    $ echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+    $ echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+
+    $ sudo apt update
+    $ sudo apt install mongodb-org 
+
+    $ sudo systemctl start mongod
+    $ sudo systemctl status mongod
+    $ mongod
+
+<!-- If you are using WSL see the notes below and skip this next section: -->
+<!-- #### For WSL:
+Even though the documentation on `MongoDB` says that WSL is not supported it is still possible to install.
+In order to run mongod as a service on WSL you will need to:
+
+Copy the script from : https://raw.githubusercontent.com/mongodb/mongo/master/debian/init.d
+to /etc/init.d/mongod
+
+Make the script executable:
+
+    $ sudo chmod a+x /etc/init.d/mongod
+
+Now you can start it as a service by:
+
+    $ sudo service mongod start -->
+
+### netcdf4 (OTL package)
+    $ apt -y install libnetcdf-dev libnetcdf-c++4-dev
+***
+## Build
+Prepare a directory to build in, its better practise to keep this seperated from the source code.
+
+    $ cd src
+    $ mkdir -p build
     $ cd build
-    $ cmake3 .. 
-    $ make >make.out 2>make.err
-    $ less make.err (to verify everything was built correctly)
 
-You should now have the executables in the bin directory: pod crs2trs brdc2ecef
+Run cmake to find the build dependencies and create the make file. If you wish to enable the optional MONGO DB utilities you will need to add the `-DENABLE_MONGODB=TRUE` flag. If you wish to compile an optimised version, typically this version will run 3 times faster but you may run into compile problems depending on your system, add the `-DOPTIMISATION=TRUE` flag:
 
-### Test 
+    $ cmake [-DENABLE_MONGODB=TRUE] [-DENABLE_OPTIMISATION=TRUE] ..
 
-To test your build of the  `POD` ... - You may not need the ulimit command but we found it necessary
+To build every package simply run `make` or `make -j 2`, where 2 is a number of parallel threads you want to use for the compilation:
 
-    $ cd ../pod/test
-    $ ulimit -s unlimited
-    $ ./sh_test_pod
+    $ make [-j 2]
 
-At the completion of the test run, the sh_test_pod script will return any differences to the standard test resuts
+To build specific package (e.g. PEA or POD), run as below:
 
-### Configuration File
+    $ make pea -j 2
+    $ make pod -j 2
 
-The `POD` Precise Orbit Determination (`./bin/pod`) uses the configuration file:
-    ├── EQM.in (Full force model equation of motion)
-    ├── VEQ.in (For variational equations)
-    ├── POD.in (For all other config)
+This should create executables in the `bin` directory of Ginan.
 
+Check to see if you can execute the PEA:
 
-### Processing Example #1
+    $ ../../bin/pea --help
 
-In this example the pod will perform a dynamic orbit determination for PRN04 over a 6 hour arc. The full gravitational force models are applied, with a cannonball model SRP model.
+and you should see something similar to:
 
-  
-To run the `POD` ...
-
-    $ bin/pod
-
-This should output the following to `stdout`...
-
-    Orbit Determination
-    Orbit residuals in ICRF : RMS(XYZ)   1.6754034501980351E-002   5.2908718335411935E-002   1.5676115599034774E-002
-    Orbit Determination: Completed
-    CPU Time (sec)   298.48134399999998
-    External Orbit comparison
-    Orbit comparison: ICRF
-    RMS RTN   2.8094479714173427E-002   2.4358145601708528E-002   4.4097979280889953E-002
-    RMS XYZ   1.6754034501980351E-002   5.2908718335411935E-002   1.5676115599034774E-002
-    Orbit comparison: ITRF
-    RMS XYZ   3.9069978513805753E-002   3.9343671258381237E-002   1.5660654272651970E-002
-    Write orbit matrices to output files
-    CPU Time (sec)   349.19307899999995
-
-The results above show that our orbits arcs, over 6 hours, are currently within 2-5 cm of the final combined IGS orbit. 
-
-The prcessing also produces the following output files...
-
-    ├── DE.430            planetary ephemris intermediate file
-    ├── Amatrix.out       design matrix
-    ├── Wmatrix.out       reduced observation matrix
-    ├── orbext_ICRF.out   intermediary file for the IGS orbit solution in ICRF for comparison purposes
-    ├── orbext_ITRF.out   intermediary file for the IGS orbit solution in ITRFfor comparison purposes
-    ├── dorb_icrf.out     differences in solutions in ICRF
-    ├── dorb_RTN.out      differences in solutions in orbital frame components radial, tangential and normal (RTN)
-    ├── dorb_Kepler.out   differences in solutions in keperian elements 
-    ├── dorb_itrf.out     differences in solutions in ITRF 
-    ├── orb_icrf.out      the final estimated orbit in ICRF
-    ├── orb_itrf.out      the final estimated orbit in ITRF
-    ├── VEQ_Smatrix.out   State transition matrix from the variational equations solution
-    ├── VEQ_Pmatrix.out   Sensitivity matrix from the variational equations solution
+    PEA starting... (pea_pod_examples vbf8c9cc from Tue Jul 6 06:09:50 2021)
+    Options:
+    --help                      Help
+    --quiet                     Less output
+    --verbose                   More output
+    --very-verbose              Much more output
+    --config arg                Configuration file
+    --trace_level arg           Trace level
+    --antenna arg               ANTEX file
+    --navigation arg            Navigation file
+    --sinex arg                 SINEX file
+    --sp3files arg              Orbit (SP3) file
+    --clkfiles arg              Clock (CLK) file
+    --dcbfiles arg              Code Bias (DCB) file
+    --bsxfiles arg              Bias Sinex (BSX) file
+    --ionfiles arg              Ionosphere (IONEX) file
+    --podfiles arg              Orbits (POD) file
+    --blqfiles arg              BLQ (Ocean loading) file
+    --erpfiles arg              ERP file
+    --elevation_mask arg        Elevation Mask
+    --max_epochs arg            Maximum Epochs
+    --epoch_interval arg        Epoch Interval
+    --rnx arg                   RINEX station file
+    --root_input_dir arg        Directory containg the input data
+    --root_output_directory arg Output directory
+    --start_epoch arg           Start date/time
+    --end_epoch arg             Stop date/time
+    --run_rts_only arg          RTS filename (without _xxxxx suffix)
+    --dump-config-only          Dump the configuration and exit
+    --input_persistance         Begin with previously stored filter and 
+                                navigation states
+    --output_persistance        Store filter and navigation states for restarting
+    PEA finished
 
 
-### Processing Example #2 - ECOM2 SRP
+Similarly, check the POD:
 
-In this example we will change the SRP model to use the ECOM2 model. 
+    $ ../../bin/pod --help
+This returns:
 
-Edit the EQM.in file so that the Solar Radiation Pressure configuration section now looks:
+    Earth Radiation Model (ERM):   1
 
-! Solar Radiation Pressure model:
-! 1. Cannonball model
-! 2. Box-wing model
-! 3. ECOM (D2B1) model
-SRP_model 3
-
-Then edit VEQ.in, so that the Non-gravitational forces now looks like:
-
-%% Non-gravitational Effects
-Solar_radiation           0
-Earth_radiation           0
-Antenna_thrust            0
-
-! Solar Radiation Pressure model:
-! 1. Cannonball model
-! 2. Box-wing model
-! 3. ECOM (D2B1) model
-SRP_model                 3
-
-run the `POD` ...
-
-    $ bin/pod
-
-This should output the following to `stdout`...
-
-    Orbit Determination
-    Orbit residuals in ICRF : RMS(XYZ)   2.0336204859568077E-002   8.4715644601919167E-003   3.9687932322714677E-002
-    Orbit Determination: Completed
-    CPU Time (sec)   299.68054799999999
-    External Orbit comparison
-    Orbit comparison: ICRF
-    RMS RTN   2.8182836396022540E-002   2.4598832384842121E-002   2.5879201921952168E-002
-    RMS XYZ   2.0336204859568077E-002   8.4715644601919167E-003   3.9687932322714677E-002
-    Orbit comparison: ITRF
-    RMS XYZ   1.8757217704973204E-002   1.1635302426688266E-002   3.9702619816620370E-002
-    Write orbit matrices to output files
-    CPU Time (sec)   350.88653299999999
+    Default master POD config file = POD.in
+    To run from default config file: ../../bin/pod or ../../bin/pod -c POD.in
     
-
-## Acknowledgements
-
-In this section we wish to acknowledge the use of and heritage of some of the source code that we have used to help develop the POD.
-
-### Eclipse Routine
-
-The routines to calculate the eclipsing times for GPS satellites were based off the original routines written by Jan Kouba, they have since been heavily modified.
-
-### JPL Planetary Ephemerides
-
-We are using the Jet Propulison (JPL) Planetary and Lunar Ephemerides processing program ((ftp://ssd.jpl.nasa.gov/pub/eph/planets/fortran/ ), in particular the routines:
-
-- CONST.f
-- FSIZER3.f
-- INTERP.f
-- PLEPH.f
-- SPLIT.f
-
-We have modified the following subroutines:
-
-- asc2eph.f90
-- STATE.f90
-
-so thate there is no longer a dependency on a binary file produced in the original JPL form.
-
-### Standards of Fundamental Astronomy (SOFA) routines
-
-We have used a number of routines obtained from SOFA, http://www.iausofa.org/ :
-
-- anp.for
-- bi00.for
-- bpn2xy.for
-- bpn2xy.for
-- c2ixys.for
-- c2tcio.for
-- cal2jd.for
-- cp.for
-- cr.for
-- era00.for
-- fad03.for
-- fae03.for
-- faf03.for
-- faju03.for
-- fal03.for
-- falp03.for
-- fama03.for
-- fame03.for
-- fane03.for
-- faom03.for
-- fapa03.for
-- fasa03.for
-- faur03.for
-- fave03.for
-- gmst00.for
-- gmst06.for
-- gmst_iers.f03
-- ir.for
-- jd2cal.for
-- jdcalf.for
-- numat.for
-- nut00a.for
-- obl80.for
-- pn00a.for
-- pn00.for
-- pnm00a.for
-- pnm06a.for
-- pom00.for
-- pr00.for
-- rx.for
-- rxr.for
-- ry.for
-- rz.for
-- s00.for
-- s06.for
-- sp00.for
-- taiutc.for
-- tide_pole_oc.f90
-- tide_pole_se.f90
-- time_GPS.f90
-- time_TAI.f90
-- time_TT.f90
-- time_TT_sec.f90
-- time_UTC.f90
-- tr.for
-- xy06.for
-- xys00a.for
-- xys06a.for
-
-### International Earth Rotation Service (IERS) routines 
-
-The following routines we originally sourced fromthe IERS:
-
-- interp_iers.f
-- CNMTX.F
-- FUNDARG.F
-- LAGINT.f
-- ORTHO_EOP.F
-- PMSDNUT2.F
-- RG_ZONT2.F
-- UTLIBR.F
-- IERS_CMP_2015.F
+    POD.in config file options by defaut can be overridden on the command line
+    
+    Command line: ../../bin/pod -m -s -o -a -p -r -t -n -i -u -q -k -w -y -h 
+    
+    Where: 
+        -m --podmode = POD Mode:
+                                    1 - Orbit Determination (pseudo-observations; orbit fitting)
+                                    2 - Orbit Determination and Prediction
+                                    3 - Orbit Integration (Equation of Motion only)
+                                    4 - Orbit Integration and Partials (Equation of Motion and Variational Equations)
+        -s --pobs    = Pseudo observations orbit .sp3 file name
+        -o --cobs    = Comparison orbit .sp3 file name
+        -a --arclen  = Orbit Estimation Arc length (hours)
+        -p --predlen = Orbit Prediction Arc length (hours)
+        -r --eopf    = Earth Orientation Paramaeter (EOP) values file
+        -t --eopsol  = Earth Orientation Paramaeter file type: (1,2,3)
+                                    1 - IERS C04 EOP
+                                    2 - IERS RS/PC Daily EOP
+                                    3 - IGS RP + IERS RS/PC Daily (dX,dY)
+        -n --nutpre  = IAU Precession / Nutation model
+                                    2000 - IAU2000A
+                                    2006 - IAU2006/2000A
+        -i --estiter = Orbit Estimatimation Iterations (1 or greater)
+        -u --sp3vel  = Output .sp3 file with velocities
+                                    0 - Do not write Velocity vector to sp3 orbit
+                                    1 - Write Velocity vector to sp3 orbit
+        -q --icmode  = Initial condition from parameter estimation procedure
+        -k --srpmodel= 1: ECOM1, 2:ECOM2, 12:ECOM12, 3:SBOX
+        -w --empmodel= 1: activated, 0: no estimation
+        -d --verbosity = output verbosity level [Default: 0]
+        -y --yaml = yaml config file
+        -h --help.   = Print program help
+    
+    Examples:
+    
+            ../../bin/pod -m 1 -q 1 -k 1 -w 0 -s igs16403.sp3 -o igs16403.sp3 -y ex1.yaml
+            ../../bin/pod -m 2 -q 1 -k 1 -w 0 -s igs16403.sp3 -p 12 -y ex2.yaml
+    
+    For orbit updates using Parameter Estimation Algorithm (PEA):
+            ../../bin/pod -m 4 -q 2 -k 1 -w 0 -s igs16403.sp3 -o igs16403.sp3 -y ex3.yaml
 
 
 
+<!-- You should now have the executables in the bin directory: 
+    ├── bin			        
+
+    * pod 
+    * crs2trs 
+    * brdc2ecef -->
+***
+## Documentation
+
+The documentation for Ginan can be generated using `doxygen` and `graphviz`. If not already installed, type as follows:
+
+	$ sudo apt -y install doxygen graphviz
+
+On success, proceed to the build directory and call make with `doc_doxygen` target:
+
+	$ cd src/build
+	$ make doc_doxygen
+
+The docs can then be found at `docs/html/index.html`. Note that documentation is generated automatically if `make` is called without arguments and `doxygen` and `graphviz` dependencies are satisfied.
+***
+## Ready!
+Congratulations! You are now ready to trial the examples of PEA and POD from the examples directory. See Ginan's manual for detailed explanation of each example. Note that examples have relative paths to files in them and rely on the presence of `products`, `data` and `solutions` directories inside the `examples` directory. Make sure you've run `download_examples.py` from the **Download** step of this instruction.
+
+The paths are relative to the examples directory and hence all the examples must be run from the `examples` directory.
+
+    cd ../../examples
+
+To run the first example of the PEA:
+
+    ../bin/pea --config ex11_pea_pp_user_gps.yaml
+
+This should create `ex11` directory with `ex11-ALIC201919900.TRACE` and `ex1120624.snx` output files. You can remove the need for path specification to the executable by adding Ginan's bin directory to `~/.bachrc` file:
+
+    PATH="path_to_ginan_bin:$PATH"
+
+And an example of POD:
+
+    ../bin/pod -y ex21_pod_fit_gps.yaml
+
+At the completion of the test run, `ex21` directory should be create. The `ex21_.sh` script will return any differences to the standard test resuts.
 
 
+***
+## Python Installation for Plotting, Processing, etc.
+Lastly, to run many of the included scripts for fast parsing of .trace/.snx files, plotting of results, automatic running of the PEA based on input date/times and stations, etc. then a number of python dependencies are needed.
 
+The file scripts/conda_gn37.yaml has a list of the necessary python dependencies.
+The best way to take advantage of this is to install the Miniconda virtual environment manager.
+This will allow you to pass the .yaml file into the conda command and automatically set up a new python environment.
 
+### Install Miniconda
+To install Miniconda, download and execute the Miniconda shell file:
+
+    $ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    $ bash Miniconda3-latest-Linux-x86_64.sh
+
+And follow the on-screen instructions  (choosing all defaults is fine).
+
+### Create virtual environment
+After installation you can create the `gn37` python environment using a prepared receipy. First open a new terminal session and enter:
+
+    $ conda env create -f <dir_to_ginan>/scripts/conda_gn37.yaml
+
+You have now created the virtual python environment `gn37` with all necessary dependencies. Anytime you wish you run python scripts, ensure you are in the virtual environment by activating:
+
+    $ conda activate gn37
+
+And then run your desired script from the `scripts` directory.
