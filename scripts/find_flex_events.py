@@ -5,44 +5,87 @@ Directories for download and output also need to be supplied
 import argparse
 import numpy as _np
 import pandas as _pd
+import georinex as _gr
 
 import matplotlib.pyplot as _plt
 import matplotlib.dates as mdates
 from datetime import timedelta as _timedelta
 from pathlib import Path as _Path
 
+# from numpy.core.umath_tests import inner1d
 
 from gn_lib.gn_io.rinex import _read_rnx, _rnx_pos
 from gn_lib.gn_io.sp3 import read_sp3 as _read_sp3
-from gn_lib.gn_download import download_rinex3, download_sp3
-from gn_lib.gn_datetime import j20002datetime
+from gn_lib.gn_download import download_rinex3, download_prod
+from gn_lib.gn_datetime import datetime2j2000, j20002datetime
 from gn_lib.gn_transform import xyz2llh_heik, llh2rot
 
 
-def load_rnxs(rnxs):
+
+def load_rnxs(rnxs,verbose=False,code_only=None):
     '''
     rnxs: List of paths to RINEX files to load
     '''
+    if verbose:
+        print(f'Reading {_Path(rnxs[0]).name}...')
     obs = _read_rnx(rnxs[0])
+    if code_only:
+        obs = obs[code_only.split(',')]
+
     if len(rnxs)>1:
+    
         for rnx in rnxs[1:]:
+            if verbose:
+                print(f'Reading {_Path(rnx).name}...')
             obs_add = _read_rnx(rnx)
+            if code_only:
+                obs_add = obs_add[code_only.split(',')]
             obs = obs.combine_first(obs_add)
+    
     return obs
 
 
-def load_sp3s(sp3s, rec_loc=None, add_nad=True, add_el=True, add_az=True, add_dist=True):
+
+def gr_read(sp3_f):
+    '''
+    Read sp3 using georinex to produce same outcome as _read_sp3 from gn_lib
+    '''
+    gsp3 = _gr.load(sp3_f).to_dataframe()
+    convertsp3 = gsp3[['position','clock']].reset_index()
+    convertsp3['time_sec'] = datetime2j2000(convertsp3['time'])
+    psp3 = convertsp3[['time_sec','sv','position','ECEF','clock']].pivot(index=['time_sec','sv'],columns=['ECEF'],values=['position','clock'])
+    psp3.columns = ['X','Y','Z','CLK','CLKX','CLKY']
+    psp3.index.names = [None,None]
+    return psp3[['X', 'Y', 'Z', 'CLK']]
+
+
+
+def load_sp3s(sp3s, rec_loc=None, add_nad=True, add_el=True, add_az=True, add_dist=True, verbose=False, gr_load=False):
     '''
     sp3s: List of paths to SP3 files to load
     rec_loc: The receiver location in XYZ coords
     add_*: If rec_loc given, choose which options are added
     '''
-    orb = _read_sp3(sp3s[0])
+    if verbose:
+        print(f'Reading {_Path(sp3s[0]).name}...')
+
+    if gr_load:
+        orb = gr_read(sp3s[0]) 
+    else:
+        orb = _read_sp3(sp3s[0])
+    
     if len(sp3s)>1:
         for sp3 in sp3s[1:]:
-            orb_add = _read_sp3(sp3)
+            if verbose:
+                print(f'Reading {_Path(sp3).name}...')
+            if gr_load:
+                orb_add = gr_read(sp3) 
+            else:
+                orb_add = _read_sp3(sp3)
             orb = orb.combine_first(orb_add)
-    orb = orb.EST
+    
+    if not gr_load:
+        orb = orb.EST
 
     if (type(rec_loc)==list) or (type(rec_loc)==_np.ndarray):
         add_all_angs(
@@ -55,7 +98,8 @@ def load_sp3s(sp3s, rec_loc=None, add_nad=True, add_el=True, add_az=True, add_di
     return orb
 
 
-def get_load_rnxsp3(start_date, end_date, station, directory, sp3pref='igs'):
+
+def get_load_rnxsp3(start_date, end_date, station, directory, sp3pref='igs', freq='1D', code_only=None, gr_load=False):
     '''
     Start date format: "YYYY-MM-DD" - str
     End   date format: "YYYY-MM-DD" - str
@@ -68,21 +112,25 @@ def get_load_rnxsp3(start_date, end_date, station, directory, sp3pref='igs'):
     dt_list = _pd.date_range(
         start = start_date,
         end = end_date,
-        freq = '1D'
+        freq = freq
     ).to_pydatetime()
-    
-    download_rinex3(dates=dt_list, station=station, dest=directory, dwn_src='cddis')
-    download_sp3(dates=dt_list, dest=directory, pref=sp3pref, dwn_src='cddis')
-    
-    rnxs = list(_Path(directory).glob('*.rnx'))
+
+    rnx_dict = download_rinex3(dates=dt_list, stations=station, dest=directory, dwn_src='cddis', f_dict=True)
+    sp3_dict = download_prod(dates=dt_list, dest=directory, ac=sp3pref, f_type='sp3', dwn_src='cddis', f_dict=True)
+
+    rnx_names = rnx_dict['rnxfiles']
+    rnxs = [str(_Path(directory)/rnx) for rnx in rnx_names]
     print('Loading rnx files ...')
-    df_rnx = load_rnxs(rnxs)
+    df_rnx = load_rnxs(rnxs,verbose=True,code_only=code_only)
     df_rnx = df_rnx.swaplevel(axis=1).EST
 
-    sp3s = list(_Path(directory).glob('*.sp3'))
+    sp3_names = sp3_dict['sp3']
+    sp3s = [str(_Path(directory)/sp3) for sp3 in sp3_names]
+    #sp3s = list(_Path(directory).glob('*.sp3'))
     rec_pos = _rnx_pos(rnxs[0])
+
     print('Loading sp3 files ...')
-    df_sp3 = load_sp3s(sp3s, rec_loc=rec_pos)
+    df_sp3 = load_sp3s(sp3s, rec_loc=rec_pos,verbose=True,gr_load=gr_load)
     
     # Create long index for sp3 data (30-sec spacing)
     dt_index = _pd.date_range(
@@ -90,27 +138,31 @@ def get_load_rnxsp3(start_date, end_date, station, directory, sp3pref='igs'):
         end = dt_list[0].strftime('%Y-%m-%d')+' 23:59:30',
         freq='30S'
     )
-
     for dt in dt_list[1:]:
         dt_index = dt_index.append(_pd.date_range(start=dt, end=dt.strftime('%Y-%m-%d')+' 23:59:30', freq='30S'))
     dt_count = len(dt_index)
 
+    print('Preparing sp3 files for merge with RINEX...')
     sv_index = []
-    for val in df_sp3.index.get_level_values(1).unique().values:
+    for val in sorted(df_sp3.index.get_level_values(1).unique()):
         sv_index += [val]*dt_count
+    dt_idx = list(dt_index.values)*len(df_sp3.index.get_level_values(1).unique())
+    long_indices = _pd.MultiIndex.from_arrays([dt_idx,sv_index],names=['time','sv'])
 
-    dt_idx = list(dt_index.values)*len(df_sp3.index.get_level_values(1).unique().values)
-    
     df_sp3_reset = df_sp3.reset_index()
     colsp3 = df_sp3_reset.columns
     df_sp3_reset.columns = ['time','sv']+list(colsp3[2:])
     df_sp3_reset['time'] = j20002datetime(df_sp3_reset['time'].values)
     df_sp3 = df_sp3_reset.set_index(['time','sv'])
 
-    long_indices = _pd.MultiIndex.from_arrays([dt_idx,sv_index],names=['time','sv'])
-
     # Interpolate angle data in sp3 dataframe
+    print('Interpolating sp3 data...')
     df_long_sp3 = _pd.merge(_pd.DataFrame(index=long_indices),df_sp3[['nad_ang','el_ang','az_ang','dist']],how='outer',on=['time','sv'])
+    # for dt in dt_list:
+    #     for col in ['nad_ang','el_ang','az_ang','dist']:
+    #         temp = df_long_sp3.reset_index().pivot(index='time',columns='sv',values=col)
+    #         temp[temp.index.date==dt.date()] = temp[temp.index.date==dt.date()].interpolate(method='cubic')
+    #         df_long_sp3[col] = temp.melt(ignore_index=False)[['value']].set_index(long_indices).value
     df_long_sp3['nad_ang'] = df_long_sp3.reset_index().pivot(index='time',columns='sv',values='nad_ang').interpolate(method='cubic').melt(ignore_index=False)[['value']].set_index(long_indices).value
     df_long_sp3['el_ang'] = df_long_sp3.reset_index().pivot(index='time',columns='sv',values='el_ang').interpolate(method='cubic').melt(ignore_index=False)[['value']].set_index(long_indices).value
     df_long_sp3['az_ang'] = df_long_sp3.reset_index().pivot(index='time',columns='sv',values='az_ang').interpolate(method='cubic').melt(ignore_index=False)[['value']].set_index(long_indices).value
@@ -124,7 +176,8 @@ def get_load_rnxsp3(start_date, end_date, station, directory, sp3pref='igs'):
     df_rnx_reset = df_rnx_reset[cols[1:]]
     df_rnx_reset.columns = ['time','sv'] + list(cols[3:])
 
-    return _pd.merge(df_rnx_reset.set_index(['time','sv']).sort_index(),df_long_sp3[['nad_ang','el_ang','az_ang','dist']],how='outer',on=['time','sv'])
+    return _pd.merge(df_rnx_reset.set_index(['time','sv']).sort_index(),df_long_sp3[['nad_ang','el_ang','az_ang','dist']].sort_index(),how='outer',on=['time','sv'])
+
 
 
 def find_flex_events(
@@ -268,6 +321,7 @@ def find_flex_events(
     return df_out
 
 
+
 def add_all_angs(
     df,
     station_pos,
@@ -295,7 +349,7 @@ def add_all_angs(
     sat_rec_dist =_np.linalg.norm(disp_vec_arr,axis=1)
     sat_norm =_np.linalg.norm(sat_pos_arr,axis=1)
 
-    if nad:
+    if nad: # inner1d(sat_pos_arr, disp_vec_arr) 
         df['nad_ang'] =_np.arccos(_np.einsum("ij,ij->j", sat_pos_arr.T, disp_vec_arr.T)/(sat_norm*sat_rec_dist))*(180/_np.pi)    
     
     if el or az:
@@ -318,167 +372,167 @@ def add_all_angs(
 
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    # Introduce command line parser
-    parser = argparse.ArgumentParser(
-        description = 'Given a station and a time period, find possible flex power events'
-        )
+#     # Introduce command line parser
+#     parser = argparse.ArgumentParser(
+#         description = 'Given a station and a time period, find possible flex power events'
+#         )
     
-    # Command line function arguments
-    parser.add_argument(
-        "station", 
-        help = "IGS GPS station name - must be new RINEX3 format - 9 characters"
-        )        
+#     # Command line function arguments
+#     parser.add_argument(
+#         "station", 
+#         help = "IGS GPS station name - must be new RINEX3 format - 9 characters"
+#         )        
     
-    parser.add_argument(
-        "st_date", 
-        help = "Start Date in YYYY-MM-DD format"
-        )
+#     parser.add_argument(
+#         "st_date", 
+#         help = "Start Date in YYYY-MM-DD format"
+#         )
     
-    parser.add_argument(
-        "en_date", 
-        help = "End Date in YYYY-MM-DD format"
-        )
+#     parser.add_argument(
+#         "en_date", 
+#         help = "End Date in YYYY-MM-DD format"
+#         )
 
-    parser.add_argument(
-        "-doy",
-        "--day_of_year", 
-        action='store_true', default=False,
-        help = "Enter Dates in YYYY-DOY format instead"
-        )
+#     parser.add_argument(
+#         "-doy",
+#         "--day_of_year", 
+#         action='store_true', default=False,
+#         help = "Enter Dates in YYYY-DOY format instead"
+#         )
 
-    parser.add_argument(
-        "obs_codes",
-        help = 'Comma separated RINEX3 Observation code/s to search, e.g. S1W,S2W '
-        )
+#     parser.add_argument(
+#         "obs_codes",
+#         help = 'Comma separated RINEX3 Observation code/s to search, e.g. S1W,S2W '
+#         )
 
-    parser.add_argument(
-        "data_dir",
-        help = 'The download directory for RINEX3 and sp3 files'
-        )
+#     parser.add_argument(
+#         "data_dir",
+#         help = 'The download directory for RINEX3 and sp3 files'
+#         )
 
-    parser.add_argument(
-        "-c",
-        "--csv",
-        action='store_true', default=True,
-        help = 'Produce plots of Flex events'
-    )
+#     parser.add_argument(
+#         "-c",
+#         "--csv",
+#         action='store_true', default=True,
+#         help = 'Produce plots of Flex events'
+#     )
 
-    parser.add_argument(
-        "-c_dir",
-        "--flex_csv_dir",
-        action='store', default='pwd',
-        help = 'The directory to save csv files with list of flex events'
-        )
+#     parser.add_argument(
+#         "-c_dir",
+#         "--flex_csv_dir",
+#         action='store', default='pwd',
+#         help = 'The directory to save csv files with list of flex events'
+#         )
 
-    parser.add_argument(
-        "-p",
-        "--plot",
-        action='store_true', default=False,
-        help = 'Produce plots of Flex events'
-    )
+#     parser.add_argument(
+#         "-p",
+#         "--plot",
+#         action='store_true', default=False,
+#         help = 'Produce plots of Flex events'
+#     )
 
-    parser.add_argument(
-        "-p_dir",
-        "--flex_plt_dir",
-        action='store', default='pwd',
-        help = 'The directory to save png plot files of flex events'
-        )
+#     parser.add_argument(
+#         "-p_dir",
+#         "--flex_plt_dir",
+#         action='store', default='pwd',
+#         help = 'The directory to save png plot files of flex events'
+#         )
 
-    parser.add_argument(
-        "-p_span",
-        "--plot_time_span", type=float,
-        action='store', default=1500.0,
-        help = 'The time span for the plot (+/- seconds from time of the flex event)'
-        )
+#     parser.add_argument(
+#         "-p_span",
+#         "--plot_time_span", type=float,
+#         action='store', default=1500.0,
+#         help = 'The time span for the plot (+/- seconds from time of the flex event)'
+#         )
 
-    parser.add_argument(
-        "-p_name_ord",
-        "--plot_naming_order",
-        action='store', default='date,prn,code',
-        help = '''Plot naming convention - comma separated and must include "date", "prn" and "code"
-        Default: date,prn,code '''
-        )
+#     parser.add_argument(
+#         "-p_name_ord",
+#         "--plot_naming_order",
+#         action='store', default='date,prn,code',
+#         help = '''Plot naming convention - comma separated and must include "date", "prn" and "code"
+#         Default: date,prn,code '''
+#         )
 
-    parser.add_argument(
-        "-j",
-        "--jump", type=float,
-        action='store', default=5.0,
-        help = 'Increase/decrease of C/N0 used to identify Start/End of event'
-        )
+#     parser.add_argument(
+#         "-j",
+#         "--jump", type=float,
+#         action='store', default=5.0,
+#         help = 'Increase/decrease of C/N0 used to identify Start/End of event'
+#         )
 
-    parser.add_argument(
-        "-el_min",
-        "--elevation_min", type=float,
-        action='store', default=0.0,
-        help = 'Min. elevation angle of satellite to consider (anything below ignored)'
-        )
+#     parser.add_argument(
+#         "-el_min",
+#         "--elevation_min", type=float,
+#         action='store', default=0.0,
+#         help = 'Min. elevation angle of satellite to consider (anything below ignored)'
+#         )
 
-    parser.add_argument(
-        "-st_fl",
-        "--start_floor", type=float,
-        action='store', default=33.0,
-        help = 'Min. Decibel-Hertz level at which to search for start of flex events (anything below ignored)'
-        )
+#     parser.add_argument(
+#         "-st_fl",
+#         "--start_floor", type=float,
+#         action='store', default=33.0,
+#         help = 'Min. Decibel-Hertz level at which to search for start of flex events (anything below ignored)'
+#         )
 
-    parser.add_argument(
-        "-en_fl",
-        "--end_floor", type=float,
-        action='store', default=30.0,
-        help = 'Min. Decibel-Hertz level at which to search for end of flex events (anything below ignored)'
-        )
+#     parser.add_argument(
+#         "-en_fl",
+#         "--end_floor", type=float,
+#         action='store', default=30.0,
+#         help = 'Min. Decibel-Hertz level at which to search for end of flex events (anything below ignored)'
+#         )
     
 
 
-    # Get command line args:
-    args = parser.parse_args()
-    # And start assigning to variables:
-    station = args.station
-    st_date = args.st_date
-    en_date = args.en_date
-    doy = args.day_of_year
-    codes = args.obs_codes
-    st_lvl = args.start_floor
-    en_lvl = args.end_floor
-    el_min = args.elevation_min
-    jump = args.jump
-    dwn_dir = args.data_dir
-    csv_flag = args.csv
-    plot_flag = args.plot
-    p_span = args.plot_time_span
-    p_name_list = args.plot_naming_order.split(',')
+#     # Get command line args:
+#     args = parser.parse_args()
+#     # And start assigning to variables:
+#     station = args.station
+#     st_date = args.st_date
+#     en_date = args.en_date
+#     doy = args.day_of_year
+#     codes = args.obs_codes
+#     st_lvl = args.start_floor
+#     en_lvl = args.end_floor
+#     el_min = args.elevation_min
+#     jump = args.jump
+#     dwn_dir = args.data_dir
+#     csv_flag = args.csv
+#     plot_flag = args.plot
+#     p_span = args.plot_time_span
+#     p_name_list = args.plot_naming_order.split(',')
     
-    if args.flex_csv_dir == 'pwd':
-        c_dir = False
-    else:
-        c_dir = args.flex_csv_dir
+#     if args.flex_csv_dir == 'pwd':
+#         c_dir = False
+#     else:
+#         c_dir = args.flex_csv_dir
 
-    if args.flex_plt_dir == 'pwd':
-        p_dir = False
-    else:
-        p_dir = args.flex_plt_dir
+#     if args.flex_plt_dir == 'pwd':
+#         p_dir = False
+#     else:
+#         p_dir = args.flex_plt_dir
 
-    if doy:
-        st_date = _pd.to_datetime(st_date).strftime('%Y-%m-%d')
-        en_date = _pd.to_datetime(en_date).strftime('%Y-%m-%d')
+#     if doy:
+#         st_date = _pd.to_datetime(st_date).strftime('%Y-%m-%d')
+#         en_date = _pd.to_datetime(en_date).strftime('%Y-%m-%d')
 
-    # Download and load RINEX and SP3 files into DataFrame:
-    df = get_load_rnxsp3(start_date=st_date,end_date=en_date,station=station,directory=dwn_dir,sp3pref='igr')
-    # Find flex events, plot if chosen:
-    df_out = find_flex_events(
-        df_in=df, 
-        codes=codes.split(','), 
-        station=station,
-        start_floor=st_lvl, 
-        end_floor=en_lvl, 
-        jump=jump, 
-        el_min=el_min,
-        GPS_flex=True,
-        csv_out=csv_flag,
-        csv_dest=c_dir,
-        csv_name=False,
-        plot=plot_flag, 
-        plot_dest=p_dir, 
-        plot_spread=p_span,
-        file_nameorder=p_name_list)
+#     # Download and load RINEX and SP3 files into DataFrame:
+#     df = get_load_rnxsp3(start_date=st_date,end_date=en_date,station=station,directory=dwn_dir,sp3pref='igr')
+#     # Find flex events, plot if chosen:
+#     df_out = find_flex_events(
+#         df_in=df, 
+#         codes=codes.split(','), 
+#         station=station,
+#         start_floor=st_lvl, 
+#         end_floor=en_lvl, 
+#         jump=jump, 
+#         el_min=el_min,
+#         GPS_flex=True,
+#         csv_out=csv_flag,
+#         csv_dest=c_dir,
+#         csv_name=False,
+#         plot=plot_flag, 
+#         plot_dest=p_dir, 
+#         plot_spread=p_span,
+#         file_nameorder=p_name_list)
