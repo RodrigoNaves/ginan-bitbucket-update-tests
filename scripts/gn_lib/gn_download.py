@@ -7,12 +7,13 @@ rnx (including transformation from crx to rnx)
 '''
 from datetime import date as _date
 from datetime import datetime as _datetime
+from ftplib import FTP_TLS as _FTP_TLS
 from pathlib import Path as _Path
-import requests as _rqs
+import urllib.request as _rqs
 import subprocess as _sp
 import pandas as _pd
 import numpy as _np
-
+import sys as _sys
 
 from .gn_const import GPS_ORIGIN
 
@@ -227,8 +228,8 @@ def check_n_download(comp_filename, dwndir, ftps, uncomp=True, remove_crx=False,
 
 def get_install_crx2rnx(override=False,verbose=False):
     '''
-    Check for presence of crx2rnx in /bin.
-    If not present, download and extract to /bin.
+    Check for presence of crx2rnx in PATH.
+    If not present, download and extract to python environment PATH location.
     If override = True, will download if present or not
     '''
     if (not _Path(f'{_sys.path[0]}/crx2rnx').is_file()) or (override):
@@ -239,15 +240,18 @@ def get_install_crx2rnx(override=False,verbose=False):
             tmp_dir.mkdir()
 
         url = 'https://terras.gsi.go.jp/ja/crx2rnx/RNXCMP_4.0.8_src.tar.gz'
-        rq = _rqs.get(url,allow_redirects=True)
-        with open(_Path('tmp/RNXCMP_4.0.8_src.tar.gz'),'wb') as f:
-            f.write(rq.content)
+        out_f = _Path('tmp/RNXCMP_4.0.8_src.tar.gz')
+        _rqs.urlretrieve(url,out_f)
 
         _sp.run(['tar', '-xvf', 'tmp/RNXCMP_4.0.8_src.tar.gz', '-C', 'tmp'])
         cp = ['gcc','-ansi','-O2','-static','tmp/RNXCMP_4.0.8_src/source/crx2rnx.c','-o','crx2rnx']
         _sp.run(cp)
         _sp.run(['rm','-r','tmp'])
-        _sp.run(['mv','crx2rnx','/bin'])
+        _sp.run(['mv','crx2rnx',_sys.path[0]])
+    else:
+        if verbose:
+            print(f'crx2rnx already present in {_sys.path[0]}')
+
 
 
 def connect_cddis(verbose=False):
@@ -363,8 +367,6 @@ def download_prod(dates, dest, ac='igs', suff='', f_type='sp3', dwn_src='cddis',
     Function used to get the product file/s from download server of choice, default: CDDIS
 
     Input:
-    yr - Year (int)
-    doy - Day-of-year (int)
     dest - destination (str)
     ac - Analysis Center / product of choice (e.g. igs, igr, cod, jpl, gfz, default = igs)
     suff - optional suffix added to file name (e.g. _0 or _06 for ultra-rapid products) 
