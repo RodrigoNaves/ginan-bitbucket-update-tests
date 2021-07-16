@@ -368,7 +368,7 @@ The docs can then be found at `docs/html/index.html`. Note that documentation is
 ### Latex
 A detailed Ginan manual is located in `docs/manual` and is in latex format. To compile Latex to pdf you will need a compiler, such as texlive:
 
-    $ sudo apt install texlive-full
+    $ sudo apt install texlive-latex-base texlive-latex-extra
 
 Now, go to `docs/manual` and generate the pdf:
 
