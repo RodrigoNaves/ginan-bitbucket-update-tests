@@ -132,6 +132,52 @@ void removeInvalidFiles(
 	}
 }
 
+void recordNetworkStatistics(std::multimap<std::string, std::shared_ptr<NtripRtcmStream>> downloadStreamMap )
+{
+	string netStreamFilename = acsConfig.trace_directory + "NetworkStatistics.json";
+	std::ofstream netStream(netStreamFilename, std::ofstream::out | std::ofstream::ate);
+	
+	if (!netStream)
+	{
+		BOOST_LOG_TRIVIAL(error)
+		<< "Could not open trace file for network statistics at " << netStreamFilename;
+		return;
+	}	
+	
+	std::vector<std::string> dataJSON;
+	std::string epochData = "\"epochData\": [";
+	std::string hourData = "\"hourData\": [";
+	std::string runData = "\"runData\": [";
+	std::string connData = "\"epochConnData\": [";
+				
+	bool isFirstEntry = true;
+	for (auto& [id, s] : downloadStreamMap )
+	{
+		NtripRtcmStream& downStream = *s;
+
+		if( isFirstEntry )
+			isFirstEntry = false;
+		else
+		{
+			epochData += ",";
+			hourData += ",";
+			runData += ",";
+			connData += ",";
+		}
+		dataJSON = downStream.getJsonNetworkStatistics(tsync);
+		epochData += dataJSON[0];
+		hourData += dataJSON[1];
+		runData +=  dataJSON[2];
+		connData +=  dataJSON[3];
+	}
+	epochData += "]";
+	hourData += "]";
+	runData += "]";
+	connData += "]";
+	netStream << "{" << epochData << "," << hourData << "," 
+						<< runData << "," << connData << "}";	
+}
+
 void reloadInputFiles()
 {
 	removeInvalidFiles(acsConfig.atxfiles);
@@ -1316,44 +1362,12 @@ int main(int argc, char **argv)
 		{
 			NtripBroadcaster::NtripUploadClient& uploadStream = *s;
 			auto trace = getTraceFile(uploadStream);
-			trace << std::endl << "<<<<<<<<<<< Network Trace : Epoch " << epoch << " >>>>>>>>>>>" << std::endl;
-			uploadStream.traceWriteEpoch(trace);
-		}
-		
-		{
-			std::ofstream netStream(acsConfig.trace_directory + "NetworkStatistics.json",std::ofstream::out | std::ofstream::ate);
+            trace << std::endl << "<<<<<<<<<<< Network Trace : Epoch " << epoch << " >>>>>>>>>>>" << std::endl;
+            uploadStream.traceWriteEpoch(trace);
+        }
+        
+        recordNetworkStatistics(ntripRtcmMultimap);
 			
-			netStream << "[";
-			bool isFirstEntry = true;
-			
-			for (auto& [id, rec] : stationMap )
-			{
-				auto down_it = ntripRtcmMultimap.find(rec.id);
-				if	(down_it != ntripRtcmMultimap.end())
-				{
-					NtripRtcmStream& downStream = *down_it->second;
-					
-					if (isFirstEntry)
-						isFirstEntry = false;
-					else
-						netStream << ",";
-					netStream << downStream.getJsonNetworkStatistics(breakTime);
-				}
-			}
-			
-			for (auto& [id, s] : outStreamManager.ntripUploadStreams)
-			{ 
-				NtripBroadcaster::NtripUploadClient& uploadStream = *s;
-				
-				if (isFirstEntry)
-					isFirstEntry = false;
-				else
-					netStream << ",";
-				netStream << uploadStream.getJsonNetworkStatistics(breakTime);
-			}
-			netStream << "]";
-		}
-	
 		if	(complete)
 		{
 			break;
