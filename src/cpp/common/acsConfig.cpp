@@ -15,6 +15,7 @@ using std::string;
 
 #include <yaml-cpp/yaml.h>
 
+#include "ntripSourceTable.hpp"
 #include "acsNtripBroadcast.hpp"
 #include "rtsSmoothing.hpp"
 #include "streamTrace.hpp"
@@ -1017,6 +1018,10 @@ bool ACSConfig::parse(
 		trySetFromYaml(trace_directory,			output_files, {"trace_directory"	});
 		trySetFromYaml(trace_filename,			output_files, {"trace_filename"		});
 
+		trySetFromYaml(rtcm_record,		     	output_files, {"rtcm_record"		});
+		trySetFromYaml(rtcm_directory,			output_files, {"rtcm_directory"	    });
+		trySetFromYaml(rtcm_filename,			output_files, {"rtcm_filename"		});        
+        
 		trySetFromYaml(output_residuals,		output_files, {"output_residuals"	});
 		trySetFromYaml(output_config,			output_files, {"output_config"		});
 
@@ -1062,7 +1067,8 @@ bool ACSConfig::parse(
 		trySetFromYaml(mongo_uri,						output_files, {"mongo_uri"					});
 
 		trySetScaledFromYaml(trace_rotate_period,		output_files, {"trace_rotate_period"	}, {"trace_rotate_period_units"		}, E_Period::_from_string_nocase);
-		trySetScaledFromYaml(summary_rotate_period,		output_files, {"summary_rotate_period"	}, {"summary_rotate_period_units"	}, E_Period::_from_string_nocase);
+		trySetScaledFromYaml(rtcm_rotate_period,		output_files, {"rtcm_rotate_period"	    }, {"rtcm_rotate_period_units"		}, E_Period::_from_string_nocase);
+        trySetScaledFromYaml(summary_rotate_period,		output_files, {"summary_rotate_period"	}, {"summary_rotate_period_units"	}, E_Period::_from_string_nocase);
 		trySetScaledFromYaml(config_rotate_period,		output_files, {"config_rotate_period"	}, {"config_rotate_period_units"	}, E_Period::_from_string_nocase);
 		trySetScaledFromYaml(ionex_rotate_period,		output_files, {"ionex_rotate_period"	}, {"ionex_rotate_period_units"		}, E_Period::_from_string_nocase);
 		trySetScaledFromYaml(ionstec_rotate_period,		output_files, {"ionstec_rotate_period"	}, {"ionstec_rotate_period_units"	}, E_Period::_from_string_nocase);
@@ -1339,6 +1345,7 @@ bool ACSConfig::parse(
 	}
 
 	tryAddRootToPath(root_output_dir, 				trace_directory);
+	tryAddRootToPath(root_output_dir, 				rtcm_directory);    
 	tryAddRootToPath(root_output_dir,				summary_directory);
 	tryAddRootToPath(root_output_dir,				clocks_directory);
 	tryAddRootToPath(root_output_dir,				ppp_sol_directory);
@@ -1354,6 +1361,7 @@ bool ACSConfig::parse(
 	tryAddRootToPath(root_output_dir,				ssrOpts.rtcm_directory);
 
 	tryAddRootToPath(trace_directory, 				trace_filename);
+    tryAddRootToPath(rtcm_directory, 				rtcm_filename);
 	tryAddRootToPath(summary_directory,				summary_filename);
 	tryAddRootToPath(clocks_directory,				clocks_filename);
 	tryAddRootToPath(ppp_sol_directory,				ppp_sol_filename);
@@ -1402,6 +1410,9 @@ bool ACSConfig::parse(
 	replaceTimes(pppOpts.rts_filename,			start_epoch);
 	replaceTimes(netwOpts.rts_filename,			start_epoch);
 	replaceTimes(ionFilterOpts.rts_filename,	start_epoch);
+    
+    // The network stream time is in UTC to avoid problems with local time.
+    replaceTimes(rtcm_filename,	 	boost::posix_time::second_clock::universal_time());
 
 	for (auto& station_file : station_files)
 	{
