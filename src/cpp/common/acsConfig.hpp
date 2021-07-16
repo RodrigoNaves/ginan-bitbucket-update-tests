@@ -165,9 +165,12 @@ struct GlobalOptions
 	string	analysis_program			= "AUSACS";
 	string	rinex_comment				= "AUSNETWORK1";
 
+	bool    run_rtcm_files              = false;
 	bool    print_stream_statistics     = false;
 	bool    caster_test                 = false;
 	string  caster_stream_root          = "";
+	
+	bool	use_recorded_rtcm			= false;
 	
 	bool	process_user				= true;
 	bool	process_network 			= false;

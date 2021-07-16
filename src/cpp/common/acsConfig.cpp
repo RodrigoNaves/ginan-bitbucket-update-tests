@@ -1420,18 +1420,67 @@ bool ACSConfig::parse(
 	}
 
 
-	trySetFromYaml(acsConfig.caster_test,	yaml,{"station_data", "caster_test"});
-	trySetFromYaml(acsConfig.print_stream_statistics,	yaml,{"station_data", "print_stats"});
 
+	trySetFromYaml(run_rtcm_files,yaml,{"station_data", "run_rtcm_files"});
+	trySetFromYaml(caster_test,	yaml,{"station_data", "caster_test"});
+	trySetFromYaml(print_stream_statistics,	yaml,{"station_data", "print_stats"});
 
+	
+
+	
 	string streamRoot = "";
 	trySetFromYaml(streamRoot,		yaml,	{"station_data", "stream_root"	});
-	if( acsConfig.caster_test )
-		acsConfig.caster_stream_root = streamRoot;
+	if( caster_test )
+		caster_stream_root = streamRoot;
 
 	auto obsStreamNode = stringsToYamlObject(yaml, {"station_data","obs_streams"});
 	auto navStreamNode = stringsToYamlObject(yaml, {"station_data","nav_streams"});
 
+	
+	// Unique list of host names.
+	std::vector<std::string> hosts;
+	for (auto nav : {false, true})
+	{
+		YAML::Node* streamNode_ptr;
+		if (nav == false)	streamNode_ptr = &obsStreamNode;
+		else				streamNode_ptr = &navStreamNode;
+		
+		map<string, string> ntripStreams;
+		for (auto streamUrl : *streamNode_ptr)
+		{
+			string streamUrl_str = streamUrl.as<string>();
+			string fullUrl = streamUrl_str;
+
+			tryAddRootToPath(streamRoot, fullUrl);
+			if (fullUrl.front() == '/')
+				fullUrl.erase(fullUrl.begin()); // in case of full urls given in station_data.streams
+			while (fullUrl.back() == '/')
+				fullUrl.pop_back();				// in case of terminating '/'
+			std::size_t slashPos = fullUrl.find_last_of("/");	// find first 4 characters after last '/'
+			string hostname = fullUrl.substr(0,slashPos+1);		// e.g. http://user:pass@auscors.ga.gov.au:2101/BCEP00BKG0 --> BCEP
+
+			if( std::find(hosts.begin(), hosts.end(), hostname) == hosts.end() )
+			{
+				hosts.push_back( hostname );
+			}
+		}
+	}
+
+	std::multimap<std::string,std::vector<std::string>> hostMap;
+	
+	if ( !run_rtcm_files )
+	{
+#ifndef	ENABLE_UNIT_TESTS
+		NtripSocket::startClients();
+#endif	
+		for( auto host : hosts )
+		{
+			NtripSourceTable sourceTable(host);
+			sourceTable.getSourceTable();
+			hostMap.insert({host,sourceTable.getStreamMounts()});	
+		}
+	}
+	
 	for (auto nav : {false, true})
 	{
 		YAML::Node* streamNode_ptr;
@@ -1451,8 +1500,27 @@ bool ACSConfig::parse(
 				fullUrl.pop_back();				// in case of terminating '/'
 			std::size_t slashPos = fullUrl.find_last_of("/");	// find first 4 characters after last '/'
 			string id = fullUrl.substr(slashPos + 1, 4);		// e.g. http://user:pass@auscors.ga.gov.au:2101/BCEP00BKG0 --> BCEP
-
-			ntripStreams[id] = fullUrl;
+			string hostname = fullUrl.substr(0,slashPos + 1);		// e.g. http://user:pass@auscors.ga.gov.au:2101/BCEP00BKG0 --> BCEP
+			string mount = fullUrl.substr(slashPos+1, fullUrl.length()-slashPos+1);
+			bool foundMount = false;
+			auto host = hostMap.find( hostname );
+			if( host != hostMap.end() )
+			{
+				auto mounts = host->second;
+				if( std::find(mounts.begin(), mounts.end(), mount) != mounts.end() )
+					foundMount = true;
+			}
+			
+			if ( foundMount || run_rtcm_files)
+			{
+				ntripStreams[id] = fullUrl;
+			}
+			else
+			{
+				URL url = URL::parse(fullUrl);
+				BOOST_LOG_TRIVIAL(warning) 
+						<< "Stream, " << url.sanitised() << " not found in sourcetable, invalid host/mount combination.\n";
+			}
 		}
 
 		for (auto& [id, streamUrl] : ntripStreams)
@@ -1462,16 +1530,67 @@ bool ACSConfig::parse(
 				//this stream was already added, dont re-add
 				continue;
 			}
-			
-			BOOST_LOG_TRIVIAL(info)
-			<< std::endl << "Adding stream from " << streamUrl;
-			auto ntripStream_ptr = std::make_shared<NtripRtcmStream>(streamUrl);
-			ntripRtcmMultimap.insert({id, ntripStream_ptr}); // for network (internet) tracing
-			if (nav == false)		{	obsStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}
-			else					{	navStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}			
-			streamDOAMap[streamUrl] = false;
+
+			if ( run_rtcm_files )
+			{
+				std::cout << "Opening RTCM files.\n";
+				std::string filename				= rtcm_filename;
+				replaceString(filename, "<STATION>", id);
+				
+				GTime fileTime;
+				fileTime.time = to_time_t(start_epoch);
+				fileTime.time /= rtcm_rotate_period;
+				fileTime.time *= rtcm_rotate_period;
+				
+				string logtime = fileTime.to_string(0);
+				std::replace( logtime.begin(), logtime.end(), '/', '-');			
+				
+				replaceString(filename, "<LOGTIME>", logtime);	
+				
+				std::cout << "Opening file : " << filename << std::endl;
+				
+				if ( !boost::filesystem::exists(filename) )
+				{
+					BOOST_LOG_TRIVIAL(error)
+						<< "Error, RTCM message file for " << id 
+						<< " filename : " << filename
+						<< " does not exit.\n";
+					exit(1);
+				}
+				
+				
+				auto ntripStream_ptr = std::make_shared<FileRtcmStream>(filename);
+				
+				if (nav == false)		{	obsStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}
+				else					{	navStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}			
+				streamDOAMap[streamUrl] = false;
+			}
+			else
+			{
+				auto ntripStream_ptr = std::make_shared<NtripRtcmStream>(streamUrl);
+				ntripRtcmMultimap.insert({id, ntripStream_ptr}); // for network (internet) tracing
+		
+				
+				if ( rtcm_record )
+				{
+					NtripRtcmStream& downloadStream = *ntripStream_ptr;
+					downloadStream.rtcm_record					= rtcm_record;
+					downloadStream.rtcm_directory				= rtcm_directory;
+					downloadStream.rtcm_filename				= rtcm_filename;
+					replaceString(downloadStream.rtcm_filename, "<STATION>", id);
+					downloadStream.rtcm_rotate_period			= rtcm_rotate_period;		
+					downloadStream.createRtcmFile();
+				}
+				
+				if (nav == false)		{	obsStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}
+				else					{	navStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}			
+				streamDOAMap[streamUrl] = false;
+			}
 		}
 	}
+
+
+	
 
 	boost::filesystem::path root_stations_path(root_stations_dir);
 
