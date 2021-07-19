@@ -7,6 +7,7 @@ rnx (including transformation from crx to rnx)
 '''
 from datetime import date as _date
 from datetime import datetime as _datetime
+from datetime import timedelta as _timedelta
 from ftplib import FTP_TLS as _FTP_TLS
 from pathlib import Path as _Path
 import urllib.request as _rqs
@@ -207,7 +208,12 @@ def check_n_download(comp_filename, dwndir, ftps, uncomp=True, remove_crx=False,
             if comp_filename.endswith('.crx.gz'):
                 get_install_crx2rnx()
                 crx_file = _Path(dwndir+comp_filename[:-3])
-                _sp.run([f'{_sys.path[0]}crx2rnx',f'{str(crx_file)}'])
+                if _sys.path[0][-1] == '/':
+                    run_str = f'{_sys.path[0]}crx2rnx'
+                else:
+                    run_str = f'{_sys.path[0]}/crx2rnx'
+                _sp.run([run_str,f'{str(crx_file)}'])
+
             print(f'Downloaded and uncompressed {comp_filename}')
         else:
             print(f'Downloaded {comp_filename}')
@@ -456,11 +462,13 @@ def download_prod(dates, dest, ac='igs', suff='', f_type='sp3', dwn_src='cddis',
 
 
 
-def download_pea_prods(dates, dest, ac='igs', out_dict=False, trop_vmf3=False, brd_typ='igs', snx_typ='igs', clk_sel='clk', most_recent=False):
+def download_pea_prods(dest, most_recent=True, dates=None, ac='igs', out_dict=False, trop_vmf3=False, brd_typ='igs', snx_typ='igs', clk_sel='clk'):
     '''
     Download necessary pea product files for date/s provided
     '''
-
+    if dest[-1] != '/':
+        dest+='/'
+    
     if most_recent: 
         snx_vars_out = download_most_recent(dest=dest, f_type='snx', ac=snx_typ, dwn_src='cddis', f_dict_out=True, gpswkD_out=True, ftps_out=True)
         f_dict, gpswkD_out, ftps = snx_vars_out
@@ -484,14 +492,15 @@ def download_pea_prods(dates, dest, ac='igs', out_dict=False, trop_vmf3=False, b
             dates = _pd.date_range(start=str(dtn),end=str(dt0),freq='1D')
             dates = list(dates)
             dates.reverse()
-            dt_list = dates_type_convert(dates)
+            dt_list = sorted(dates_type_convert(dates))
     else:
-        dt_list = dates_type_convert(dates)
-    
+        dt_list = sorted(dates_type_convert(dates))
+
     dest_pth = _Path(dest)
     # Output dict for the files that are downloaded
     if not out_dict:
         out_dict = {
+            'dates':dt_list,
             'atxfiles':['igs14.atx'],
             'blqfiles':['OLOAD_GO.BLQ']
         }
@@ -552,10 +561,14 @@ def download_pea_prods(dates, dest, ac='igs', out_dict=False, trop_vmf3=False, b
     for el in list(ac_typ_dict.values()):
         for typ in el:
             f_types.append(typ)
+    if most_recent:
+        f_types.append('snx')
 
     # Prepare the output dictionary based on the downloaded files:
-    for f_type,name in zip(sorted(f_types),['clk', 'erp', 'nav', 'snx', 'sp3']):
-        out_dict[f'{name}files'] = sorted(f_dict[f_type])
+    for f_type in f_types:
+        if f_type=='rnx':
+            out_dict[f'navfiles'] = sorted(f_dict[f_type])
+        out_dict[f'{f_type}files'] = sorted(f_dict[f_type])
 
     return out_dict
 
@@ -565,6 +578,8 @@ def download_rinex3(dates, stations, dest, dwn_src='cddis', ftps=False, f_dict=F
     '''
     Function used to get the RINEX3 observation file from download server of choice, default: CDDIS
     '''
+    if dest[-1] != '/':
+        dest+='/'
     # Convert input to list of datetime dates (if not already)
     dt_list = dates_type_convert(dates)
 
@@ -596,7 +611,7 @@ def download_rinex3(dates, stations, dest, dwn_src='cddis', ftps=False, f_dict=F
                     if not check_file_present(comp_filename=f, dwndir=dest):
                         if p_date == dt:
                             try:
-                                success = check_n_download(f, dwndir=dest, ftps=ftps, uncomp=True, remove_crx=True,no_check=True)
+                                success = check_n_download(f, dwndir=dest, ftps=ftps, uncomp=True, remove_crx=True, no_check=True)
                             except:
                                 print(f'Download of {f} failed - file not found')
                                 success = False
@@ -604,7 +619,7 @@ def download_rinex3(dates, stations, dest, dwn_src='cddis', ftps=False, f_dict=F
                             ftps.cwd('/')
                             ftps.cwd(f"gnss/data/daily{dt.strftime('/%Y/%j/%yd/')}")
                             try:
-                                success = check_n_download(f, dwndir=dest, ftps=ftps, uncomp=True, remove_crx=True,no_check=True)
+                                success = check_n_download(f, dwndir=dest, ftps=ftps, uncomp=True, remove_crx=True, no_check=True)
                             except:
                                 print(f'Download of {f} failed - file not found')
                                 success = False
