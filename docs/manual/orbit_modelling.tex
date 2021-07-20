@@ -1,8 +1,13 @@
-\chapter{Orbit Modelling}
-\label{ch:orbit_modelling}
+\title{Orbit modelling}
 
 
-\newthought{POD} is designed to do some stuff.
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\begin{document}
+
+\maketitle
+
 
 \section{Gravitational Force Models}
 
@@ -21,7 +26,7 @@ model.The cannonball model provides a useful, first-order approximation, however
 \subsection{ECOM I}
 The ECOM I model has been widely used for a cubic-like satellite and is formed by three unit vectors as defined in the following: 
 \begin{equation}
-e_d = r_s_u_n - r_s_a_t / |r_s_u_n - r_s_a_t|
+e_d = r_{sun} - r_{sat} / |r_{sun} - r_{sat}|
 \end{equation}
 \begin{equation}
 e_y = r_z \times e_d / |r_z \times e_d|
@@ -34,10 +39,10 @@ Where
 $e_d$ denotes the satellite-sun vector,
 $e_y$ denotes the vector along the axis of the solar panel, 
 $e_b$ is given by the right-hand rule of ed and ey.
-The total SRP acceleration $\ddot{r}_s_r_p}$ is expressed as 
+The total SRP acceleration $\ddot{r}_{srp}$ is expressed as 
 
 \begin{equation}
-\ddot{r}_s_r_p = \vect{D} \cdot e_d + \vect{Y} \cdot e_y + \vect{B} \cdot e_b
+\ddot{r}_{srp} = D \cdot e_d + Y \cdot e_y + B \cdot e_b
 \end{equation}
 Where 
 $D$ denotes the total acceleration in ed,
@@ -93,18 +98,39 @@ B = B_0 + B_C \cdot cos \Delta u + B_S \cdot sin \Delta u
 
 
 \subsection{Box Wing}
-The SRP effect also can be handled by a so-called box-wing model that takes satellite bus areas, solar panel area, satellite attitude and interactions between photons and optical properties. The box-wing model used for a flat surface of satellite bus with thermal effect can be expressed as
+The SRP effect also can be handled by a so-called box-wing model that takes satellite bus areas, solar panel area, satellite attitude and interactions between photons and optical properties. The box-wing model $\ddot{r}_{boxw}$ used for a flat surface of satellite bus with thermal effect can be expressed as
 \begin{equation}
-\ddot{r}_b_o_x_w = -(A \cdot S_0)/(M \cdot C) cos \theta  
+\ddot{r}_{boxw} = -(A \cdot S_0)/(M \cdot C) cos \theta  
                    [(\alpha + \delta)(e_d+2/3 \cdot e_N) + 2\rho cos \theta \cdot e_N]  
 \end{equation}
+Where 
+$A$ denotes the cross-section area,
+$S_{0}$ denotes the solar irradince at 1 AU $(1367W/m^2)$, 
+$M$ denotes the mass of satellite,
+$C$ denotes the speed of light,
+$\alpha$ denotes the absorption coefficient,
+$\delta$ denotes the diffusion coefficient,
+$\rho$ denotes the reflection coefficient,
+$e_N$ denotes the normal vector of the surface,
+$cos \theta$ denotes the angle between the $e_d$ and $e_N$. 
 
 
 \subsection{Antenna Thrust}
+The navigation antenna produces a re-bouncing acceleration when the signal is transmitted. This is called as antenna thrust, which generates a constant acceleration in the radial direction of satellite orbit and can be model as 
+\begin{equation}
+\ddot{r}_{ant} = W/(M \cdot C)   
+\end{equation}
+Where 
+$W$ denotes the emitted power in watt.
+
 
 \subsection{Albedo}
+The earth radiation pressure (ERP), called albedo, also creates a small acceleration on navigation satellites. The ERP acceleration can be expressed as
+For satellite bus and solar panel mast
 
-\section{Transformtation between Celestial and Terrestrial Reference Systems}
+
+
+\section{Transformation between Celestial and Terrestrial Reference Systems}
 
 The variational equations obtained from the POD need to be transformed into the terrestrial reference frame so that the adjustments can be made in the ECEF frame that the PEA operates in.
 
