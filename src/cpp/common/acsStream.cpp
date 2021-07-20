@@ -414,7 +414,7 @@ void CustomDecoder::decodeTimeStampRTCM(uint8_t* data, unsigned int message_leng
     int milli_sec = getbituInc(data,i,10);
     customTime.sec = (double)milli_sec/1000.0;
     
-    std::cout << "decodeTimeStampRTCM, " << customTime << std::endl;
+    //std::cout << "decodeTimeStampRTCM, (UTC) " << std::put_time( std::gmtime( &customTime.time ), "%F %X" )  << " : " << customTime.sec << std::endl;
 }
 
 

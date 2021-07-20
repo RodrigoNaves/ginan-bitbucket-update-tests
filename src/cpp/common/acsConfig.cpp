@@ -1087,7 +1087,7 @@ bool ACSConfig::parse(
 		trySetFromAny(stopStr,			commandOpts, processing_options, {"end_epoch"		});
 		if (!startStr.empty())	start_epoch	= boost::posix_time::time_from_string(startStr);
 		if (!stopStr .empty())	end_epoch	= boost::posix_time::time_from_string(stopStr);
-
+		
 		trySetFromYaml(process_minimum_constraints,	processing_options, {"process_modes","minimum_constraints"	});
 		trySetFromYaml(process_network,				processing_options, {"process_modes","network"				});
 		trySetFromYaml(process_user,				processing_options, {"process_modes","user"					});
@@ -1541,7 +1541,7 @@ bool ACSConfig::parse(
 				fileTime.time = to_time_t(start_epoch);
 				fileTime.time /= rtcm_rotate_period;
 				fileTime.time *= rtcm_rotate_period;
-				
+	
 				string logtime = fileTime.to_string(0);
 				std::replace( logtime.begin(), logtime.end(), '/', '-');			
 				
