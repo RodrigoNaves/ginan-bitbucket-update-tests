@@ -81,7 +81,7 @@ You can test your username and password is working correctly by running the curl
 curl https://ntrip.data.gnss.ga.gov.au/ALIC00AUS0 -H "Ntrip-Version: NTRIP/2.0" -i  --output - -u <user>
 \end{lstlisting}
 %
-\section{output files}
+\section{output files:}
 \begin{lstlisting}[language=yaml,caption=yaml input files configuration example]
 output_files:
 
@@ -121,7 +121,7 @@ output_sinex:                   true
 sinex_directory:                ./
 \end{lstlisting}
 
-\section{output options}
+\section{output options:}
 
 \begin{lstlisting}[language=yaml,caption=yaml input files configuration example]
 output_options:
@@ -306,6 +306,27 @@ default_filter_parameters:
 	bias_read_mode:             30              # +1: read DSB biases, +2: read OSB biases, +4: read code biases, +8: read phase biases, +16: read satellite bias, +32: read station bias,
 		bias_output_rate:           300.0
 \end{lstlisting}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \chapter{PEA Configuration File - YAML}
 	
 The PEA processing engine uses a single yaml file for configuration of all processing options.
@@ -333,7 +354,7 @@ Many processing options have default values associated with them. To prevent rep
 
 This section of the yaml file specifies the lists of files to be used for general metadata inputs, and inputs of external product data.
 
-\begin{lstlisting}[language=xml,caption=A typical input\_files section]
+\begin{lstlisting}[language=yaml,caption=A typical input\_files section]
 # Example
 input_files:
 
@@ -391,69 +412,14 @@ A list of BSINEX files to be used in processing. These may supply biases to assi
 \subsection{ionfiles:}
 A list of ION files to be used in processing. These may supply the ionospheric modelling parameters for single frequency processing.
 
-\section{station\_data:}
-This section specifies the sources of observation data to be used in positioning.
-
-It may consist of RINEX files, or RTCM streams, which are specified as follows:
-\subsection{Post processing:}
-
-\begin{lstlisting}[language=xml,caption=station\_data:]
-# post processing example
-station_data:
-	root_stations_directory: /data/acs/pea/proc/exs/data
-	rnxfiles:
-		- "ALIC*.rnx"
-		- "BAKO*.rnx"
-\end{lstlisting}
 
 
-\subsection{root\_stations\_directory:}
-This specifies a root directory to be prepended to all other file paths specified in this section. For file paths that are absolute, (ie. starting with a /), this parameter is not applied.
-
-\subsection{rnxfiles:}
-This is a list of RINEX files to be used for observation data. The first 4 characters of the filename are used as the receiver ID.
-
-If multiple files are supplied with the same ID, they are all processed in sequence - according to the epoch times specified within the files. In this case, it is advisible to correctly specify the start\_epoch for the filter, or the first epoch in the first file will likely be used.
-
-\subsection{rtcmfiles:}
-This is a list of RTCM binary files to be used for observation data. The first 4 characters of the filename are used as the receiver ID.
-
-This can be used to read data that has been saved from a stream for later testing. There may be synchronisation issues when multiple such files are used.
-
-\subsection{Real-time processing:}
-\begin{lstlisting}[language=xml,caption=station\_data:]
-# realtime streaming example
-station_data:
-	
-	stream_root: "https://USERNAME:password@ntrip.data.gnss.ga.gov.au/"
-	
-	obs_streams:
-	- BLCK00AUS0
-	- BBDH00AUS0
-	- BOMB00AUS0
-	- BLGL00AUS0
-	
-	nav_streams:
-	- SSR100AUS0
-\end{lstlisting}
 
 
-\subsection{stream\_root:}
-This specifies a root url to be prepended to all other streams specified in this section. If the streams used have individually specified root urls, usernames, or passwords, this should not be used.
 
-\subsection{obs\_streams:}
-This is a list of RTCM streams to read realtime data from. The first 4 characters of the filename are used as the receiver ID.
 
-In combination with the stream\_root parameter, they may require a username, password, port and mountpoint.
 
-The streams in this section are processed for observations from receivers.
 
-\subsection{nav\_streams:}
-This is a list of RTCM streams to read realtime data from. 
-
-In combination with the stream\_root parameter, they may require a username, password, port and mountpoint.
-
-The streams in this section are processed separately from observations, and will typically be used for receiving SSR messages or other navigational data from an external service.
 
 \section{output\_files:}
 This section of the yaml file specifies options to enable outputs and specify file locations.
@@ -462,24 +428,24 @@ An example of this section follows:
 \begin{lstlisting}[language=yaml,caption=output\_files:]
 output_files:
 
-    root_output_directory:          /data/acs/pea/output/exs/<CONFIG>/
+root_output_directory:          /data/acs/ginan/examples/<CONFIG>/
 
-    output_trace:                   true
-    trace_level:                    3
-    trace_directory:                ./
-    trace_filename:                 <CONFIG>-<STATION><LOGTIME>.TRACE
+output_trace:                   true
+trace_level:                    3
+trace_directory:                ./
+trace_filename:                 <CONFIG>-<STATION><LOGTIME>.TRACE
 
-    output_residuals:               false
+output_residuals:               false
 
-    output_config:                  true
+output_config:                  true
 
-    output_summary:                 false
-    summary_directory:              ./
-    summary_filename:               <CONFIG>-<YYYY><DDD><HH>.SUM
+output_summary:                 false
+summary_directory:              ./
+summary_filename:               <CONFIG>-<YYYY><DDD><HH>.SUM
 
-    output_clocks:                  true
-    clocks_directory:               ./
-    clocks_filename:                <CONFIG>.clk
+output_clocks:                  true
+clocks_directory:               ./
+clocks_filename:                <CONFIG>.clk
 \end{lstlisting}
 
 \subsection{Wildcard Tags}
@@ -578,6 +544,90 @@ The URL to the location of the mongo database server.
 
 
 
+
+
+
+
+
+\section{station\_data:}
+This section specifies the sources of observation data to be used in positioning.
+
+It may consist of RINEX files, or RTCM streams, which are specified as follows:
+\subsubsection{Post processing:}
+
+\begin{lstlisting}[language=yaml,caption=station\_data:]
+# post processing example
+station_data:
+	root_stations_directory: /data/acs/ginan/examples/data
+	rnxfiles:
+		- "ALIC*.rnx"
+		- "BAKO*.rnx"
+\end{lstlisting}
+
+
+\subsection{root\_stations\_directory:}
+This specifies a root directory to be prepended to all other file paths specified in this section. For file paths that are absolute, (ie. starting with a /), this parameter is not applied.
+
+\subsection{rnxfiles:}
+This is a list of RINEX files to be used for observation data. The first 4 characters of the filename are used as the receiver ID.
+
+If multiple files are supplied with the same ID, they are all processed in sequence - according to the epoch times specified within the files. In this case, it is advisible to correctly specify the start\_epoch for the filter, or the first epoch in the first file will likely be used.
+
+\subsection{rtcmfiles:}
+This is a list of RTCM binary files to be used for observation data. The first 4 characters of the filename are used as the receiver ID.
+
+This can be used to read data that has been saved from a stream for later testing. There may be synchronisation issues when multiple such files are used.
+
+\subsubsection{Real-time processing:}
+\begin{lstlisting}[language=yaml,caption=station\_data:]
+# realtime streaming example
+station_data:
+	
+	stream_root: "https://USERNAME:password@ntrip.data.gnss.ga.gov.au/"
+	
+	obs_streams:
+	- BLCK00AUS0
+	- BBDH00AUS0
+	- BOMB00AUS0
+	- BLGL00AUS0
+	
+	nav_streams:
+	- SSR100AUS0
+\end{lstlisting}
+
+
+\subsection{stream\_root:}
+This specifies a root url to be prepended to all other streams specified in this section. If the streams used have individually specified root urls, usernames, or passwords, this should not be used.
+
+\subsection{obs\_streams:}
+This is a list of RTCM streams to read realtime data from. The first 4 characters of the filename are used as the receiver ID.
+
+In combination with the stream\_root parameter, they may require a username, password, port and mountpoint.
+
+The streams in this section are processed for observations from receivers.
+
+\subsection{nav\_streams:}
+This is a list of RTCM streams to read realtime data from. 
+
+In combination with the stream\_root parameter, they may require a username, password, port and mountpoint.
+
+The streams in this section are processed separately from observations, and will typically be used for receiving SSR messages or other navigational data from an external service.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \section{processing\_options:}
 
 This sections specifies the extent of processing that is performed by the engine.
@@ -597,18 +647,35 @@ Maximum epochs to process before completion. This parameter may be left undefine
 
 \subsection{process\_modes:}
 
-\subsubsection{user:}
+\begin{lstlisting}[language=yaml,caption=process\_modes:]
+process_modes:
+    user:                   true
+    network:                false
+    minimum_constraints:    false
+    rts:                    false
+    ionosphere:             false
+\end{lstlisting}
+
+\subsection{user:}
 Boolean to process all stations individually. Typically used for determining position of individual receivers. See TODO
-\subsubsection{network:}
+\subsection{network:}
 Boolean to process all stations in a single filter. May be used for determination of orbits, clocks, etc. See TODO
-\subsubsection{minimum\_constraints:}
+\subsection{minimum\_constraints:}
 Boolean to apply a rigid transformation to the results of the network filter after completion. See TODO
-\subsubsection{ionosphere:}
+\subsection{ionosphere:}
 Boolean to compute an ionosphere model from observations. See TODO
-\subsubsection{unit\_tests:}
+\subsection{unit\_tests:}
 Boolean to run tests to compare intermediate values during processing to stored results. See TODO
 
 \subsection{process\_sys:}
+\begin{lstlisting}[language=yaml,caption=process\_sys:]
+process_sys:
+    gps:            true
+    glo:            false
+    gal:            false
+    bds:            false
+\end{lstlisting}
+
 \subsubsection{gps:}
 \subsubsection{glo:}
 \subsubsection{gal:}
@@ -666,6 +733,224 @@ Processing will begin at the earliest of: Observations received for all stations
 \subsection{code\_priorities:}
 List of observation codes that may be used in processing, and the order of priority for use. (Currently only a single code is used per frequency)
 
+\subsection{joseph\_stabilisation:}
+Boolean to apply additional calculations in filter to ensure numerical stability.
+
+
+
+
+
+
+
+
+
+
+
+\section{user\_filter\_parameters, network\_filter\_parameters, ionosphere\_filter\_parameters:}
+
+\subsection{inverter:}
+Method of inversion used to calculate kalman gain. options include 
+LLT,
+LDLT,
+INV
+
+\subsection{max\_prefit\_remvovals:}
+Prior to kalman filtering the prefit residuals of measurements are checked for consistency, and may be removed or deweighted if not statistically reasonable. This parameter defines how many such measurements may be removed or deweighted at a given epoch.
+
+These removals have low overhead associated with them as they occur before filter inversion takes place.
+
+\subsection{max\_filter\_iterations:}
+After kalman filtering, the postfit residuals of meaurements are checked for consistency, and measurements may be removed or deweighted if not statistically reasonable. This parameter specifies the number of times the filter may be iterated by deweighting and recomputing the resultant values.
+
+These iterations have large overhead with them as the complete filter stage is computed multiple times. Large iteration values may exceed double the processing time.
+
+
+\subsection{rts\_lag:}
+Number of future epochs to use in RTS smoothing. A larger lag will give more optimal smoothing results, at the expense of a longer lag before they are calculated, and requiring more processing time per epoch.
+
+A negative value indicates that the entire solution should be smoothed at the conclusion of processing. This will obtain optimal results, with lowest processing time, but is not suitable for real-time applications.
+
+\subsection{rts\_directory:}
+Directory to output RTS files.
+
+\subsection{rts\_filename:}
+Filename for RTS files. Multiple intermediate files are generated by RTS smoothing, as well as an additional output files for kalman filter states and clocks.
+
+\subsection{outage\_reset\_limit:}
+Maximum number of epochs with missed phase measurements before the ambiguity associated with the measurement is reset.
+
+\subsection{phase\_reject\_limit:}
+Maximum number of phase measurements to reject before the ambiguity associated with the measurement is reset.
+
+
+
+
+
+
+
+
+\section{troposphere:}	TODO aaron, in config twice
+
+\subsection{model:}
+
+\subsection{vmf3dir:}
+
+\subsection{orography:}
+
+\subsection{gpt2grid:}
+
+
+
+
+\section{ionosphere:}
+
+\subsection{corr\_mode:}
+
+\subsection{iflc\_freqs:}
+
+
+
+
+
+\section{unit\_test\_options:}
+
+\subsection{output\_pass:}
+
+\subsection{stop\_on\_fail:}
+
+\subsection{stop\_on\_done:}
+
+\subsection{output\_errors:}
+
+\subsection{absorb\_errors:}
+
+\subsection{directory:}
+
+\subsection{filename:}
+
+
+
+
+
+
+\section{ionosphere\_filter\_parameters:}
+
+\subsection{model:}
+
+\subsection{lat\_center, lon\_center:}
+
+\subsection{lat\_width, lon\_width:}
+
+\subsection{lat\_res, lon\_res:}
+
+\subsection{time\_res:}
+
+\subsection{func\_order:}
+
+\subsection{layer\_heights:}
+
+\subsection{model\_noise:}
+
+
+
+
+
+\section{ambiguity\_resolution\_options:}
+
+\subsection{Min\_elev\_for\_AR:}
+
+\subsection{Set\_size\_for\_lambda:}
+
+\subsection{Max\_round\_iterat:}
+
+\subsection{GPS\_amb\_resol:}
+
+\subsection{WL\_mode:}
+
+\subsection{WL\_succ\_rate\_thres:}
+
+\subsection{WL\_sol\_ratio\_thres:}
+
+\subsection{WL\_procs\_noise\_sat:}
+
+\subsection{WL\_procs\_noise\_sta:}
+
+\subsection{NL\_mode:}
+
+\subsection{NL\_succ\_rate\_thres:}
+
+\subsection{NL\_proc\_start:}
+
+\subsection{read\_OSB:}
+
+\subsection{read\_DSB:}
+
+\subsection{read\_SSR:}
+
+\subsection{read\_satellite\_bias:}
+
+\subsection{read\_station\_bias:}
+
+\subsection{read\_GLONASS\_IFB:}
+
+\subsection{write\_OSB:}
+
+\subsection{write\_DSB:}
+
+\subsection{write\_SSR\_bias:}
+
+\subsection{write\_satellite\_bias:}
+
+\subsection{write\_station\_bias:}
+
+\subsection{bias\_output\_rate:}
+
+
+
+
+
+
+\section{minimum\_constraints:}
+
+\subsection{process\_mode:}
+
+\subsection{estimate:}
+
+\subsubsection{scale:}
+
+\subsubsection{rotation:}
+
+\subsubsection{translation:}
+
+
+
+\section{output\_options:}
+
+\subsection{config\_description:}
+
+\subsection{analysis\_agency:}
+
+\subsection{analysis\_center:}
+
+\subsection{analysis\_program:}
+
+\subsection{rinex\_comment:}
+
+
+
+\section{default\_filter\_parameters:}
+
+\subsection{stations:}
+
+\subsubsection{error\_model:}
+
+\subsubsection{code\_sigmas, phase\_sigmas:}
+
+\subsubsection{title}
+
+\subsection{satellites:}
+
+\subsection{eop:}
 
 
 
@@ -678,6 +963,7 @@ satellite options
 
 Kalman objects
 
+eigen
 
 minimum constraint options
 

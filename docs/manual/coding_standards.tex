@@ -6,7 +6,7 @@
 \section{Code style}
 Decades of experience has shown that codebases that are built with concise, clean code have fewer issues and are easier to maintain. If submitting a pull request for a patch to the software, please ensure your code meets the following standards.
 
-Overall we are aiming for
+Overall we are aiming to
 \begin{itemize}
 	\item  Write for clarity
 	\item  Write for clarity
@@ -14,7 +14,7 @@ Overall we are aiming for
 	\item  Use aliases to reduce clutter.
 \end{itemize}
 
-\subsection{Bad}
+\subsubsection{Unconcise code - Not recommended}
 \begin{lstlisting}[language=C++]
 //check first letter of satellite type against something
 
@@ -29,7 +29,7 @@ else if (obs.Sat.id().c_str()[0]) == 'I')
     
 \end{lstlisting}
 
-\subsection{Good}
+\subsubsection{Clear Code - Good}
 
 \begin{lstlisting}[language=c++]
 char& sysChar = obs.Sat.id().c_str()[0];
@@ -54,7 +54,7 @@ switch (sysChar)
 	\item  Use tabs to keep things tidy - If the same function is called multiple times with different parameters, the parameters should line up.
 \end{itemize}
 
-\subsection{Bad}
+\subsubsection{Scattered Parameters - Bad}
 
 \begin{lstlisting}[language=c++]
 trySetFromYaml(mongo_metadata,output_files,{"mongo_metadata" });
@@ -62,7 +62,7 @@ trySetFromYaml(mongo_output_measurements,output_files,{"mongo_output_measurement
 trySetFromYaml(mongo_states,output_files,{"mongo_states" });
 \end{lstlisting}
 
-\subsection{Good}
+\subsubsection{Aligned Parameters - Good}
 \begin{lstlisting}[language=c++]
 trySetFromYaml(mongo_metadata,             output_files, {"mongo_metadata"              });
 trySetFromYaml(mongo_output_measurements,  output_files, {"mongo_output_measurements"	});
@@ -71,14 +71,15 @@ trySetFromYaml(mongo_states,               output_files, {"mongo_states"		      
 
 \section{Statements}
 
-* One statement per line  - \*unless you have a very good reason
+One statement per line 
+- * unless you have a very good reason
 
-\subsection{Bad}
+\subsubsection{Multiple Statements per Line - Bad}
 \begin{lstlisting}[language=c++]
 z[k]=ROUND(zb[k]); y=zb[k]-z[k]; step[k]=SGN(y);
 \end{lstlisting}
 
-\subsection{Good}
+\subsubsection{Single Statement per Line - Good}
 
 \begin{lstlisting}[language=c++]
 z[k]    = ROUND(zb[k]);
@@ -86,11 +87,11 @@ y       = zb[k]-z[k];
 step[k] = SGN(y);
 \end{lstlisting}
 
-\subsection{Example of a good reason:}
+\subsubsection{Example of a good reason:}
 
 * Multiple statements per line sometimes shows repetetive code more clearly, but put some spaces so the separation is clear.
 
-\subsection{Normal}
+\subsubsection{Normal}
 
 \begin{lstlisting}[language=c++]
 switch (sysChar)
@@ -112,7 +113,7 @@ switch (sysChar)
 }
 \end{lstlisting}
 
-\subsection{Ok}
+\subsubsection{Ok}
 
 \begin{lstlisting}[language=c++]
 if      (sys == SYS_GLO)    fact = EFACT_GLO;
@@ -122,7 +123,7 @@ else if (sys == SYS_SBS)    fact = EFACT_SBS;
 else                        fact = EFACT_GPS;
 \end{lstlisting}
 
-\subsection{Ok}	
+\subsubsection{Ok}	
 
 \begin{lstlisting}[language=c++]
 switch (sysChar)
@@ -173,7 +174,7 @@ if  ( ( testA     > 10)
 
 * Use variables to name return values rather than using functions directly
 
-\subsection{Bad}
+\subsubsection{Bad}
 
 \begin{lstlisting}[language=c++]
 if (doSomeParsing(someObject))
@@ -182,7 +183,7 @@ if (doSomeParsing(someObject))
 }
 \end{lstlisting}
 
-\subsection{Good}
+\subsubsection{Good}
 \begin{lstlisting}[language=c++]
 bool fail = doSomeParsing(someObject);
 if (fail)
@@ -331,7 +332,7 @@ void function(
 \item Prefer range-based loops rather than iterators or `i` loops, unless unavoidable.
 \end{itemize}
 
-\subsection{Bad}
+\subsubsection{Bad}
 \begin{lstlisting}[language=c++]
 double double_arr[10] = {};
 
@@ -356,7 +357,7 @@ for (auto iter = doubleMap.begin(); iter != doubleMap.end(); iter++)   //long, u
    	}
 }
 \end{lstlisting}
-\subsection{Good - Iterating Maps}
+\subsubsection{Good - Iterating Maps}
 \begin{lstlisting}[language=c++]
 map<string, double> offsetMap;
 
@@ -370,7 +371,7 @@ for (auto& [siteName, offset] : doubleMap)	//give readable names to map keys and
     }
 }
 \end{lstlisting}
-\subsection{ Good - Iterating Lists}
+\subsubsection{Good - Iterating Lists}
 \begin{lstlisting}[language=c++]
 list<Obs> obsList;
 
@@ -382,7 +383,7 @@ for (auto& obs : obsList)         //give readable names to list elements
 }
 \end{lstlisting}
 
-\section{Special Case - Deleting from maps/lists}
+\subsubsection{Special Case - Deleting from maps/lists}
 
 Use iterators when you need to delete from STL containers:
 \begin{lstlisting}[language=c++]
