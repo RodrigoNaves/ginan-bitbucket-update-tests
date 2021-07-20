@@ -700,7 +700,7 @@ MinimumStationOptions& ACSConfig::getMinConOpts(
 		return recOpts;
 
 	//initialise the options for this reciever
-// 	auto& globalOpts = minCOpts.stationMap[""];
+	auto& globalOpts = minCOpts.stationMap[""];
 	if (globalOpts._initialised == false)
 	{
 		//get specifics from config file
