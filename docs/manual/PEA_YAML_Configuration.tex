@@ -43,7 +43,7 @@ To process one RINEX file, you need to first specify the root dircetory of where
 $ pea --rnx CAS100ATA_R_20191990000_01D_30S_MO.rnx
 \end{lstlisting}
 %
-If you wanted to process another file, located in the same \emph{root\_stations\_directory}, this can be achieved at the command line using the \emph{-rnx <rnxfilename} flag, see listing~ref{lst:pea-yaml-add-station}.
+If you wanted to process another file, located in the same \emph{root\_stations\_directory}, this can be achieved at the command line using the \emph{-rnx \textless rnxfilename \textgreater} flag, see listing~ref{lst:pea-yaml-add-station}.
 %
 \begin{lstlisting}[language=yaml,caption=yaml input files configuration example]
 station_data:
@@ -451,16 +451,24 @@ clocks_filename:                <CONFIG>.clk
 \subsection{Wildcard Tags}
 Output filenames can include wildcards wrapped in < > brackets to allow more generic names to be used. While processing, these tags are replaced with details gathered from processing, and allows for automatic generation of, for example, hourly output files.
 
-\subsection{<CONFIG>}
+\subsection{\textless CONFIG\textgreater}
 This is replaced with the 'config\_description' value entered in the yaml file.
-\subsection{<STATION>}
+\subsection{\textless STATION\textgreater}
 This is replaced with the 4 character station id of each station that generates a trace file.
-\subsection{<LOGTIME>}
+\subsection{\textless LOGTIME\textgreater}
 This is replaced with the (rounded) time of the epochs within the trace file.
 
 If trace file rotation is configured for 1 hour, the <LOGTIME> wildcard will be rounded down to the closest hour, and subsequently change value once per hour and generate a separate output file for each hour of processing.
 
-\subsection{<DDD>, <D>, <WWWW>, <YYYY>, <YY>, <MM>, <DD>, <HH>}
+\subsection
+{\textless DDD\textgreater,
+\textless D\textgreater, 
+\textless WWWW\textgreater, 
+\textless YYYY\textgreater, 
+\textless YY\textgreater, 
+\textless MM\textgreater, 
+\textless DD\textgreater, 
+\textless HH\textgreater}
 These are replaced with the components of time of the start epoch.
 
 
@@ -481,9 +489,9 @@ trace\_filename, summary\_filename, clocks\_filename, ionex\_filename, biasSinex
 Integer from 0-5 to specify verbosity of trace outputs. (5 - print everything)
 
 \subsection{trace\_rotate\_period, trace\_rotate\_period\_units:}
-Granularity of length of time used for <LOGTIME> tags. These parameters may be used such that the filename of an output will change intermittently, and thus distribute the output over multiple files.
+Granularity of length of time used for \textless LOGTIME\textgreater tags. These parameters may be used such that the filename of an output will change intermittently, and thus distribute the output over multiple files.
 
-The <LOGTIME> tag is updated according to the epoch time, not the current clock time.
+The \textless LOGTIME\textgreater tag is updated according to the epoch time, not the current clock time.
 
 trace\_rotate\_period must be a numeric value, and trace\_rotate\_period\_units may be one of seconds (default), minutes, hours, days, weeks, years, (with or without plural s).
 
@@ -719,7 +727,7 @@ Internal processing option. Bad things will likely happen if this is set to fals
 \subsection{sat\_pcv:}
 Boolean to model satellite phase center variations.
 \subsection{pivot\_station:}
-Station specified as origin for receiver clocks. Clocks for this station will be constrained to zero. May be set to <AUTO> or undefined to use first available station.
+Station specified as origin for receiver clocks. Clocks for this station will be constrained to zero. May be set to \textless AUTO \textgreater or undefined to use first available station.
 \subsection{pivot\_satellite}:
 Unused.
 \subsection{wait\_next\_epoch:}
