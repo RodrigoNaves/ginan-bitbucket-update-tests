@@ -1067,7 +1067,6 @@ bool ACSConfig::parse(
 		trySetScaledFromYaml(ionex_rotate_period,		output_files, {"ionex_rotate_period"	}, {"ionex_rotate_period_units"		}, E_Period::_from_string_nocase);
 		trySetScaledFromYaml(ionstec_rotate_period,		output_files, {"ionstec_rotate_period"	}, {"ionstec_rotate_period_units"	}, E_Period::_from_string_nocase);
 		trySetScaledFromYaml(biasSINEX_rotate_period,	output_files, {"biasSINEX_rotate_period"}, {"biasSINEX_rotate_period_units"	}, E_Period::_from_string_nocase);
-		
 	}
 
 	auto processing_options = stringsToYamlObject(yaml, {"processing_options"});
