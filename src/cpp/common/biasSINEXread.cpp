@@ -5,12 +5,8 @@
 #include "biasSINEX.hpp"
 #include "enums.h"
 
-
-
 #define SSR_CBIA_VALID 3600.0
 #define SSR_PBIA_VALID 300.0
-
-
 
 
 map<E_Sys, E_ObsCode> defaultCodesL1 =
@@ -32,7 +28,6 @@ map<E_Sys, E_ObsCode> defaultCodesL2 =
 };
 
 array<map<string, map<E_ObsCode, map<E_ObsCode, map<GTime, SinexBias, std::greater<GTime>>>>>, NUM_MEAS> SINEXBiases;		///< Multi dimensional map, as SINEXBiases[measType][id][code1][code2][time]
-array<map<string, map<E_ObsCode, map<E_ObsCode, map<GTime, SinexBias, std::greater<GTime>>>>>, NUM_MEAS> SINEXBiases_out;	///< Multi dimensional map, as SINEXBiases[measType][id][code1][code2][time]
 
 E_ObsCode str2code(
 	string&		input,

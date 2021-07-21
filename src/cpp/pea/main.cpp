@@ -507,7 +507,9 @@ void mainOncePerEpochPerStation(
 	
 	if (acsConfig.process_ionosphere)
 	{
-		update_receivr_measr(trace, rec);
+		bool sppUsed;
+		selectAprioriSource(rec,sppUsed);
+		if(rec.aprioriPos.norm()) update_receivr_measr(trace, rec);
 	}
 
 	/* exclude measurements of eclipsing satellite (block IIA) */
