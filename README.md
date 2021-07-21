@@ -44,7 +44,7 @@ Ginan is supported on the following platforms
 ***
 ## Download
 
-You can downlaod Ginan source from github using git clone:
+You can download Ginan source from github using git clone:
 
     $ git clone https://github.com/GeoscienceAustralia/ginan.git
     
@@ -62,25 +62,25 @@ Then download all of the example data using the python script provided:
     ├── CMakeLists.txt		! Cmake build file
     ├── docs/			    ! Documentation directory
     ├── examples/           ! Ginan examples directory
-    |   ├── data/           ! example dataset (rinex files)**
-    |   ├── products/       ! example products and aux files**
-    |   ├── solutions/      ! example solutions for QC**
-    |   --------------PEA examples--------------
-    |   ├── ex11            ! PEA example 1
-    |   ├── ex12            ! PEA example 2
-    |   ├── ex13            ! PEA example 3
-    |   ├── ex14            ! PEA example 4
-    |   ├── ex15            ! PEA example 5
-    |   ├── ex17            ! PEA example 7
-    |   ├── ex18            ! PEA example 8
-    |   --------------POD examples--------------
-    |   ├── ex21            ! POD example 1
-    |   ├── ex22            ! POD example 2
-    |   ├── ex23            ! POD example 3
-    |   ├── ex24            ! POD example 4
-    |   ├── ex25            ! POD example 5
-    |   └── ex26            ! POD example 6
-    |
+    │   ├── data/           ! example dataset (rinex files)**
+    │   ├── products/       ! example products and aux files**
+    │   ├── solutions/      ! example solutions for QC**
+    │   --------------PEA examples--------------
+    │   ├── ex11            ! PEA example 1
+    │   ├── ex12            ! PEA example 2
+    │   ├── ex13            ! PEA example 3
+    │   ├── ex14            ! PEA example 4
+    │   ├── ex15            ! PEA example 5
+    │   ├── ex17            ! PEA example 7
+    │   ├── ex18            ! PEA example 8
+    │   --------------POD examples--------------
+    │   ├── ex21            ! POD example 1
+    │   ├── ex22            ! POD example 2
+    │   ├── ex23            ! POD example 3
+    │   ├── ex24            ! POD example 4
+    │   ├── ex25            ! POD example 5
+    │   └── ex26            ! POD example 6
+    │
     ├── lib/		        ! Compiled objectlibrary directory*
     ├── scripts/		    ! Auxillary Python and Shell scripts and libraries
     └── src/		        ! Source code directory
@@ -377,7 +377,7 @@ Now, go to `docs/manual` and generate the pdf:
     $ makeglossaries main
     $ pdflatex main.tex
 
-`main.pdf`file should now appear in the directory.
+`main.pdf` file should now appear in the directory.
 ***
 ## Ready!
 Congratulations! You are now ready to trial the examples of PEA and POD from the examples directory. See Ginan's manual for detailed explanation of each example. Note that examples have relative paths to files in them and rely on the presence of `products`, `data` and `solutions` directories inside the `examples` directory. Make sure you've run `download_examples.py` from the **Download** step of this instruction.
