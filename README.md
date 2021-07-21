@@ -19,7 +19,7 @@ We currently support the processing of:
 
 *\*precise orbit determination only with full support coming soon*
 
-We are actively developing the ACS to have the following capabilities and features:
+We are actively developing Ginan to have the following capabilities and features:
 
 * Precise Orbit & Clock determination of GNSS satellites (GNSS POD);
 * Precise Point Positioning (PPP) of GNSS stations in network and individual mode;
@@ -33,20 +33,20 @@ We are actively developing the ACS to have the following capabilities and featur
 * Routinely produce IGS final, rapid, ultra-rapid and real-time (RT) products;
 * Model Ocean Tide Loading (OTL) displacements.
 
-The software is broken into two main components: Network Parameter Estimation Algorithm (PEA) and Precise Orbit Determination (POD).
+The software consists of two main components: Network Parameter Estimation Algorithm (PEA) and Precise Orbit Determination (POD).
 ***
 ## Supported Platforms
 
-Ginan is supported on the following Platforms
+Ginan is supported on the following platforms
 
 * Linux
-* Mac OSX
+* MacOS
 ***
 ## Download
 
 You can downlaod Ginan source from github using git clone:
 
-    $ git clone git@https://github.com/GeoscienceAustralia/ginan.git
+    $ git clone https://github.com/GeoscienceAustralia/ginan.git
     
 Then download all of the example data using the python script provided:
 
@@ -171,6 +171,7 @@ Eigen3 is used for performing matrix calculations in PEA, and has a very nice AP
 
 
 ### MongoDB (PEA, optional)
+Needed for realtime preview of the processed results (developers-only)
 
     $ wget https://github.com/mongodb/mongo-c-driver/releases/download/1.17.1/mongo-c-driver-1.17.1.tar.gz
     $ tar -xvf mongo-c-driver-1.17.1.tar.gz
