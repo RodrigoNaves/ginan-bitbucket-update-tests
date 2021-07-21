@@ -946,7 +946,9 @@ int main(int argc, char **argv)
 	{
 		BOOST_LOG_TRIVIAL(error) 	<< "Incorrect configuration";
 		BOOST_LOG_TRIVIAL(info) 	<< "PEA finished";
-
+#ifndef	ENABLE_UNIT_TESTS
+		NtripSocket::io_service.stop();
+#endif
 		return EXIT_FAILURE;
 	}
 

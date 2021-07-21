@@ -8,7 +8,7 @@ Name=New Compiled Binary Launcher
 Type=Native Application
 
 [Launch][Launch Configuration 0][Data]
-Arguments=--config ../Development/Ex-ACS21-RtcmTest.yaml\s
+Arguments=--config ../Development/ex18_pea_rt_netw_gnss_ar.yaml
 Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
 Dependency Action=Nothing
 EnvironmentGroup=
