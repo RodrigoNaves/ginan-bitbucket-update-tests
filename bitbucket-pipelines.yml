@@ -7,8 +7,6 @@ pipelines:
         name: Build docker image
         services:
             - docker
-        caches:
-            - docker
         size: 2x
         script:
             - export TAG=$(git describe --tags --always)
@@ -147,8 +145,6 @@ pipelines:
         name: Push docker image
         services:
             - docker
-        caches:
-            - docker
         size: 2x
         script:
             - export TAG=$(git describe --tags --always)
@@ -163,8 +159,6 @@ pipelines:
     - step:
         name: Build manual
         services:
-            - docker
-        caches:
             - docker
         size: 2x
         script:
