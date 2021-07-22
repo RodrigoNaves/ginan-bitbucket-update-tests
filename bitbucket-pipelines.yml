@@ -12,11 +12,42 @@ pipelines:
         size: 2x
         script:
             - export TAG=$(git describe --tags --always)
-            - export IMAGE="$DOCKER_HUB_USERNAME/ginan:$TAG"
+            - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
             - docker build -t "$IMAGE" -f ./aws/docker/Dockerfile .
-            - docker run "$IMAGE" /ginan/aws/docker/run-tests.sh
             - docker login -u "$DOCKER_HUB_USERNAME" -p "$DOCKER_HUB_PASSWORD"
             - docker push "$IMAGE"
+    - parallel:
+        - step:
+            script:
+              - export TAG=$(git describe --tags --always)
+              - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
+              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pea.sh
+            services:
+                - docker
+            size: 2x
+        - step:
+            script:
+              - export TAG=$(git describe --tags --always)
+              - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
+              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pod.sh
+            services:
+                - docker
+            size: 2x
+    - step:
+        name: Push docker image
+        services:
+            - docker
+        caches:
+            - docker
+        size: 2x
+        script:
+            - export TAG=$(git describe --tags --always)
+            - export CACHE_IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
+            - export FINAL_IMAGE="$DOCKER_HUB_USERNAME/ginan:$TAG"
+            - docker pull "$CACHE_IMAGE"
+            - docker login -u "$DOCKER_HUB_USERNAME" -p "$DOCKER_HUB_PASSWORD"
+            - docker tag "$CACHE_IMAGE" "$FINAL_IMAGE"
+            - docker push "$FINAL_IMAGE"
 
 definitions:
   services:
