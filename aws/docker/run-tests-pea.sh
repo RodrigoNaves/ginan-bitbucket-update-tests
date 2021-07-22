@@ -11,15 +11,36 @@ cd /ginan
 python scripts/download_examples.py
 
 # run example tests
+TEST_NUM=$1
+
 cd /ginan/examples
-pea --config ex11_pea_pp_user_gps.yaml
-pea --config ex12_pea_pp_user_gnss.yaml
-pea --config ex13_pea_pp_user_gps_sf.yaml
-pea --config ex14_pea_pp_user_gnss_ar.yaml
-# TODO not working:
-# pea --config ex15_pea_rt_user_gnss_ar.yaml
-# TODO absent:
-# ex16
-pea --config ex17_pea_pp_netw_gnss_ar.yaml
-# TODO not working:
-# pea --config ex18_pea_rt_netw_gnss_ar.yaml
+
+case $TEST_NUM in
+  1)
+    pea --config ex11_pea_pp_user_gps.yaml
+    ;;
+  2)
+    pea --config ex12_pea_pp_user_gnss.yaml
+    ;;
+  3)
+    pea --config ex13_pea_pp_user_gps_sf.yaml
+    ;;
+  4)
+    pea --config ex14_pea_pp_user_gnss_ar.yaml
+    ;;
+  5)
+    # TODO not working:
+    ## pea --config ex15_pea_rt_user_gnss_ar.yaml
+    ;;
+  6)
+    # TODO absent:
+    # ex16
+    ;;
+  7)
+    pea --config ex17_pea_pp_netw_gnss_ar.yaml
+    ;;
+  8)
+    # TODO not working:
+    # pea --config ex18_pea_rt_netw_gnss_ar.yaml
+    ;;
+esac

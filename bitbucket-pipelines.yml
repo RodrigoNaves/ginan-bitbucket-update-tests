@@ -21,7 +21,7 @@ pipelines:
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
-              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pea.sh
+              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pea.sh 1
             services:
                 - docker
             size: 2x
@@ -29,7 +29,103 @@ pipelines:
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
-              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pod.sh
+              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pea.sh 2
+            services:
+                - docker
+            size: 2x
+        - step:
+            script:
+              - export TAG=$(git describe --tags --always)
+              - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
+              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pea.sh 3
+            services:
+                - docker
+            size: 2x
+        - step:
+            script:
+              - export TAG=$(git describe --tags --always)
+              - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
+              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pea.sh 4
+            services:
+                - docker
+            size: 2x
+        - step:
+            script:
+              - export TAG=$(git describe --tags --always)
+              - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
+              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pea.sh 5
+            services:
+                - docker
+            size: 2x
+        - step:
+            script:
+              - export TAG=$(git describe --tags --always)
+              - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
+              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pea.sh 6
+            services:
+                - docker
+            size: 2x
+        - step:
+            script:
+              - export TAG=$(git describe --tags --always)
+              - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
+              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pea.sh 7
+            services:
+                - docker
+            size: 2x
+        - step:
+            script:
+              - export TAG=$(git describe --tags --always)
+              - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
+              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pea.sh 8
+            services:
+                - docker
+            size: 2x
+        - step:
+            script:
+              - export TAG=$(git describe --tags --always)
+              - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
+              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pod.sh 1
+            services:
+                - docker
+            size: 2x
+        - step:
+            script:
+              - export TAG=$(git describe --tags --always)
+              - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
+              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pod.sh 2
+            services:
+                - docker
+            size: 2x
+        - step:
+            script:
+              - export TAG=$(git describe --tags --always)
+              - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
+              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pod.sh 3
+            services:
+                - docker
+            size: 2x
+        - step:
+            script:
+              - export TAG=$(git describe --tags --always)
+              - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
+              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pod.sh 4
+            services:
+                - docker
+            size: 2x
+        - step:
+            script:
+              - export TAG=$(git describe --tags --always)
+              - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
+              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pod.sh 5
+            services:
+                - docker
+            size: 2x
+        - step:
+            script:
+              - export TAG=$(git describe --tags --always)
+              - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
+              - docker run "$IMAGE" /ginan/aws/docker/run-tests-pod.sh 6
             services:
                 - docker
             size: 2x
