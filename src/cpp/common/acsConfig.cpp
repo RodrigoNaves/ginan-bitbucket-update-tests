@@ -888,7 +888,7 @@ void globber(
 				// Skip if not a file
 				if (boost::filesystem::is_regular_file(dir_file) == false)
 					continue;
-
+				
 				string dir_fileName = dir_file.path().filename().string();
 
 				if (checkGlob(searchGlob, dir_fileName))
@@ -1421,7 +1421,6 @@ bool ACSConfig::parse(
 
 
 
-	trySetFromYaml(run_rtcm_files,yaml,{"station_data", "run_rtcm_files"});
 	trySetFromYaml(caster_test,	yaml,{"station_data", "caster_test"});
 	trySetFromYaml(print_stream_statistics,	yaml,{"station_data", "print_stats"});
 
@@ -1511,7 +1510,7 @@ bool ACSConfig::parse(
 					foundMount = true;
 			}
 			
-			if ( foundMount || run_rtcm_files)
+			if ( foundMount )
 			{
 				ntripStreams[id] = fullUrl;
 			}
@@ -1531,61 +1530,26 @@ bool ACSConfig::parse(
 				continue;
 			}
 
-			if ( run_rtcm_files )
-			{
-				std::cout << "Opening RTCM files.\n";
-				std::string filename				= rtcm_filename;
-				replaceString(filename, "<STATION>", id);
-				
-				GTime fileTime;
-				fileTime.time = to_time_t(start_epoch);
-				fileTime.time /= rtcm_rotate_period;
-				fileTime.time *= rtcm_rotate_period;
 	
-				string logtime = fileTime.to_string(0);
-				std::replace( logtime.begin(), logtime.end(), '/', '-');			
-				
-				replaceString(filename, "<LOGTIME>", logtime);	
-				
-				std::cout << "Opening file : " << filename << std::endl;
-				
-				if ( !boost::filesystem::exists(filename) )
-				{
-					BOOST_LOG_TRIVIAL(error)
-						<< "Error, RTCM message file for " << id 
-						<< " filename : " << filename
-						<< " does not exit.\n";
-					exit(1);
-				}
-				
-				
-				auto ntripStream_ptr = std::make_shared<FileRtcmStream>(filename);
-				
-				if (nav == false)		{	obsStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}
-				else					{	navStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}			
-				streamDOAMap[streamUrl] = false;
-			}
-			else
+			auto ntripStream_ptr = std::make_shared<NtripRtcmStream>(streamUrl);
+			ntripRtcmMultimap.insert({id, ntripStream_ptr}); // for network (internet) tracing
+	
+			
+			if ( rtcm_record )
 			{
-				auto ntripStream_ptr = std::make_shared<NtripRtcmStream>(streamUrl);
-				ntripRtcmMultimap.insert({id, ntripStream_ptr}); // for network (internet) tracing
-		
-				
-				if ( rtcm_record )
-				{
-					NtripRtcmStream& downloadStream = *ntripStream_ptr;
-					downloadStream.rtcm_record					= rtcm_record;
-					downloadStream.rtcm_directory				= rtcm_directory;
-					downloadStream.rtcm_filename				= rtcm_filename;
-					replaceString(downloadStream.rtcm_filename, "<STATION>", id);
-					downloadStream.rtcm_rotate_period			= rtcm_rotate_period;		
-					downloadStream.createRtcmFile();
-				}
-				
-				if (nav == false)		{	obsStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}
-				else					{	navStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}			
-				streamDOAMap[streamUrl] = false;
+				NtripRtcmStream& downloadStream = *ntripStream_ptr;
+				downloadStream.rtcm_record					= rtcm_record;
+				downloadStream.rtcm_directory				= rtcm_directory;
+				downloadStream.rtcm_filename				= rtcm_filename;
+				replaceString(downloadStream.rtcm_filename, "<STATION>", id);
+				downloadStream.rtcm_rotate_period			= rtcm_rotate_period;		
+				downloadStream.createRtcmFile();
 			}
+			
+			if (nav == false)		{	obsStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}
+			else					{	navStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}			
+			streamDOAMap[streamUrl] = false;
+		
 		}
 	}
 
