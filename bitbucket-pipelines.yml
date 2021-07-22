@@ -18,6 +18,7 @@ pipelines:
             - docker push "$IMAGE"
     - parallel:
         - step:
+            name: PEA test 1
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -26,6 +27,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
+            name: PEA test 2
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -34,6 +36,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
+            name: PEA test 3
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -42,6 +45,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
+            name: PEA test 4
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -50,6 +54,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
+            name: PEA test 5
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -58,6 +63,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
+            name: PEA test 6
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -66,6 +72,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
+            name: PEA test 7
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -74,6 +81,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
+            name: PEA test 8
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -82,6 +90,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
+            name: POD test 1
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -90,6 +99,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
+            name: POD test 2
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -98,6 +108,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
+            name: POD test 3
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -106,6 +117,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
+            name: POD test 4
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -114,6 +126,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
+            name: POD test 5
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -122,6 +135,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
+            name: POD test 6
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -139,11 +153,28 @@ pipelines:
         script:
             - export TAG=$(git describe --tags --always)
             - export CACHE_IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
-            - export FINAL_IMAGE="$DOCKER_HUB_USERNAME/ginan:$TAG"
+            - export FINAL_IMAGE="$DOCKER_HUB_USERNAME/ginan"
             - docker pull "$CACHE_IMAGE"
             - docker login -u "$DOCKER_HUB_USERNAME" -p "$DOCKER_HUB_PASSWORD"
-            - docker tag "$CACHE_IMAGE" "$FINAL_IMAGE"
-            - docker push "$FINAL_IMAGE"
+            - docker tag "$CACHE_IMAGE" "$FINAL_IMAGE:$TAG"
+            - docker push "$FINAL_IMAGE:$TAG"
+            - docker tag "$CACHE_IMAGE" "$FINAL_IMAGE:latest"
+            - docker push "$FINAL_IMAGE:latest"
+    - step:
+        name: Build manual
+        services:
+            - docker
+        caches:
+            - docker
+        size: 2x
+        script:
+            - export TAG=$(git describe --tags --always)
+            - export IMAGE="$DOCKER_HUB_USERNAME/ginan-env:latest"
+            - export MANUAL="ginan-manual-$(date +"%Y-%m-%d")-$TAG.pdf"
+            - docker pull "$IMAGE"
+            - docker run -v "$PWD/docs/manual:/manual" "$IMAGE" bash -c "cd /manual; pdflatex main; pdflatex main; mv main.pdf $MANUAL"
+            - docker run -v "$PWD/docs/manual:/manual" -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e AWS_DEFAULT_REGION amazon/aws-cli s3 cp "/manual/$MANUAL" "s3://ginan-manual/$MANUAL"
+
 
 definitions:
   services:
