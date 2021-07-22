@@ -583,8 +583,8 @@ int readrnxh(
 	tsys	= TSYS_GPS;
 
 	char sysChar = "";
-	int type_offset = 20;
-	int sysChar_offset = 40;
+	int typeOffset = 20;
+	int sysCharOffset = 40;
 
 	while (std::getline(inputStream, line))
 	{
@@ -599,13 +599,13 @@ int readrnxh(
 
 			if(ver==3.04)
 			{
-				type_offset+=1;
-				sysChar_offset+=2;
+				typeOffset		+= 1;
+				sysCharOffset	+= 2;
 			}
 
-			type	= *(buff+type_offset);
+			type	= buff[typeOffset];
 
-			sysChar = buff[sysChar_offset];
+			sysChar = buff[sysCharOffset];
 
 			/* satellite system */
 			switch (sysChar)
@@ -1290,7 +1290,8 @@ int readrnxclk(
 	index++;
 	string line;
 
-	typedef struct {
+	typedef struct 
+	{
 		short offset;
 		short length;
 	} ClkStruct;
@@ -1303,7 +1304,9 @@ int readrnxclk(
 	ClkStruct clk = {40,19};
 	ClkStruct std = {60,19};
 
-	if (ver == 3.04){
+	/* special case for 3.04 rnx with 9 char AR names */
+	if (ver == 3.04)
+	{
 		ar.length  += 5;
 		tim.offset += 5;
 		clk.offset += 5;
