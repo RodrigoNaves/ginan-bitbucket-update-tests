@@ -200,6 +200,7 @@ struct RtcmStream : ObsStream, NavStream,
 	double totalLatency = 0;
 	ulong numMessagesLatency = 0;
     
+	bool rtcm_file_run = false;
     GTime rtcm_UTC;
     int adjgpsweek(int week) override;
     void setTime(GTime& time, double tow) override;

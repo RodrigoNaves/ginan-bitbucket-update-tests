@@ -54,6 +54,7 @@ ObsList ObsStream::getObs()
 	}
 	else
 	{
+
 		return ObsList();
 	}
 }
@@ -339,10 +340,14 @@ int RtcmStream::adjgpsweek(int week)
 void RtcmStream::setTime(GTime& time, double tow)
 {
     GTime now;
-    if ( rtcm_UTC.time == 0 )
-        now = utc2gpst(timeget());
+    if ( rtcm_file_run )
+	{
+		//std::cout << "rtcm_UTC :" << std::put_time( std::gmtime( &rtcm_UTC.time ), "%F %X" )
+		//						  << " : " << rtcm_UTC.sec << std::endl;
+		now = utc2gpst(rtcm_UTC);
+	}
     else
-        now = utc2gpst(rtcm_UTC);
+        now = utc2gpst(timeget());
 
 	int week;
 	double tow_p = time2gpst(now, &week);		//todo aaron, cant use now all the time
@@ -1008,7 +1013,7 @@ ObsList MSM7Decoder::decodeMSM7(uint8_t* data, unsigned int message_length,
 	
 	traceLatency(tobs);
 	
-	//create observations for satelllites according to the mask
+	//create observations for satellites according to the mask
 	for (int sat = 0; sat < 64; sat++)
 	{
 		bool mask 					= getbituInc(data, i,	1);
@@ -1018,6 +1023,9 @@ ObsList MSM7Decoder::decodeMSM7(uint8_t* data, unsigned int message_length,
 			obs.Sat.sys = rtcmsys;
 			obs.Sat.prn = sat + 1;
 			obs.time=tobs;
+			//std::cout << "decodeMSM7, obs.time :" << std::put_time( std::gmtime( &obs.time.time ), "%F %X" )
+			//					  << " : " << obs.time.sec << std::endl;			
+			
 			obsList.push_back(obs);
 		}
 	}
@@ -1285,6 +1293,7 @@ void RtcmStream::createRtcmFile()
 
 void RtcmStream::parseRTCM(std::istream& inputStream)
 {
+	
 	while (inputStream)
 	{
 		
@@ -1306,7 +1315,7 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 				}
 			}
 			else
-			{                
+			{ 				
 				return;
 			}
 			byteCnt++;
@@ -1430,6 +1439,7 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
             numFramesDecoded++;
             decodeTimeStampRTCM((uint8_t*) message,message_length);
             rtcm_UTC = customTime;
+			rtcm_file_run = true;
         }
         
         
@@ -1491,6 +1501,9 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 				SuperList.insert(SuperList.end(),obsList.begin(),obsList.end());
 				obsListList.push_back(SuperList);
 				SuperList.clear();
+				// Line added for parsing RTCM files, value indicates that it is the last MSM message
+				// for a given time and reference station ID.
+				return;
 			}
 			else if	( SuperList.size()>0
 					&&obsList.size()>0	
@@ -1505,7 +1518,8 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 				
 			if(SuperList.size()>1000) SuperList.clear();
 		}
-	} 	
+	} 
+
 }
 
 /** Initialises SSROut struct. To be called at the start of every epoch

@@ -193,8 +193,12 @@ void ACSConfig::addStationFile(
 		{
 			auto rtcmStream_ptr = std::make_shared<FileRtcmStream>(filePath.string());
 
+
+			//if( stationId == ??? )
+			//	navStreamMultimap.insert({stationId, std::move(rtcmStream_ptr)});
+			//else
 			obsStreamMultimap.insert({stationId, std::move(rtcmStream_ptr)});
-// 			rinexFiles.push_back(filename.string());
+
 			
 			streamDOAMap[fileName] = false;
 		}
@@ -1467,17 +1471,15 @@ bool ACSConfig::parse(
 
 	std::multimap<std::string,std::vector<std::string>> hostMap;
 	
-	if ( !run_rtcm_files )
-	{
+
 #ifndef	ENABLE_UNIT_TESTS
-		NtripSocket::startClients();
+	NtripSocket::startClients();
 #endif	
-		for( auto host : hosts )
-		{
-			NtripSourceTable sourceTable(host);
-			sourceTable.getSourceTable();
-			hostMap.insert({host,sourceTable.getStreamMounts()});	
-		}
+	for( auto host : hosts )
+	{
+		NtripSourceTable sourceTable(host);
+		sourceTable.getSourceTable();
+		hostMap.insert({host,sourceTable.getStreamMounts()});	
 	}
 	
 	for (auto nav : {false, true})
