@@ -372,167 +372,167 @@ def add_all_angs(
 
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-#     # Introduce command line parser
-#     parser = argparse.ArgumentParser(
-#         description = 'Given a station and a time period, find possible flex power events'
-#         )
+    # Introduce command line parser
+    parser = argparse.ArgumentParser(
+        description = 'Given a station and a time period, find possible flex power events'
+        )
     
-#     # Command line function arguments
-#     parser.add_argument(
-#         "station", 
-#         help = "IGS GPS station name - must be new RINEX3 format - 9 characters"
-#         )        
+    # Command line function arguments
+    parser.add_argument(
+        "station", 
+        help = "IGS GPS station name - must be new RINEX3 format - 9 characters"
+        )        
     
-#     parser.add_argument(
-#         "st_date", 
-#         help = "Start Date in YYYY-MM-DD format"
-#         )
+    parser.add_argument(
+        "st_date", 
+        help = "Start Date in YYYY-MM-DD format"
+        )
     
-#     parser.add_argument(
-#         "en_date", 
-#         help = "End Date in YYYY-MM-DD format"
-#         )
+    parser.add_argument(
+        "en_date", 
+        help = "End Date in YYYY-MM-DD format"
+        )
 
-#     parser.add_argument(
-#         "-doy",
-#         "--day_of_year", 
-#         action='store_true', default=False,
-#         help = "Enter Dates in YYYY-DOY format instead"
-#         )
+    parser.add_argument(
+        "-doy",
+        "--day_of_year", 
+        action='store_true', default=False,
+        help = "Enter Dates in YYYY-DOY format instead"
+        )
 
-#     parser.add_argument(
-#         "obs_codes",
-#         help = 'Comma separated RINEX3 Observation code/s to search, e.g. S1W,S2W '
-#         )
+    parser.add_argument(
+        "obs_codes",
+        help = 'Comma separated RINEX3 Observation code/s to search, e.g. S1W,S2W '
+        )
 
-#     parser.add_argument(
-#         "data_dir",
-#         help = 'The download directory for RINEX3 and sp3 files'
-#         )
+    parser.add_argument(
+        "data_dir",
+        help = 'The download directory for RINEX3 and sp3 files'
+        )
 
-#     parser.add_argument(
-#         "-c",
-#         "--csv",
-#         action='store_true', default=True,
-#         help = 'Produce plots of Flex events'
-#     )
+    parser.add_argument(
+        "-c",
+        "--csv",
+        action='store_true', default=True,
+        help = 'Produce plots of Flex events'
+    )
 
-#     parser.add_argument(
-#         "-c_dir",
-#         "--flex_csv_dir",
-#         action='store', default='pwd',
-#         help = 'The directory to save csv files with list of flex events'
-#         )
+    parser.add_argument(
+        "-c_dir",
+        "--flex_csv_dir",
+        action='store', default='pwd',
+        help = 'The directory to save csv files with list of flex events'
+        )
 
-#     parser.add_argument(
-#         "-p",
-#         "--plot",
-#         action='store_true', default=False,
-#         help = 'Produce plots of Flex events'
-#     )
+    parser.add_argument(
+        "-p",
+        "--plot",
+        action='store_true', default=False,
+        help = 'Produce plots of Flex events'
+    )
 
-#     parser.add_argument(
-#         "-p_dir",
-#         "--flex_plt_dir",
-#         action='store', default='pwd',
-#         help = 'The directory to save png plot files of flex events'
-#         )
+    parser.add_argument(
+        "-p_dir",
+        "--flex_plt_dir",
+        action='store', default='pwd',
+        help = 'The directory to save png plot files of flex events'
+        )
 
-#     parser.add_argument(
-#         "-p_span",
-#         "--plot_time_span", type=float,
-#         action='store', default=1500.0,
-#         help = 'The time span for the plot (+/- seconds from time of the flex event)'
-#         )
+    parser.add_argument(
+        "-p_span",
+        "--plot_time_span", type=float,
+        action='store', default=1500.0,
+        help = 'The time span for the plot (+/- seconds from time of the flex event)'
+        )
 
-#     parser.add_argument(
-#         "-p_name_ord",
-#         "--plot_naming_order",
-#         action='store', default='date,prn,code',
-#         help = '''Plot naming convention - comma separated and must include "date", "prn" and "code"
-#         Default: date,prn,code '''
-#         )
+    parser.add_argument(
+        "-p_name_ord",
+        "--plot_naming_order",
+        action='store', default='date,prn,code',
+        help = '''Plot naming convention - comma separated and must include "date", "prn" and "code"
+        Default: date,prn,code '''
+        )
 
-#     parser.add_argument(
-#         "-j",
-#         "--jump", type=float,
-#         action='store', default=5.0,
-#         help = 'Increase/decrease of C/N0 used to identify Start/End of event'
-#         )
+    parser.add_argument(
+        "-j",
+        "--jump", type=float,
+        action='store', default=5.0,
+        help = 'Increase/decrease of C/N0 used to identify Start/End of event'
+        )
 
-#     parser.add_argument(
-#         "-el_min",
-#         "--elevation_min", type=float,
-#         action='store', default=0.0,
-#         help = 'Min. elevation angle of satellite to consider (anything below ignored)'
-#         )
+    parser.add_argument(
+        "-el_min",
+        "--elevation_min", type=float,
+        action='store', default=0.0,
+        help = 'Min. elevation angle of satellite to consider (anything below ignored)'
+        )
 
-#     parser.add_argument(
-#         "-st_fl",
-#         "--start_floor", type=float,
-#         action='store', default=33.0,
-#         help = 'Min. Decibel-Hertz level at which to search for start of flex events (anything below ignored)'
-#         )
+    parser.add_argument(
+        "-st_fl",
+        "--start_floor", type=float,
+        action='store', default=33.0,
+        help = 'Min. Decibel-Hertz level at which to search for start of flex events (anything below ignored)'
+        )
 
-#     parser.add_argument(
-#         "-en_fl",
-#         "--end_floor", type=float,
-#         action='store', default=30.0,
-#         help = 'Min. Decibel-Hertz level at which to search for end of flex events (anything below ignored)'
-#         )
+    parser.add_argument(
+        "-en_fl",
+        "--end_floor", type=float,
+        action='store', default=30.0,
+        help = 'Min. Decibel-Hertz level at which to search for end of flex events (anything below ignored)'
+        )
     
 
 
-#     # Get command line args:
-#     args = parser.parse_args()
-#     # And start assigning to variables:
-#     station = args.station
-#     st_date = args.st_date
-#     en_date = args.en_date
-#     doy = args.day_of_year
-#     codes = args.obs_codes
-#     st_lvl = args.start_floor
-#     en_lvl = args.end_floor
-#     el_min = args.elevation_min
-#     jump = args.jump
-#     dwn_dir = args.data_dir
-#     csv_flag = args.csv
-#     plot_flag = args.plot
-#     p_span = args.plot_time_span
-#     p_name_list = args.plot_naming_order.split(',')
+    # Get command line args:
+    args = parser.parse_args()
+    # And start assigning to variables:
+    station = args.station
+    st_date = args.st_date
+    en_date = args.en_date
+    doy = args.day_of_year
+    codes = args.obs_codes
+    st_lvl = args.start_floor
+    en_lvl = args.end_floor
+    el_min = args.elevation_min
+    jump = args.jump
+    dwn_dir = args.data_dir
+    csv_flag = args.csv
+    plot_flag = args.plot
+    p_span = args.plot_time_span
+    p_name_list = args.plot_naming_order.split(',')
     
-#     if args.flex_csv_dir == 'pwd':
-#         c_dir = False
-#     else:
-#         c_dir = args.flex_csv_dir
+    if args.flex_csv_dir == 'pwd':
+        c_dir = False
+    else:
+        c_dir = args.flex_csv_dir
 
-#     if args.flex_plt_dir == 'pwd':
-#         p_dir = False
-#     else:
-#         p_dir = args.flex_plt_dir
+    if args.flex_plt_dir == 'pwd':
+        p_dir = False
+    else:
+        p_dir = args.flex_plt_dir
 
-#     if doy:
-#         st_date = _pd.to_datetime(st_date).strftime('%Y-%m-%d')
-#         en_date = _pd.to_datetime(en_date).strftime('%Y-%m-%d')
+    if doy:
+        st_date = _pd.to_datetime(st_date).strftime('%Y-%m-%d')
+        en_date = _pd.to_datetime(en_date).strftime('%Y-%m-%d')
 
-#     # Download and load RINEX and SP3 files into DataFrame:
-#     df = get_load_rnxsp3(start_date=st_date,end_date=en_date,station=station,directory=dwn_dir,sp3pref='igr')
-#     # Find flex events, plot if chosen:
-#     df_out = find_flex_events(
-#         df_in=df, 
-#         codes=codes.split(','), 
-#         station=station,
-#         start_floor=st_lvl, 
-#         end_floor=en_lvl, 
-#         jump=jump, 
-#         el_min=el_min,
-#         GPS_flex=True,
-#         csv_out=csv_flag,
-#         csv_dest=c_dir,
-#         csv_name=False,
-#         plot=plot_flag, 
-#         plot_dest=p_dir, 
-#         plot_spread=p_span,
-#         file_nameorder=p_name_list)
+    # Download and load RINEX and SP3 files into DataFrame:
+    df = get_load_rnxsp3(start_date=st_date,end_date=en_date,station=station,directory=dwn_dir,sp3pref='igr')
+    # Find flex events, plot if chosen:
+    df_out = find_flex_events(
+        df_in=df, 
+        codes=codes.split(','), 
+        station=station,
+        start_floor=st_lvl, 
+        end_floor=en_lvl, 
+        jump=jump, 
+        el_min=el_min,
+        GPS_flex=True,
+        csv_out=csv_flag,
+        csv_dest=c_dir,
+        csv_name=False,
+        plot=plot_flag, 
+        plot_dest=p_dir, 
+        plot_spread=p_span,
+        file_nameorder=p_name_list)

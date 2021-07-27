@@ -69,7 +69,7 @@ def dates_type_convert(dates):
         dates = [_np.datetime64(dates)]
         typ_dt = type(dates)
 
-    if (type(dates) == list) or (type(dates) == _np.ndarray):
+    if (type(dates) == list) or (type(dates) == _np.ndarray) or (type(dates)==_pd.core.indexes.datetimes.DatetimeIndex):
         dt_list = []
         for dt in dates:
             if type(dt) == _datetime:
