@@ -1439,7 +1439,31 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
             numFramesDecoded++;
             decodeTimeStampRTCM((uint8_t*) message,message_length);
             rtcm_UTC = customTime;
-			rtcm_file_run = true;
+			
+			
+			if( !rtcm_file_run )
+			{
+				rtcm_file_run = true;	
+				boost::posix_time::ptime time_t_epoch = boost::posix_time::second_clock::universal_time(); 
+				boost::posix_time::ptime curTime = boost::posix_time::microsec_clock::universal_time();
+				boost::posix_time::time_duration diff = curTime - time_t_epoch;
+				Delta_RTCM_run = curTime - boost::posix_time::from_time_t(rtcm_UTC.time) 
+										 - boost::posix_time::milliseconds((long)(rtcm_UTC.sec*1e3));
+			}
+			else
+			{
+				// Sync the parsing of messages with the original time spacing from the caster.
+				
+				boost::posix_time::ptime curTime = boost::posix_time::microsec_clock::universal_time();
+				boost::posix_time::time_duration newDelta = curTime - boost::posix_time::from_time_t(rtcm_UTC.time) 
+														- boost::posix_time::milliseconds((long)(rtcm_UTC.sec*1e3));	
+
+				if( newDelta < Delta_RTCM_run )
+				{
+					inputStream.seekg(pos);
+					return;
+				}
+			}
         }
         
         
@@ -1502,8 +1526,8 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 				obsListList.push_back(SuperList);
 				SuperList.clear();
 				// Line added for parsing RTCM files, value indicates that it is the last MSM message
-				// for a given time and reference station ID.
-				return;
+				// for a given time and reference station ID. Currently superseded with timestamps see above.
+				//return;
 			}
 			else if	( SuperList.size()>0
 					&&obsList.size()>0	
