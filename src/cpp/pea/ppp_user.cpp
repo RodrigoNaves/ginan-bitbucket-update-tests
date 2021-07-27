@@ -854,7 +854,7 @@ int ppp_filter(
 
 			if	(   acsConfig.max_inno	> 0
 				&&( fabs(codeInnov)		> acsConfig.max_inno
-				||fabs(phasInnov)		> acsConfig.max_inno))
+				  ||fabs(phasInnov)		> acsConfig.max_inno))
 			{
 				tracepde(2, std::cout, "outlier rejected  sat=%s %d res=%9.4f %9.4f el=%4.1f\n", obs.Sat.id().c_str(), ft, codeInnov, phasInnov, satStat.el * R2D);
 				obs.excludeOutlier = true;
