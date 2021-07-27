@@ -45,6 +45,8 @@ docs/manual/*.toc
 docs/manual/main.ilg
 docs/manual/main.ind
 docs/manual/main.lol
+docs/manual/*.fls
+docs/manual/*.fdb*
 
 docs/html/
 docs/DoxygenLayout.xml
@@ -100,3 +102,5 @@ Thumbs.db
 # vscode settings
 .vscode/
 
+# remove commitversion.h
+src/cpp/pea/peaCommitVersion.h

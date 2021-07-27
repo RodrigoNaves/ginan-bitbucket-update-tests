@@ -1,5 +1,5 @@
 '''
-Functions to download files necessary for Ginarn processing:
+Functions to download files necessary for Ginan processing:
 sp3
 erp
 clk

@@ -1,307 +1,4 @@
 
-%\subsubsection{Build}\label{build}
-%
-%To build the PEA Precise Estimation Algorithm\ldots{}
-%
-%We suggest using the following directory structure when installing the
-%ACS toolkit. It will be created by following this guide.
-%
-%\begin{verbatim}
-%/data/
-%└── acs/
-%    ├── pea/
-%    └── pod/
-%\end{verbatim}
-%
-%The following is an example procedure to install the dependencies
-%necessary to run the \texttt{pea} on a base ubuntu linux distribution
-%
-%Update the base operating system:
-%
-%\begin{verbatim}
-%$ sudo apt update
-%$ sudo apt upgrade
-%\end{verbatim}
-%
-%Install base utilities gcc, gfortran, git, openssl, blas, lapack, etc
-%
-%\begin{verbatim}
-%$ sudo apt install -y git gobjc gobjc++ gfortran libopenblas-dev openssl curl net-tools openssh-server cmake make \
-%liblapack-dev gzip vim libssl1.0-dev python3-cartopy python3-scipy python3-matplotlib python3-mpltoolkits.basemap
-%\end{verbatim}
-%
-%Create a temporary directory structure to make the dependencies in:
-%
-%\begin{verbatim}
-%$ sudo mkdir -p /data/tmp
-%$ cd /data/tmp
-%\end{verbatim}
-%
-%\subparagraph{YAML}\label{yaml}
-%
-%We are using the YAML library to parse the configuration files used to
-%run many of the programs found in this library
-%(https://github.com/jbeder/yaml-cpp). Here is an example of how we have
-%installed the yaml library from source:
-%
-%\begin{verbatim}
-%$ cd /data/tmp
-%$ sudo git clone https://github.com/jbeder/yaml-cpp.git
-%$ cd yaml-cpp
-%$ sudo mkdir cmake-build
-%$ cd cmake-build
-%$ sudo cmake .. -DCMAKE\_INSTALL\_PREFIX=/usr/local/ -DYAML\_CPP\_BUILD\_TESTS=OFF
-%$ sudo make install yaml-cpp
-%$ cd ../..
-%$ sudo rm -fr yaml-cpp
-%\end{verbatim}
-%
-%\paragraph{Boost}\label{boost}
-%
-%We rely on a number of the utilities provided by boost
-%(https://www.boost.org/), such as their time and logging libraries.
-%
-%\begin{verbatim}
-%$ cd /data/tmp/
-%$ sudo wget -c https://boostorg.jfrog.io/artifactory/main/release/1.73.0/source/boost_1_73_0.tar.gz
-%$ sudo gunzip boost_1_73_0.tar.gz
-%$ sudo tar xvf boost_1_73_0.tar
-%$ cd boost_1_73_0/
-%$ sudo ./bootstrap.sh
-%$ sudo ./b2 install
-%$ cd ..
-%$ sudo rm -fr boost_1_73_0/ boost_1_73_0.tar
-%\end{verbatim}
-%
-%\paragraph{Eigen3}\label{eigen3}
-%
-%Eigen3 is used for performing matrix calculations, and has a very nice
-%API.
-%
-%\begin{verbatim}
-%$ cd /data/tmp/
-%$ sudo git clone https://gitlab.com/libeigen/eigen.git
-%$ cd eigen
-%$ sudo mkdir cmake-build
-%$ cd cmake-build
-%$ sudo cmake ..
-%$ sudo make install
-%$ cd ../..
-%$ sudo rm -rf eigen
-%\end{verbatim}
-%
-%\paragraph{Mongo-db}\label{mongo-db}
-%
-%\begin{verbatim}
-%$ wget https://github.com/mongodb/mongo-c-driver/releases/download/1.17.1/mongo-c-driver-1.17.1.tar.gz
-%$ tar -xvf mongo-c-driver-1.17.1.tar.gz
-%
-%$ cd mongo-c-driver-1.17.1/
-%$ mkdir cmakebuild
-%$ cd cmakebuild/
-%$ cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF ..
-%$ cmake --build .
-%$ sudo cmake --build . --target install
-%
-%$ cd ../../
-%$ curl -OL https://github.com/mongodb/mongo-cxx-driver/releases/download/r3.6.0/mongo-cxx-driver-r3.6.0.tar.gz
-%$ tar -xzf mongo-cxx-driver-r3.6.0.tar.gz
-%
-%$ cd mongo-cxx-driver-r3.6.0/
-%
-%$ cd build/
-%$ cmake ..                                    -DCMAKE_BUILD_TYPE=Release              -DCMAKE_INSTALL_PREFIX=/usr/local
-%$ sudo cmake --build . --target EP_mnmlstc_core
-%$ cmake --build .
-%$ sudo cmake --build . --target install
-%
-%$ wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
-%$ echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
-%$ echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
-%
-%$ sudo apt update
-%$ sudo apt install mongodb-org
-%
-%If you are using WSL see the notes below and skip this next section:
-%
-%$ sudo systemctl start mongod
-%$ sudo systemctl status mongod
-%$ mongod
-%
-%
-%For WSL:
-%Even though the documentation on MongoBB says that WSL is not supportedm it is still possible to install.
-%In order to run mongod as a service on WSL you will need to:
-%
-%Copy the script from : https://raw.githubusercontent.com/mongodb/mongo/master/debian/init.d
-%to /etc/init.d/mongod
-%
-%Make the script executable:
-%$ sudo chmod a+x /etc/init.d/mongod
-%
-%Now you can start it as a service by:
-%$ sudo service mongod start
-%\end{verbatim}
-%
-%\paragraph{netcdf4}\label{netcdf4}
-%
-%\begin{verbatim}
-%$ apt -y install libnetcdf-dev libnetcdf-c++4-dev
-%\end{verbatim}
-%
-%\subsubsection{Installing PEA}\label{installing-pea}
-%
-%\paragraph{PEA Executable}\label{pea-executable}
-%
-%\begin{verbatim}
-%$ cd /data/acs/
-%\end{verbatim}
-%
-%Clone the repository via https:
-%
-%\begin{verbatim}
-%$ git clone https://bitbucket.org/geoscienceaustralia/pea.git
-%\end{verbatim}
-%
-%You should now have\ldots{}
-%
-%\begin{verbatim}
-%pea
-%├── INSTALL.md
-%├── LICENSE.md
-%├── README.md
-%├── aws/                - for automated builds in aws
-%├── config/
-%│   ├── Ex00-UnitTest.yaml
-%│   ├── Ex01-PPP.yaml
-%│   ├── Ex02-Network.yaml
-%│   ├── Ex03-Network_Orbits.yaml
-%│   ├── Ex04-Ionosphere.yaml
-%│   ├── Ex05-Realtime.yaml
-%│   ├── iontest_20115w.yaml
-%│   └── PPP-iontest.yaml
-%├── cpp/
-%│   ├── CMakeLists.txt
-%│   ├── cmake           - files to help cmake find dependencies
-%│   ├── docs            - automatic code documentation configuration
-%│   └── src/
-%│       ├── 3rdparty/   - see ACKNOWLEDGEMENTS in README.md
-%│       ├── common/     - libraries used by the pea
-%│       ├── iono/       - routines for ionosphere modelling
-%│       ├── pea/        - main for `pea`
-%│       └── rtklib/     - subset of modified routines from RTKlib see ACKNOWLEDGEMENTS in README.md
-%└── python
-%    ├── config
-%    ├── README.md
-%    └── source
-%        ├── download_examples.py
-%        ├── install_examples.py
-%        └── other helper programs
-%\end{verbatim}
-%
-%Prepare a directory to build in, its better practise to keep this
-%seperated from the source code.
-%
-%\begin{verbatim}
-%$ cd pea/cpp
-%$ mkdir -p build
-%$ cd build
-%\end{verbatim}
-%
-%Run cmake to find the build dependencies and create the make file:
-%
-%\begin{verbatim}
-%$ cmake ..
-%\end{verbatim}
-%
-%If you wish to enable the optional MONGO DB utilities you will need to
-%add the flag:
-%
-%\begin{verbatim}
-%$ cmake -DENABLE_MONGODB=TRUE ..
-%\end{verbatim}
-%
-%If you wish to compile an optimised version, typically this version will
-%run 3 times faster but you may run into compile problems depending on
-%your system, add the -DOPTIMISATION=TRUE flag:
-%
-%\begin{verbatim}
-%$ cmake -DENABLE_MONGODB=TRUE -DOPTIMISATION=TRUE .. 
-%\end{verbatim}
-%
-%Now build the \texttt{pea}
-%
-%\begin{verbatim}
-%$ cmake --build $PWD --target pea
-%\end{verbatim}
-%
-%To change to build location substitue your preferred destination for
-%\texttt{\$PWD} , e.g \texttt{/usr/local/bin}
-%
-%Alternatively to the command above you can make the code in parallel
-%using:
-%
-%\$ make -j 5 all
-%
-%where the -j flag controls how many jobs can be run at the same time.
-%
-%Check to see if you can execute the \texttt{pea}:
-%
-%\begin{verbatim}
-%$ ./pea
-%\end{verbatim}
-%
-%and you should see something similar to:
-%
-%\begin{verbatim}
-%PEA starting...
-%Options:
-%  --help                      Help
-%  --verbose                   More output
-%  --quiet                     Less output
-%  --config arg                Configuration file
-%  --trace_level arg           Trace level
-%  --antenna arg               ANTEX file
-%  --navigation arg            Navigation file
-%  --sinex arg                 SINEX file
-%  --sp3file arg               Orbit (SP3) file
-%  --clkfile arg               Clock (CLK) file
-%  --dcbfile arg               Code Bias (DCB) file
-%  --ionfile arg               Ionosphere (IONEX) file
-%  --podfile arg               Orbits (POD) file
-%  --blqfile arg               BLQ (Ocean loading) file
-%  --erpfile arg               ERP file
-%  --elevation_mask arg        Elevation Mask
-%  --max_epochs arg            Maximum Epochs
-%  --epoch_interval arg        Epoch Interval
-%  --rnx arg                   RINEX station file
-%  --root_input_dir arg        Directory containg the input data
-%  --root_output_directory arg Output directory
-%  --start_epoch arg           Start date/time
-%  --end_epoch arg             Stop date/time
-%  --dump-config-only          Dump the configuration and exit
-%PEA finished
-%\end{verbatim}
-%
-%\paragraph{PEA Documentation}\label{pea-documentation}
-%
-%The documentation for the pea can be generated similarly using
-%\texttt{doxygen} if it is installed.
-%
-%\begin{verbatim}
-%$ sudo apt-get install doxygen
-%
-%$ cd pea/cpp/build
-%$ make doc_doxygen
-%\end{verbatim}
-%
-%The docs can then be found at \texttt{doc\_doxygen/html/index.html}
-%
-%\subsubsection{Ready}\label{ready}
-%
-%You are now ready to trial the examples in the \texttt{README.md} file
-%and the examples in \texttt{Overview.pdf}
-
 \chapter{Python}
 \section{Python Installation for Plotting, Processing,
 etc.}\label{python-installation-for-plotting-processing-etc.}
@@ -329,7 +26,7 @@ $ bash Miniconda3-latest-Linux-x86_64.sh
 And follow the installation instructions on screen (choosing all
 defaults is fine).
 
-\newthought{Create virtual environment}, after installation you can create the \emph{ginan37} python environment. First open a new terminal session and enter:
+\textit{Create virtual environment}, after installation you can create the \emph{ginan37} python environment. First open a new terminal session and enter:
 
 \begin{lstlisting}[language=bash,caption=Example showing how to create a conda environment]
 $ conda env create -f <dir_to_pea>/python/ginan_py37.yaml
@@ -395,361 +92,426 @@ files. The date and time is then selected based on this, allowing us to
 - \texttt{-plt\_m\_r} will plot the ZTD and XYZ results as \texttt{.png}
 files and place in a \texttt{plots} directory
 
-\section{Latency Tool}\label{latency-tool}
 
-To run currently do something like\ldots{}
+\section{Site metadata utility}\label{log2snx}
 
-\begin{verbatim}
-nohup python source/main/python/npi/latency.py 2>&1 & 
-\end{verbatim}
+Proper geodetic processing requires knowing of the site's receiver and antenna information. PEA extracts this information from the input sinex file or a set of sinex files. In addition, user can download \href{ftp://igs.ensg.ign.fr/pub/igs/igscb/station/general/igs.snx}{igs.snx} file that contains historical records of $\sim$500 sites and is regenerated daily from the logfiles available at \url{ftp://ftp.igs.org/pub/station/log/}. We developed a similar tool, log2snx.py, that does parsing of available igs logfiles and produces a sinex file as needed by PEA.
 
-A simple configuration file \texttt{config/config.yaml} looks
-like\ldots{}
+\begin{lstlisting}[caption=log2snx.py help message]
+$ python3 scripts/log2snx.py  -h
+  usage: log2snx.py [-h] [-l LOGGLOB] [-r RNXGLOB [RNXGLOB ...]] [-o OUTFILE]
+  [-fs FRAME_SNX] [-fd FRAME_DIS] [-fp FRAME_PSD]
+  [-d DATETIME] [-n NUM_THREADS]
 
-\begin{verbatim}
-streams:
-- type: NTRIP
-  protocol: http
-  host: auscors.ga.gov.au
-  port: 2101
-  username: a_username
-  password: a_password
-  count: 10
-  stations:
-  - {format: RTCM3, id: COCO7}
+IGS log files parsing utility. Globs over log files using LOGGLOB expression
+and outputs SINEX metadata file. If provided with frame and frame
+discontinuity files (soln), will project the selected stations present in the
+frame to the datetime specified. How to get the logfiles: rclone sync
+igs:pub/sitelogs/ /data/station_logs/station_logs_IGS -vv How to get the frame
+files: rclone sync itrf:pub/itrf/itrf2014 /data/ITRF/itrf2014/ -vv --include
+"*{gnss,IGS-TRF}*" --transfers=10 rclone sync igs:pub/ /data/TRF/ -vv
+--include "{IGS14,IGb14,IGb08,IGS08}/*" see rclone config options inside this
+script file Alternatively, use s3 bucket link to download all the files needed
+s3://peanpod/aux/
+
+optional arguments:
+-h, --help            show this help message and exit
+-l LOGGLOB, --logglob LOGGLOB
+        logs glob path (required)
+-r RNXGLOB [RNXGLOB ...], --rnxglob RNXGLOB [RNXGLOB ...]
+        rinex glob path (optional)
+-o OUTFILE, --outfile OUTFILE
+        output file path (optional)
+-fs FRAME_SNX, --frame_snx FRAME_SNX
+        frame sinex file path (optional)
+-fd FRAME_DIS, --frame_dis FRAME_DIS
+        frame discontinuities file path (required with
+        --frame_snx)
+-fp FRAME_PSD, --frame_psd FRAME_PSD
+        frame psd file path (optional)
+-d DATETIME, --datetime DATETIME
+        date to which project frame coordinates, default is
+        today (optional)
+-n NUM_THREADS, --num_threads NUM_THREADS
+        number of threads to run in parallel
+\end{lstlisting}
+
+\section{Sinex preview utility}\label{snx2map}
+
+To quickly visualise and compare networks, a fast sinex preview utility has been developed - snx2map.py. It accepts any number of sinex files, extract estimated coordinates of the sites present and outputs a map in the form of html page.
+
+\begin{lstlisting}[caption=snx2map.py help message]
+$ python3 scripts/snx2map.py  -h
+usage: snx2map.py [-h] [-i SNXPATH [SNXPATH ...]] [-o OUTDIR]
+
+Parse sinex SITE/ID block and create html map.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i SNXPATH [SNXPATH ...], --snxpath SNXPATH [SNXPATH ...]
+                        path to sinex file (.snx/.ssc). Can be compressed with
+                        LZW (.Z)
+  -o OUTDIR, --outdir OUTDIR
+                        path to output dir
+\end{lstlisting}
+
+
+
+% \section{Latency Tool}\label{latency-tool}
+
+% To run currently do something like\ldots{}
+
+% \begin{verbatim}
+% nohup python source/main/python/npi/latency.py 2>&1 & 
+% \end{verbatim}
+
+% A simple configuration file \texttt{config/config.yaml} looks
+% like\ldots{}
+
+% \begin{verbatim}
+% streams:
+% - type: NTRIP
+%   protocol: http
+%   host: auscors.ga.gov.au
+%   port: 2101
+%   username: a_username
+%   password: a_password
+%   count: 10
+%   stations:
+%   - {format: RTCM3, id: COCO7}
  
-\end{verbatim}
+% \end{verbatim}
 
-and again with more streams looks something like\ldots{}
+% and again with more streams looks something like\ldots{}
 
-\begin{verbatim}
-streams:
-- type: NTRIP
-  protocol: http
-  host: auscors.ga.gov.au
-  port: 2101
-  username: a_username
-  password: a_password
-#  count: 10
-  stations:
-  - {id: TID17}
-  - {id: 00NA7}
-  - {id: 01NA7}
-  - {id: ABMF7}
+% \begin{verbatim}
+% streams:
+% - type: NTRIP
+%   protocol: http
+%   host: auscors.ga.gov.au
+%   port: 2101
+%   username: a_username
+%   password: a_password
+% #  count: 10
+%   stations:
+%   - {id: TID17}
+%   - {id: 00NA7}
+%   - {id: 01NA7}
+%   - {id: ABMF7}
 
-\end{verbatim}
+% \end{verbatim}
 
 
-\section{Messages}\label{messages}
+% \section{Messages}\label{messages}
 
-%\subsection{COCO7}\label{coco7}
-%
-%From 10,000 messages\ldots{} - 1006 - 1008 - 1013 - 1019 - 1020 - 1033 -
-%1044 - 1077 - 1087 - 1097 - 1117 - 1127
-%
-%From 1,000 messages\ldots{} - 1006 Station co-ordinates - 1008 Antenna
-%Description - 1013 Auxiliary Operation Information - System Parameters -
-%1019 Auxiliary Operation Information - Satellite Ephemeris Data - 1020
-%Auxiliary Operation Information - Satellite Ephemeris Data - 1033
-%Receiver and Antenna Description - 1044 Auxiliary Operation Information
-%- Satellite Ephemeris Data - 1077 Observations - GPS MSMs (MSM7) - 1087
-%Observations - GLONASS MSMs (MSM7) - 1097 Observations - Galileo MSMs
-%(MSM7) - 1117 Observations - QZSS MSMs (MSM7) - 1127 Observations - BDS
-%MSMs (MSM7)
-%
-%2018-07-20 12:05:51,887 INFO Connected - starting to read
-%messages\ldots{} 2018-07-20 12:05:51,894 INFO frame length={[}None{]}
-%message number={[}None{]} 2018-07-20 12:05:51,895 INFO frame
-%length={[}56{]} message number={[}1117{]} 2018-07-20 12:05:51,896 INFO
-%frame length={[}294{]} message number={[}1127{]} 2018-07-20 12:05:51,898
-%INFO frame length={[}422{]} message number={[}1077{]} 2018-07-20
-%12:05:51,899 INFO frame length={[}261{]} message number={[}1087{]}
-%2018-07-20 12:05:51,899 INFO frame length={[}22{]} message
-%number={[}1097{]} 2018-07-20 12:05:51,900 INFO frame length={[}56{]}
-%message number={[}1117{]} 2018-07-20 12:05:51,901 INFO frame
-%length={[}294{]} message number={[}1127{]} 2018-07-20 12:05:51,902 INFO
-%frame length={[}422{]} message number={[}1077{]} 2018-07-20 12:05:51,903
-%INFO frame length={[}261{]} message number={[}1087{]} 2018-07-20
-%12:05:51,904 INFO frame length={[}22{]} message number={[}1097{]}
-%2018-07-20 12:05:51,904 INFO frame length={[}56{]} message
-%number={[}1117{]} 2018-07-20 12:05:51,906 INFO frame length={[}294{]}
-%message number={[}1127{]} 2018-07-20 12:05:51,906 INFO frame
-%length={[}56{]} message number={[}1033{]} 2018-07-20 12:05:51,908 INFO
-%frame length={[}422{]} message number={[}1077{]} 2018-07-20 12:05:51,909
-%INFO frame length={[}261{]} message number={[}1087{]} \ldots{}
-%2018-07-20 12:08:27,591 INFO frame length={[}22{]} message
-%number={[}1097{]} 2018-07-20 12:08:27,591 INFO frame length={[}56{]}
-%message number={[}1117{]} 2018-07-20 12:08:27,593 INFO frame
-%length={[}294{]} message number={[}1127{]} 2018-07-20 12:08:28,718 INFO
-%frame length={[}21{]} message number=\protect\hyperlink{section-1}{1006}
-%2018-07-20 12:08:28,718 INFO frame length={[}29{]} message
-%number={[}1008{]} 2018-07-20 12:08:28,720 INFO frame length={[}422{]}
-%message number={[}1077{]} 2018-07-20 12:08:28,720 INFO frame
-%length={[}256{]} message number={[}1087{]} 2018-07-20 12:08:28,720 INFO
-%frame length={[}22{]} message number={[}1097{]} 2018-07-20 12:08:28,721
-%INFO frame length={[}56{]} message number={[}1117{]} 2018-07-20
-%12:08:28,721 INFO frame length={[}294{]} message number={[}1127{]}
-%2018-07-20 12:08:29,566 INFO frame length={[}422{]} message
-%number={[}1077{]} 2018-07-20 12:08:29,567 INFO count={[}1000{]}
-%skipped={[}1{]}
-%
-%9 secs -\textgreater{} 06:00 then 2:29 to 08:29 so 2:38 secs to get
-%1,000 messages = 158 secs to get 1,000 messages = 0.158 secs / message
-%or 6.3 messages / sec
+% %\subsection{COCO7}\label{coco7}
+% %
+% %From 10,000 messages\ldots{} - 1006 - 1008 - 1013 - 1019 - 1020 - 1033 -
+% %1044 - 1077 - 1087 - 1097 - 1117 - 1127
+% %
+% %From 1,000 messages\ldots{} - 1006 Station co-ordinates - 1008 Antenna
+% %Description - 1013 Auxiliary Operation Information - System Parameters -
+% %1019 Auxiliary Operation Information - Satellite Ephemeris Data - 1020
+% %Auxiliary Operation Information - Satellite Ephemeris Data - 1033
+% %Receiver and Antenna Description - 1044 Auxiliary Operation Information
+% %- Satellite Ephemeris Data - 1077 Observations - GPS MSMs (MSM7) - 1087
+% %Observations - GLONASS MSMs (MSM7) - 1097 Observations - Galileo MSMs
+% %(MSM7) - 1117 Observations - QZSS MSMs (MSM7) - 1127 Observations - BDS
+% %MSMs (MSM7)
+% %
+% %2018-07-20 12:05:51,887 INFO Connected - starting to read
+% %messages\ldots{} 2018-07-20 12:05:51,894 INFO frame length={[}None{]}
+% %message number={[}None{]} 2018-07-20 12:05:51,895 INFO frame
+% %length={[}56{]} message number={[}1117{]} 2018-07-20 12:05:51,896 INFO
+% %frame length={[}294{]} message number={[}1127{]} 2018-07-20 12:05:51,898
+% %INFO frame length={[}422{]} message number={[}1077{]} 2018-07-20
+% %12:05:51,899 INFO frame length={[}261{]} message number={[}1087{]}
+% %2018-07-20 12:05:51,899 INFO frame length={[}22{]} message
+% %number={[}1097{]} 2018-07-20 12:05:51,900 INFO frame length={[}56{]}
+% %message number={[}1117{]} 2018-07-20 12:05:51,901 INFO frame
+% %length={[}294{]} message number={[}1127{]} 2018-07-20 12:05:51,902 INFO
+% %frame length={[}422{]} message number={[}1077{]} 2018-07-20 12:05:51,903
+% %INFO frame length={[}261{]} message number={[}1087{]} 2018-07-20
+% %12:05:51,904 INFO frame length={[}22{]} message number={[}1097{]}
+% %2018-07-20 12:05:51,904 INFO frame length={[}56{]} message
+% %number={[}1117{]} 2018-07-20 12:05:51,906 INFO frame length={[}294{]}
+% %message number={[}1127{]} 2018-07-20 12:05:51,906 INFO frame
+% %length={[}56{]} message number={[}1033{]} 2018-07-20 12:05:51,908 INFO
+% %frame length={[}422{]} message number={[}1077{]} 2018-07-20 12:05:51,909
+% %INFO frame length={[}261{]} message number={[}1087{]} \ldots{}
+% %2018-07-20 12:08:27,591 INFO frame length={[}22{]} message
+% %number={[}1097{]} 2018-07-20 12:08:27,591 INFO frame length={[}56{]}
+% %message number={[}1117{]} 2018-07-20 12:08:27,593 INFO frame
+% %length={[}294{]} message number={[}1127{]} 2018-07-20 12:08:28,718 INFO
+% %frame length={[}21{]} message number=\protect\hyperlink{section-1}{1006}
+% %2018-07-20 12:08:28,718 INFO frame length={[}29{]} message
+% %number={[}1008{]} 2018-07-20 12:08:28,720 INFO frame length={[}422{]}
+% %message number={[}1077{]} 2018-07-20 12:08:28,720 INFO frame
+% %length={[}256{]} message number={[}1087{]} 2018-07-20 12:08:28,720 INFO
+% %frame length={[}22{]} message number={[}1097{]} 2018-07-20 12:08:28,721
+% %INFO frame length={[}56{]} message number={[}1117{]} 2018-07-20
+% %12:08:28,721 INFO frame length={[}294{]} message number={[}1127{]}
+% %2018-07-20 12:08:29,566 INFO frame length={[}422{]} message
+% %number={[}1077{]} 2018-07-20 12:08:29,567 INFO count={[}1000{]}
+% %skipped={[}1{]}
+% %
+% %9 secs -\textgreater{} 06:00 then 2:29 to 08:29 so 2:38 secs to get
+% %1,000 messages = 158 secs to get 1,000 messages = 0.158 secs / message
+% %or 6.3 messages / sec
 
-\begin{itemize}
-\item
-  1033 Received and Antenna Description
-\item
-  1077 GPS MSMs
-\item
-  1087 GLONASS MSMs
-\item
-  1097 Galileo MSMs
-\item
-  1117 QZSS MSMs
-\item
-  1127 BDS MSMs
-\end{itemize}
+% \begin{itemize}
+% \item
+%   1033 Received and Antenna Description
+% \item
+%   1077 GPS MSMs
+% \item
+%   1087 GLONASS MSMs
+% \item
+%   1097 Galileo MSMs
+% \item
+%   1117 QZSS MSMs
+% \item
+%   1127 BDS MSMs
+% \end{itemize}
 
-\subsection{MSM (1,2,3,4,5,6,7)}\label{msm-1234567}
+% \subsection{MSM (1,2,3,4,5,6,7)}\label{msm-1234567}
 
-MSM message contains - message header - satellite data - signal data
+% MSM message contains - message header - satellite data - signal data
 
-The message header contains - message number DF002 uint12 12-bits -
-reference station id DF003 uint12 12-bits - GNSS epoch time ??? uint30
-30-bits - multiple message bit DF393 bit(1) 1-bit
+% The message header contains - message number DF002 uint12 12-bits -
+% reference station id DF003 uint12 12-bits - GNSS epoch time ??? uint30
+% 30-bits - multiple message bit DF393 bit(1) 1-bit
 
-GNSS Epoch Time - GPS is --TOW DF004 DF004 GPS Epoch Time (TOW)
-0-604,799,999ms 1ms uint30 milliseconds from beginning of GPS week
-(midnight GMT on Saturday night/Sunday morning measured in GPS time) -
-GLONASS is -- GLONASS DAY OF WEEK DF416 int3 3-bits DF416 GLONASS Day of
-Week 0-7 1 uint3 0=sunday, 1=monday, \ldots{}, 6=saturday, 7=not known
--- GLONASS EPOCH TIME DF034 uint27 27-bits DF034 GLONASS Epoch Time
-0-86,400,999ms 1ms uint27\\
-- Galileo is -- TOW DF248 DF248 GALILEO Epoch Time 0-604,799,999ms 1ms
-uint30 - QZSS is -- TOW DF428 DF428 QZSS Epoch Time 0-604,799,999ms 1ms
-uint30\\
-- BeiDou is -- TOW DF+002 DF427 BeiDou Epoch Time 0-604,799,999ms 1ms
-uint30
+% GNSS Epoch Time - GPS is --TOW DF004 DF004 GPS Epoch Time (TOW)
+% 0-604,799,999ms 1ms uint30 milliseconds from beginning of GPS week
+% (midnight GMT on Saturday night/Sunday morning measured in GPS time) -
+% GLONASS is -- GLONASS DAY OF WEEK DF416 int3 3-bits DF416 GLONASS Day of
+% Week 0-7 1 uint3 0=sunday, 1=monday, \ldots{}, 6=saturday, 7=not known
+% -- GLONASS EPOCH TIME DF034 uint27 27-bits DF034 GLONASS Epoch Time
+% 0-86,400,999ms 1ms uint27\\
+% - Galileo is -- TOW DF248 DF248 GALILEO Epoch Time 0-604,799,999ms 1ms
+% uint30 - QZSS is -- TOW DF428 DF428 QZSS Epoch Time 0-604,799,999ms 1ms
+% uint30\\
+% - BeiDou is -- TOW DF+002 DF427 BeiDou Epoch Time 0-604,799,999ms 1ms
+% uint30
 
-\section{RTCM v3}\label{rtcm-v3}
+% \section{RTCM v3}\label{rtcm-v3}
 
-The following is a Hex-ASCII example of a message type 1005 (Stationary
-Antenna Reference Point, No Height Information).
+% The following is a Hex-ASCII example of a message type 1005 (Stationary
+% Antenna Reference Point, No Height Information).
 
-D3 00 13 3E D7 D3 02 02 98 0E DE EF 34 B4 BD 62 AC 09 41 98 6F 33 36 0B
-98
+% D3 00 13 3E D7 D3 02 02 98 0E DE EF 34 B4 BD 62 AC 09 41 98 6F 33 36 0B
+% 98
 
-The parameters for this message are: 
-% 
-Reference Station Id = 2003 
-% 
-GPS
-Service supported, but not GLONASS or Galileo 
-% 
-ARP ECEF-X =
-1114104.5999 meters 
-% 
-ARP ECEF-Y = -4850729.7108 meters 
-% 
-ARP ECEF-Z =
-3975521.4643 meters
+% The parameters for this message are: 
+% % 
+% Reference Station Id = 2003 
+% % 
+% GPS
+% Service supported, but not GLONASS or Galileo 
+% % 
+% ARP ECEF-X =
+% 1114104.5999 meters 
+% % 
+% ARP ECEF-Y = -4850729.7108 meters 
+% % 
+% ARP ECEF-Z =
+% 3975521.4643 meters
 
-\section{ACS Metrics}\label{acs-metrics}
+% \section{ACS Metrics}\label{acs-metrics}
 
-\subsection{RTCM v3}\label{rtcm-v3-1}
+% \subsection{RTCM v3}\label{rtcm-v3-1}
 
-An \texttt{RTCM\ v3} stream of data consists of a set of
-\texttt{RTCM\ v3} packets.
+% An \texttt{RTCM\ v3} stream of data consists of a set of
+% \texttt{RTCM\ v3} packets.
 
-An \texttt{RTCM\ v3} packet consists of:
+% An \texttt{RTCM\ v3} packet consists of:
 
-\begin{itemize}
-\item
-  8-bit preamble
-\item
-  16-bits ** 6-bit reserved (should be \texttt{0}s) ** 10-bit length
-\item
-  variable length message ** 12-bit message type
-\item
-  24-bit message CRC
-\end{itemize}
+% \begin{itemize}
+% \item
+%   8-bit preamble
+% \item
+%   16-bits ** 6-bit reserved (should be \texttt{0}s) ** 10-bit length
+% \item
+%   variable length message ** 12-bit message type
+% \item
+%   24-bit message CRC
+% \end{itemize}
 
-\begin{longtable}[]{@{}lll@{}}
-\toprule
-x & x & x\tabularnewline
-\midrule
-\endhead
-Preamble & 8-bits &\tabularnewline
-\tabularnewline
-\bottomrule
-\end{longtable}
+% \begin{longtable}[]{@{}lll@{}}
+% \toprule
+% x & x & x\tabularnewline
+% \midrule
+% \endhead
+% Preamble & 8-bits &\tabularnewline
+% \tabularnewline
+% \bottomrule
+% \end{longtable}
 
-\begin{itemize}
-\item
-  8-bit pre-amble character
-\item
-  The start or an \texttt{RTCM\ v3} packet is marked by the
-  \texttt{0xD3} pre-amble character
-\end{itemize}
+% \begin{itemize}
+% \item
+%   8-bit pre-amble character
+% \item
+%   The start or an \texttt{RTCM\ v3} packet is marked by the
+%   \texttt{0xD3} pre-amble character
+% \end{itemize}
 
-Following this is
+% Following this is
 
-\subsection{Reading RTCM3 Data\ldots{}}\label{reading-rtcm3-data}
+% \subsection{Reading RTCM3 Data\ldots{}}\label{reading-rtcm3-data}
 
-\begin{itemize}
-\item
-  RTCM3 packet starts with 0xd3 byte so first skip to start of packet
-\end{itemize}
+% \begin{itemize}
+% \item
+%   RTCM3 packet starts with 0xd3 byte so first skip to start of packet
+% \end{itemize}
 
-See
-{[}https://pdfs.semanticscholar.org/bf93/21e569cc0f009982af3158a6489accc8f3e5.pdf{]}
+% See
+% {[}https://pdfs.semanticscholar.org/bf93/21e569cc0f009982af3158a6489accc8f3e5.pdf{]}
 
-RTCM v3 frame looks like: - preamble 8-bits (0xD3) - reserved 6-bits -
-message length 10-bits - message variable length - CRC 24-bits
+% RTCM v3 frame looks like: - preamble 8-bits (0xD3) - reserved 6-bits -
+% message length 10-bits - message variable length - CRC 24-bits
 
-So to parse it we do 1. find the start of packet byte - i.e.~the
-preamble byte - i.e.~0xd3\\
-2. read the next 2 bytes (aka 16-bits) and extract the message length
-from the right-hand 10-bits
+% So to parse it we do 1. find the start of packet byte - i.e.~the
+% preamble byte - i.e.~0xd3\\
+% 2. read the next 2 bytes (aka 16-bits) and extract the message length
+% from the right-hand 10-bits
 
-\section{RTCM v3}\label{rtcm-v3-2}
+% \section{RTCM v3}\label{rtcm-v3-2}
 
-d3 74 63
+% d3 74 63
 
-\begin{verbatim}
-               09   8765 4321
-\end{verbatim}
+% \begin{verbatim}
+%                09   8765 4321
+% \end{verbatim}
 
-1101 0011 \textbar{} 0111 0100 \textbar{} 0110 0011 \textbar{}
+% 1101 0011 \textbar{} 0111 0100 \textbar{} 0110 0011 \textbar{}
 
-so the length is 63 (hex which is 99 decimal)
+% so the length is 63 (hex which is 99 decimal)
 
-d3 74 63 18 d1 94 65 0d 43 4c 53 14 b1 2c 4f
+% d3 74 63 18 d1 94 65 0d 43 4c 53 14 b1 2c 4f
 
-1101 0011 \textbar{} 0111 0100 \textbar{} 0110 0011 \textbar{} 1101 0011
-\textbar{} 0111 0100 \textbar{} 0110 0011
+% 1101 0011 \textbar{} 0111 0100 \textbar{} 0110 0011 \textbar{} 1101 0011
+% \textbar{} 0111 0100 \textbar{} 0110 0011
 
-00011000 00011000
+% 00011000 00011000
 
-byte 0 = preamble = 0xD3
+% byte 0 = preamble = 0xD3
 
-bytes 1 \& 2 = reserved (6-bits) + message length (10-bits)
+% bytes 1 \& 2 = reserved (6-bits) + message length (10-bits)
 
-\begin{verbatim}
-byte1 & 0x03 << 8 | byte2
+% \begin{verbatim}
+% byte1 & 0x03 << 8 | byte2
 
-byte1 = 00011000
-byte2 = 00011000
+% byte1 = 00011000
+% byte2 = 00011000
 
-00011000 & 0x03 = 00000000
-\end{verbatim}
+% 00011000 & 0x03 = 00000000
+% \end{verbatim}
 
-bytes 3\ldots{}n-1 = variable length message
+% bytes 3\ldots{}n-1 = variable length message
 
-bytes n\ldots{}n+2 = 24-bit CRC (CRC24)
+% bytes n\ldots{}n+2 = 24-bit CRC (CRC24)
 
-\subsection{RTCM v3 Message}\label{rtcm-v3-message}
+% \subsection{RTCM v3 Message}\label{rtcm-v3-message}
 
-reserved : 1-bit message number : 12-bits uint12
+% reserved : 1-bit message number : 12-bits uint12
 
-18 d1 is\ldots{}
+% 18 d1 is\ldots{}
 
-123456789012 0001100011010001
+% 123456789012 0001100011010001
 
-\section{RTCM v3}\label{rtcm-v3-3}
+% \section{RTCM v3}\label{rtcm-v3-3}
 
-\subsection{GPS RTK Observable
-Messages}\label{gps-rtk-observable-messages}
+% \subsection{GPS RTK Observable
+% Messages}\label{gps-rtk-observable-messages}
 
-message header (aka number aka type): - 1001 - 1002 - 1003 - 1004
+% message header (aka number aka type): - 1001 - 1002 - 1003 - 1004
 
-\begin{longtable}[]{@{}llll@{}}
-\toprule
-DATA FIELD & DF NUMBER & DATA TYPE & NO. OF BITS\tabularnewline
-\midrule
-\endhead
-Message Number (e.g.,``1001''= 0011 1110 1001) & DF002 & uint12 &
-12\tabularnewline
-Reference Station ID & DF003 & uint12 & 12\tabularnewline
-GPS Epoch Time (TOW) & DF004 & uint30 & 30\tabularnewline
-Synchronous GNSS Flag & DF005 & bit(1) & 1\tabularnewline
-No. of GPS Satellite Signals Processed & DF006 & uint5 &
-5\tabularnewline
-GPS Divergence-free Smoothing Indicator & DF007 & bit(1) &
-1\tabularnewline
-GPS Smoothing Interval & DF008 & bit(3) & 3\tabularnewline
-TOTAL & & & 64\tabularnewline
-\bottomrule
-\end{longtable}
+% \begin{longtable}[]{@{}llll@{}}
+% \toprule
+% DATA FIELD & DF NUMBER & DATA TYPE & NO. OF BITS\tabularnewline
+% \midrule
+% \endhead
+% Message Number (e.g.,``1001''= 0011 1110 1001) & DF002 & uint12 &
+% 12\tabularnewline
+% Reference Station ID & DF003 & uint12 & 12\tabularnewline
+% GPS Epoch Time (TOW) & DF004 & uint30 & 30\tabularnewline
+% Synchronous GNSS Flag & DF005 & bit(1) & 1\tabularnewline
+% No. of GPS Satellite Signals Processed & DF006 & uint5 &
+% 5\tabularnewline
+% GPS Divergence-free Smoothing Indicator & DF007 & bit(1) &
+% 1\tabularnewline
+% GPS Smoothing Interval & DF008 & bit(3) & 3\tabularnewline
+% TOTAL & & & 64\tabularnewline
+% \bottomrule
+% \end{longtable}
 
-\subsection{Station Antenna Reference Point
-Messages}\label{station-antenna-reference-point-messages}
+% \subsection{Station Antenna Reference Point
+% Messages}\label{station-antenna-reference-point-messages}
 
-\begin{itemize}
-\item
-  1005
-\item
-  1006
-\end{itemize}
+% \begin{itemize}
+% \item
+%   1005
+% \item
+%   1006
+% \end{itemize}
 
-{\emph{1005}}\label{section}
+% {\emph{1005}}\label{section}
 
-\begin{longtable}[]{@{}llll@{}}
-\toprule
-DATA FIELD & DF NUMBER & DATA TYPE & NO. OF BITS\tabularnewline
-\midrule
-\endhead
-Message Number (e.g. ``1005''= 0011 1110 1101) & DF002 & uint12 &
-12\tabularnewline
-Reference Station ID & DF003 & uint12 & 12\tabularnewline
-\ldots{} & & &\tabularnewline
-TOTAL & & & 152\tabularnewline
-\bottomrule
-\end{longtable}
+% \begin{longtable}[]{@{}llll@{}}
+% \toprule
+% DATA FIELD & DF NUMBER & DATA TYPE & NO. OF BITS\tabularnewline
+% \midrule
+% \endhead
+% Message Number (e.g. ``1005''= 0011 1110 1101) & DF002 & uint12 &
+% 12\tabularnewline
+% Reference Station ID & DF003 & uint12 & 12\tabularnewline
+% \ldots{} & & &\tabularnewline
+% TOTAL & & & 152\tabularnewline
+% \bottomrule
+% \end{longtable}
 
-\hypertarget{section-1}{{\emph{1006}}\label{section-1}}
+% \hypertarget{section-1}{{\emph{1006}}\label{section-1}}
 
-\begin{longtable}[]{@{}llll@{}}
-\toprule
-DATA FIELD & DF NUMBER & DATA TYPE & NO. OF BITS\tabularnewline
-\midrule
-\endhead
-Message Number (e.g. ``1006''= 0011 1110 1110) & DF002 & uint12 &
-12\tabularnewline
-Reference Station ID & DF003 & uint12 & 12\tabularnewline
-\ldots{} & & &\tabularnewline
-TOTAL & & & 168\tabularnewline
-\bottomrule
-\end{longtable}
+% \begin{longtable}[]{@{}llll@{}}
+% \toprule
+% DATA FIELD & DF NUMBER & DATA TYPE & NO. OF BITS\tabularnewline
+% \midrule
+% \endhead
+% Message Number (e.g. ``1006''= 0011 1110 1110) & DF002 & uint12 &
+% 12\tabularnewline
+% Reference Station ID & DF003 & uint12 & 12\tabularnewline
+% \ldots{} & & &\tabularnewline
+% TOTAL & & & 168\tabularnewline
+% \bottomrule
+% \end{longtable}
 
-\subsection{Antenna Description
-Messages}\label{antenna-description-messages}
+% \subsection{Antenna Description
+% Messages}\label{antenna-description-messages}
 
-\begin{itemize}
-\item
-  1007
-\item
-  1008
-\end{itemize}
+% \begin{itemize}
+% \item
+%   1007
+% \item
+%   1008
+% \end{itemize}
 
-{\emph{1007}}\label{section-2}
+% {\emph{1007}}\label{section-2}
 
-\begin{longtable}[]{@{}llll@{}}
-\toprule
-DATA FIELD & DF NUMBER & DATA TYPE & NO. OF BITS\tabularnewline
-\midrule
-\endhead
-Message Number (e.g. ``1007''= 0011 1110 1111) & DF002 & uint12 &
-12\tabularnewline
-Reference Station ID & DF003 & uint12 & 12\tabularnewline
-\ldots{} & & &\tabularnewline
-TOTAL & & & 40+8*N\tabularnewline
-\bottomrule
-\end{longtable}
+% \begin{longtable}[]{@{}llll@{}}
+% \toprule
+% DATA FIELD & DF NUMBER & DATA TYPE & NO. OF BITS\tabularnewline
+% \midrule
+% \endhead
+% Message Number (e.g. ``1007''= 0011 1110 1111) & DF002 & uint12 &
+% 12\tabularnewline
+% Reference Station ID & DF003 & uint12 & 12\tabularnewline
+% \ldots{} & & &\tabularnewline
+% TOTAL & & & 40+8*N\tabularnewline
+% \bottomrule
+% \end{longtable}
 
-The Python RTCM3 library knows about the following messages: - 1001 -
-1002 - 1003 - 1004 - 1005 - 1006 - 1008 - 1009 - 1010 - 1011 - 1012 -
-1033
+% The Python RTCM3 library knows about the following messages: - 1001 -
+% 1002 - 1003 - 1004 - 1005 - 1006 - 1008 - 1009 - 1010 - 1011 - 1012 -
+% 1033
 
