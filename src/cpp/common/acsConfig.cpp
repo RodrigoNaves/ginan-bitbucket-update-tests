@@ -192,7 +192,8 @@ void ACSConfig::addStationFile(
 		if (recOpts.exclude == false)
 		{
 			auto rtcmStream_ptr = std::make_shared<FileRtcmStream>(filePath.string());
-
+			FileRtcmStream& rtcmStream = *rtcmStream_ptr;
+			rtcmStream.simulate_real_time = simulate_real_time;
 
 			//if( stationId == ??? )
 			//	navStreamMultimap.insert({stationId, std::move(rtcmStream_ptr)});
@@ -1084,7 +1085,9 @@ bool ACSConfig::parse(
 	{
 		trySetFromAny(max_epochs,		commandOpts, processing_options, {"max_epochs"		});
 		trySetFromAny(epoch_interval,	commandOpts, processing_options, {"epoch_interval"	});
-
+		trySetFromAny(simulate_real_time, commandOpts, processing_options, {"simulate_real_time"});
+		
+		
 		string startStr;
 		string stopStr;
 		trySetFromAny(startStr,			commandOpts, processing_options, {"start_epoch"		});

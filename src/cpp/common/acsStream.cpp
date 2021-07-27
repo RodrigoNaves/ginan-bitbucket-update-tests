@@ -1447,8 +1447,15 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 				boost::posix_time::ptime time_t_epoch = boost::posix_time::second_clock::universal_time(); 
 				boost::posix_time::ptime curTime = boost::posix_time::microsec_clock::universal_time();
 				boost::posix_time::time_duration diff = curTime - time_t_epoch;
-				Delta_RTCM_run = curTime - boost::posix_time::from_time_t(rtcm_UTC.time) 
-										 - boost::posix_time::milliseconds((long)(rtcm_UTC.sec*1e3));
+				if( simulate_real_time )
+				{
+					Delta_RTCM_run = curTime - boost::posix_time::from_time_t(rtcm_UTC.time) 
+											 - boost::posix_time::milliseconds((long)(rtcm_UTC.sec*1e3));
+				}
+				else
+				{
+					Delta_RTCM_run = boost::posix_time::milliseconds(0);
+				}
 			}
 			else
 			{

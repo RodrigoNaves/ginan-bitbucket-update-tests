@@ -170,6 +170,7 @@ struct GlobalOptions
 	string  caster_stream_root          = "";
 	
 	bool	use_recorded_rtcm			= false;
+	bool	simulate_real_time			= false;
 	
 	bool	process_user				= true;
 	bool	process_network 			= false;

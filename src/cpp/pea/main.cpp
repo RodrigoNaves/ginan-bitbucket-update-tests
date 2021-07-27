@@ -1229,7 +1229,7 @@ int main(int argc, char **argv)
 					//already have observations for this epoch.
 					continue;
 				}
-
+				
 				//try to get some data
 				rec.obsList = obsStream.getObs(tsync);
 

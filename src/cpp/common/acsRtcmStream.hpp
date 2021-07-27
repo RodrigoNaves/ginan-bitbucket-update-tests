@@ -200,7 +200,9 @@ struct RtcmStream : ObsStream, NavStream,
 	double totalLatency = 0;
 	ulong numMessagesLatency = 0;
     
+	bool simulate_real_time = false;
 	bool rtcm_file_run = false;
+	
 	boost::posix_time::time_duration Delta_RTCM_run;
     GTime rtcm_UTC;
     int adjgpsweek(int week) override;
