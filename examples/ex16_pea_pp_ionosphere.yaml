@@ -6,7 +6,7 @@
 
 input_files:
 
-    root_input_directory: /data/acs/pea/proc/exs/products/
+    root_input_directory: products/
 
     atxfiles:   [ igs14_2045_plus.atx                                ]    # required
     snxfiles:   [ igs19P2062.snx                                     ]    # required
@@ -20,14 +20,14 @@ input_files:
     #orbfiles:   [ orb_partials/gag20624_orbits_partials.out.eop_test23      ]    # only need this if we are estimating orbits
 
     navfiles: [ brdm1990.19p        ]  # broadcast navigation file
-    sp3files: [ TUG0R03TST_20191990000_01D_05M_ORB.SP3 ] # satellite orbit files in SP3 format
-    clkfiles: [ TUG0R03TST_20191990000_01D_30S_CLK.CLK ] # satellite clock files in RNX CLK format
-    erpfiles: [ TUG0R03TST_20191990000_01D_01D_ERP.ERP ] # config parser doesn't accept weekly files yet.
+    sp3files: [ TUG0R03FIN_20191990000_01D_05M_ORB.SP3 ] # satellite orbit files in SP3 format
+    clkfiles: [ TUG0R03FIN_20191990000_01D_30S_CLK.CLK ] # satellite clock files in RNX CLK format
+    erpfiles: [ TUG0R03FIN_20191990000_01D_01D_ERP.ERP ] # config parser doesn't accept weekly files yet.
     # dcbfiles: [ TUG0R03FIN_20191990000_01D_01D_OSB.BIA ] # daily signal biases files
 
 station_data:
 
-    root_stations_directory: /data/acs/pea/proc/exs/data/
+    root_stations_directory: data/
 
     rnxfiles:
         # Select files to run by:
@@ -90,7 +90,7 @@ output_options:
 processing_options:
 
     start_epoch:               2019-07-18 00:00:00
-    #end_epoch:                 2019-07-18 23:59:30
+    # end_epoch:                 2019-07-18 23:59:30
     max_epochs:                 720        #0 is infinite
     epoch_interval:             30          #seconds
 
@@ -171,7 +171,7 @@ ionosphere_filter_parameters:
     lat_res:      5.0
     lon_res:      5.0
     time_res:     1800.0
-    func_order:   12
+    func_order:   8
     layer_heights: [450]
     model_noise:    0.01
 
