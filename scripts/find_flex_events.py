@@ -184,8 +184,8 @@ def find_flex_events(
     df_in, 
     codes, 
     station='None',
-    start_floor=33.0, 
-    end_floor=30.0, 
+    start_floor=35.0, 
+    end_floor=32.0, 
     jump=5.0, 
     el_min=15.0,
     GPS_flex=True,
@@ -195,7 +195,8 @@ def find_flex_events(
     plot=False, 
     plot_dest=False, 
     plot_spread=1500,
-    file_nameorder=['date','prn','code']):
+    plot_multi=False,
+    file_nameorder=['prn','date','code','event']):
     '''
     Return a DataFrame with "flex" events given the DataFrame df_in
     Output a .csv file with DataFrame information
@@ -299,8 +300,14 @@ def find_flex_events(
                 datetime_str = row['Time'].strftime('%Y%m%d-%H%M')
                 cond1 = dfp.index > row['Time']-_pd.Timedelta(seconds=plot_spread)
                 cond2 = dfp.index < row['Time']+_pd.Timedelta(seconds=plot_spread)
-                dfp[cond1 & cond2][row['PRN']].plot(figsize=(12,8),ax=ax1)
                 
+                if plot_multi:
+                    for sat in dfp.columns:
+                        dfp.loc[dfp[sat]<end_floor,sat] = _np.NaN
+                    dfp[cond1 & cond2].dropna(axis=1,how='all').plot(figsize=(12,10),ax=ax1)
+                else:
+                    dfp[cond1 & cond2][row['PRN']].plot(figsize=(12,10),ax=ax1)
+
                 ax1.set_xlabel('Time',fontsize=16)
                 ax1.set_ylabel(f'$C/N_0$ {row["Code"]} (dB-Hz)',fontsize=16)
                 ax1.set_title(f'Flex Event - {row["Event_type"]} - {row["Code"]} - {row["PRN"]} - {date_str}',fontsize=18)
@@ -313,8 +320,13 @@ def find_flex_events(
                         plt_names.append(row["PRN"])
                     elif name == 'code':
                         plt_names.append(row["Code"])
+                    elif name == 'event':
+                        plt_names.append(row['Event_type'])
     
-                out_f = plot_dest/f'Flex_{"_".join(plt_names)}.png'
+                if plot_multi:
+                    out_f = plot_dest/f'Flex_{"_".join(plt_names)}_multi.png'
+                else:
+                    out_f = plot_dest/f'Flex_{"_".join(plt_names)}.png'
                 fig1.savefig(str(out_f),facecolor='w',bbox_inches="tight")
                 _plt.close(fig=fig1)
 
@@ -448,6 +460,13 @@ if __name__ == "__main__":
         )
 
     parser.add_argument(
+        "-p_multi",
+        "--plot_multi_sats", 
+        action='store_true', default=False,
+        help = 'Option '
+        )
+
+    parser.add_argument(
         "-p_name_ord",
         "--plot_naming_order",
         action='store', default='date,prn,code',
@@ -501,6 +520,7 @@ if __name__ == "__main__":
     csv_flag = args.csv
     plot_flag = args.plot
     p_span = args.plot_time_span
+    p_multi = args.plot_multi_sats
     p_name_list = args.plot_naming_order.split(',')
     
     if args.flex_csv_dir == 'pwd':
@@ -535,4 +555,5 @@ if __name__ == "__main__":
         plot=plot_flag, 
         plot_dest=p_dir, 
         plot_spread=p_span,
+        plot_multi=p_multi,
         file_nameorder=p_name_list)
