@@ -1534,7 +1534,7 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 				SuperList.clear();
 				// Line added for parsing RTCM files, value indicates that it is the last MSM message
 				// for a given time and reference station ID. Currently superseded with timestamps see above.
-				//return;
+				return;
 			}
 			else if	( SuperList.size()>0
 					&&obsList.size()>0	
