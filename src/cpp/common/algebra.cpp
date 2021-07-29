@@ -313,7 +313,7 @@ void KFState::stateTransition(
 	GTime		newTime)	///< [in]	Time of update for process noise and dynamics (s)
 {
 	KFState& kfState = *this;
-//
+	
 	if (time == GTime::noTime())
 	{
 		time = newTime;
@@ -321,7 +321,7 @@ void KFState::stateTransition(
 	
 	double tgap = newTime.time - time.time;
 	time = newTime;
-//
+	
 //	TestStack ts(__FUNCTION__);
 
 	int newStateCount = stateTransitionMap.size();

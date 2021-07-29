@@ -72,12 +72,10 @@ struct OutputOptions
 	bool	output_summary 				= false;
 	string	summary_directory			= "./";
 	string	summary_filename			= "pea<YYYY><DDD><HH>.summary";
-	double	summary_rotate_period		= 0;
 
 	bool	output_clocks 				= false;
 	string	clocks_directory			= "./";
 	string	clocks_filename				= "pea<YYYY><DDD><HH>.clk";
-	double	clocks_rotate_period		= 0;
 	bool	output_AR_clocks			= false;
 
 	bool	output_ppp_sol 				= false;
@@ -87,20 +85,14 @@ struct OutputOptions
 	bool	output_ionex 				= false;
 	string	ionex_directory				= "./";
 	string	ionex_filename				= "pea<YYYY><DDD><HH>.ionex";
-	double	ionex_rotate_period			= 0;
 
 	bool	output_ionstec				= false;
 	string	ionstec_directory			= "./";
 	string	ionstec_filename			= "pea<YYYY><DDD><HH>.STEC";
-	double	ionstec_rotate_period		= 0;
 
 	bool	output_biasSINEX			= false;
 	string	biasSINEX_directory			= "./";
 	string	biasSINEX_filename			= "AUS0ACSRAP_<YYYY><DDD><HH>00_01D_30S_ABS.BIA";
-	double	biasSINEX_rotate_period		= 0;
-
-	double	config_rotate_period		= 0;
-
 
 	bool	output_sinex				= false;
 	string 	sinex_directory				= "./";
@@ -164,7 +156,7 @@ struct GlobalOptions
 	bool    caster_test                 = false;
 	string  caster_stream_root          = "";
 	
-	bool	process_user				= true;
+	bool	process_user				= false;
 	bool	process_network 			= false;
 	bool	process_minimum_constraints	= false;
 	bool	process_ionosphere			= false;

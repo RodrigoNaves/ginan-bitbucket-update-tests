@@ -730,7 +730,7 @@ void mainOncePerEpoch(
 			std::set<SatSys> sats;	// List of satellites visible in this epoch
 			for (auto& rec_ptr	: epochStations)
 			for (auto& obs	: rec_ptr->obsList)
-					sats.insert(obs.Sat);
+				sats.insert(obs.Sat);
 			
 			calcSsrCorrections(netTrace, sats, tsync);
 		
