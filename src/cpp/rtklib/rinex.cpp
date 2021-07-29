@@ -582,7 +582,7 @@ int readrnxh(
 	sys		= E_Sys::GPS;
 	tsys	= TSYS_GPS;
 
-	char sysChar = "";
+	char sysChar = '\0';
 	int typeOffset = 20;
 	int sysCharOffset = 40;
 
@@ -597,15 +597,19 @@ int readrnxh(
 		{
 			ver		= str2num(buff,0,9);
 
-			if(ver==3.04)
-			{
-				typeOffset		+= 1;
-				sysCharOffset	+= 2;
-			}
-
 			type	= buff[typeOffset];
 
 			sysChar = buff[sysCharOffset];
+
+			if(ver==3.04 && type == ' ')
+			{
+				typeOffset		+= 1;
+				sysCharOffset	+= 2;
+				type	= buff[typeOffset];
+
+				sysChar = buff[sysCharOffset];
+
+			}
 
 			/* satellite system */
 			switch (sysChar)
