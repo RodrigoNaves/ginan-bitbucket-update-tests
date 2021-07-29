@@ -225,7 +225,7 @@ Now you can start it as a service by:
     $ sudo service mongod start -->
 
 ### netcdf4 (OTL package)
-    $ apt -y install libnetcdf-dev libnetcdf-c++4-dev
+    $ sudo apt -y install libnetcdf-dev libnetcdf-c++4-dev
 ***
 ## Build
 Prepare a directory to build in, its better practise to keep this seperated from the source code.
