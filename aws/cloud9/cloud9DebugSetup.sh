@@ -14,11 +14,11 @@ cat <<EOF >~/environment/.c9/runners/pea.run
     "make -j8 pea",
   
   //edit this line to set executable to run  
-    "node $HOME/.c9/bin/c9gdbshim.js pea --config /data/acs/ginan/examples/ex11_pea_pp_user_gps.yaml"
+    "node \$HOME/.c9/bin/c9gdbshim.js pea --config /data/acs/ginan/examples/ex11_pea_pp_user_gps.yaml"
   ],
-  "info": "Running cpp $file",
+  "info": "Running cpp \$file",
   "debugger": "gdb",
-  "$debugDefaultState": true,
+  "\$debugDefaultState": true,
   "selector": "^.*\\.(cpp|cc|hpp|h)$",
   "trackId": "Cplusplus"
 }
