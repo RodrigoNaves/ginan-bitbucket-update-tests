@@ -16,7 +16,7 @@ pipelines:
             - docker push "$IMAGE"
     - parallel:
         - step:
-            name: PEA test 1
+            name: PEA test 1 (GPS user ppp)
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -25,7 +25,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
-            name: PEA test 2
+            name: PEA test 2 (GNSS user ppp)
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -34,7 +34,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
-            name: PEA test 3
+            name: PEA test 3 (GPS user single freq)
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -43,7 +43,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
-            name: PEA test 4
+            name: PEA test 4 (GNSS user ambres)
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -52,7 +52,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
-            name: PEA test 5
+            name: PEA test 5 (not working - skipped)
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -61,7 +61,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
-            name: PEA test 6
+            name: PEA test 6 (absent)
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -70,7 +70,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
-            name: PEA test 7
+            name: PEA test 7 (GNSS network ppp ambres)
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -79,7 +79,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
-            name: PEA test 8
+            name: PEA test 8 (not working - skipped)
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -88,7 +88,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
-            name: POD test 1
+            name: POD test 1 (GPS mode fit)
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -97,7 +97,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
-            name: POD test 2
+            name: POD test 2 (GNSS mode fit)
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -106,7 +106,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
-            name: POD test 3
+            name: POD test 3 (GPS mode predict)
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -115,7 +115,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
-            name: POD test 4
+            name: POD test 4 (GPS from init cond file)
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -124,7 +124,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
-            name: POD test 5
+            name: POD test 5 (GPS mode fit 2)
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
@@ -133,7 +133,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
-            name: POD test 6
+            name: POD test 6 (MEO mode fit)
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"

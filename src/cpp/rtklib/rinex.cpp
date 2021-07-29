@@ -601,6 +601,7 @@ int readrnxh(
 
 			sysChar = buff[sysCharOffset];
 
+			// possible error in generation by one manufacturer. This hack gets around it
 			if(ver==3.04 && type == ' ')
 			{
 				typeOffset		+= 1;
