@@ -136,7 +136,7 @@ struct CustomDecoder : RtcmDecoder
 {
 	int customType = 0;
 	GTime customTime;
-	void decodeTimeStampRTCM(uint8_t* data, unsigned int message_length);
+	E_RTCMSubmessage decodeTimeStampRTCM(uint8_t* data, unsigned int message_length);
 };
 
 struct SSRDecoder : RtcmDecoder

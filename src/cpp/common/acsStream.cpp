@@ -7,6 +7,7 @@
 #include <map>
 #include <boost/utility/binary.hpp>
 #include <boost/filesystem.hpp>
+#include "acsRtcmStream.hpp"
 
 static int rtcmdeblvl = 3;
 boost::posix_time::time_duration RtcmStream::Delta_RTCM_run;
@@ -406,14 +407,15 @@ GTime RtcmDecoder::getGpst()
     return utc2gpst(timeget());
 }
 
-void CustomDecoder::decodeTimeStampRTCM(uint8_t* data, unsigned int message_length)
+E_RTCMSubmessage CustomDecoder::decodeTimeStampRTCM(uint8_t* data, unsigned int message_length)
 {
     customType = 0;
     //customTime;
     int i = 0;
     int message_number		= getbituInc(data, i, 12);
-    int customType  		= getbituInc(data, i, 8);
-    
+	
+    E_RTCMSubmessage customType = E_RTCMSubmessage::_from_integral(getbituInc(data, i, 8));
+	
     unsigned int* var = (unsigned int*)&customTime.time;
     var[0] = getbituInc(data,i,32);
     var[1] = getbituInc(data,i,32);
@@ -421,6 +423,7 @@ void CustomDecoder::decodeTimeStampRTCM(uint8_t* data, unsigned int message_leng
     customTime.sec = (double)milli_sec/1000.0;
     
     //std::cout << "decodeTimeStampRTCM, (UTC) " << std::put_time( std::gmtime( &customTime.time ), "%F %X" )  << " : " << customTime.sec << std::endl;
+	return customType;
 }
 
 

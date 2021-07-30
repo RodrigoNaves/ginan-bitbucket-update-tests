@@ -364,6 +364,10 @@ BETTER_ENUM(RtcmMessageType, uint16_t,
 		//GLONASS_AUX_OPERATION_INFO = 1230
 )
 
+BETTER_ENUM(E_RTCMSubmessage,	short int,
+			INITIAL = 1,
+			TIMESTAMP = 2
+)
 
 
 #endif

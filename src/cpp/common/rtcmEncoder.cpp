@@ -52,11 +52,11 @@ void RtcmEncoder::CustomEndcoder::encodeTimeStampRTCM(bool isFileStart)
     // Custom message code, for crcsi maximum length 4096 bits or 512 bytes.
     unsigned int messCode = +RtcmMessageType::CUSTOM;
     
-    unsigned int messType = 2; // Describes the type of message, 8 bits long. 2 - Timestamp.
+    E_RTCMSubmessage messType; // Describes the type of message, 8 bits long. 2 - Timestamp.
     if( isFileStart )
-        messType = 1;
+        messType = E_RTCMSubmessage::_from_integral(1);
     else
-        messType = 2;
+        messType = E_RTCMSubmessage::_from_integral(2);
     
     ptime time_t_epoch = second_clock::universal_time(); 
     ptime curTime = microsec_clock::universal_time();
