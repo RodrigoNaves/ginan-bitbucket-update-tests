@@ -193,17 +193,58 @@ void ACSConfig::addStationFile(
 		{
 			auto rtcmStream_ptr = std::make_shared<FileRtcmStream>(filePath.string());
 			FileRtcmStream& rtcmStream = *rtcmStream_ptr;
-			rtcmStream.simulate_real_time = simulate_real_time;
 
-			//if( stationId == ??? )
-			//	navStreamMultimap.insert({stationId, std::move(rtcmStream_ptr)});
-			//else
-			obsStreamMultimap.insert({stationId, std::move(rtcmStream_ptr)});
+			navStreamMultimap.insert({stationId, std::move(rtcmStream_ptr)});
 
 			
 			streamDOAMap[fileName] = false;
 		}
 	}
+}
+
+void ACSConfig::addNavigationFile(
+	string fileName,			///< Filename to create navigation from
+	string type)				///< Type of data in file
+{
+	if (streamDOAMap.find(fileName) != streamDOAMap.end())
+	{
+		//this stream was already added, dont re-add
+		return;
+	}
+	
+	boost::filesystem::path filePath(fileName);
+
+	if (checkValidFile(fileName, "navigation") == false)
+	{
+		return;
+	}
+
+	if (!boost::filesystem::is_regular_file(filePath))
+	{
+		return;
+	}
+	
+	auto filename = filePath.filename();
+	string extension = filename.extension().string();
+	
+	if (type == "RTCM")
+	{
+		string stationId = filename.string().substr(0,4);
+		boost::algorithm::to_upper(stationId);
+
+		auto recOpts = getRecOpts(stationId);
+
+		if (recOpts.exclude == false)
+		{
+			auto rtcmStream_ptr = std::make_shared<FileRtcmStream>(filePath.string());
+			FileRtcmStream& rtcmStream = *rtcmStream_ptr;
+
+			obsStreamMultimap.insert({stationId, std::move(rtcmStream_ptr)});
+
+			
+			streamDOAMap[fileName] = false;
+		}
+	}	
 }
 
 /** Prepare the configuration of the program
@@ -997,18 +1038,21 @@ bool ACSConfig::parse(
 	}
 
 	vector<string> rnxfiles;
-	vector<string> rtcmfiles;
+	vector<string> obs_rtcmfiles;
+	vector<string> nav_rtcmfiles;
 	auto station_data = stringsToYamlObject(yaml, {"station_data"});
 	{
 		trySetFromAny(root_stations_dir,	commandOpts, station_data,	{"root_stations_directory"	});
 		trySetFromAny(rnxfiles,				commandOpts, station_data,	{"rnxfiles"					});
-		trySetFromAny(rtcmfiles,			commandOpts, station_data,	{"rtcmfiles"				});
-
+		trySetFromAny(obs_rtcmfiles,			commandOpts, station_data,	{"obs_rtcmfiles"				});
+		trySetFromAny(nav_rtcmfiles,			commandOpts, station_data,	{"nav_rtcmfiles"				});
 		tryAddRootToPath(root_stations_dir, rnxfiles);
-		tryAddRootToPath(root_stations_dir, rtcmfiles);
+		tryAddRootToPath(root_stations_dir, obs_rtcmfiles);
+		tryAddRootToPath(root_stations_dir, nav_rtcmfiles);
 
 		globber(rnxfiles);
-		globber(rtcmfiles);
+		globber(obs_rtcmfiles);
+		globber(nav_rtcmfiles);
 	}
 
 
@@ -1543,11 +1587,8 @@ bool ACSConfig::parse(
 			if ( rtcm_record )
 			{
 				NtripRtcmStream& downloadStream = *ntripStream_ptr;
-				downloadStream.rtcm_record					= rtcm_record;
-				downloadStream.rtcm_directory				= rtcm_directory;
 				downloadStream.rtcm_filename				= rtcm_filename;
-				replaceString(downloadStream.rtcm_filename, "<STATION>", id);
-				downloadStream.rtcm_rotate_period			= rtcm_rotate_period;		
+				replaceString(downloadStream.rtcm_filename, "<STATION>", id);	
 				downloadStream.createRtcmFile();
 			}
 			
@@ -1570,10 +1611,15 @@ bool ACSConfig::parse(
 			addStationFile(rnxfile, "RINEX");
 		}
 
-		for (auto& rtcmfile : rtcmfiles)
+		for (auto& rtcmfile : obs_rtcmfiles)
 		{
 			addStationFile(rtcmfile, "RTCM");
 		}
+		
+		for (auto& rtcmfile : nav_rtcmfiles)
+		{
+			addNavigationFile(rtcmfile, "RTCM");
+		}		
 
 		if (obsStreamMultimap.empty())
 		{

@@ -199,20 +199,15 @@ struct RtcmStream : ObsStream, NavStream,
     ulong numNonMessBytes = 0;
 	double totalLatency = 0;
 	ulong numMessagesLatency = 0;
-    
-	bool simulate_real_time = false;
-	bool rtcm_file_run = false;
-	
-	boost::posix_time::time_duration Delta_RTCM_run;
+ 
+	static boost::posix_time::time_duration Delta_RTCM_run;
     GTime rtcm_UTC;
     int adjgpsweek(int week) override;
     void setTime(GTime& time, double tow) override;
     GTime getGpst() override;
     
-    bool    rtcm_record = false;    
-	string	rtcm_directory;
-    string  rtcm_filename;
-    double	rtcm_rotate_period;
+	bool	first_rtcm_message = false;
+	std::string  rtcm_filename;
     
     void createRtcmFile();
 	void parseRTCM(std::istream& inputStream);

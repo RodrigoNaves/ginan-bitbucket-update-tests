@@ -498,7 +498,8 @@ struct ACSConfig : GlobalOptions, InputOptions, OutputOptions, DebugOptions
 	bool	parse();
 	void	info(Trace& trace);
 	void	addStationFile(string fileName, string type);
-
+	void 	addNavigationFile(string fileName, string type);
+	
 	SatelliteOptions&			getSatOpts		(SatSys&	Sat);
 	ReceiverOptions&			getRecOpts		(string		id);
 	MinimumStationOptions&		getMinConOpts	(string 	id);

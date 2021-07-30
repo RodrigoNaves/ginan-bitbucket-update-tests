@@ -9,6 +9,7 @@
 #include <boost/filesystem.hpp>
 
 static int rtcmdeblvl = 3;
+boost::posix_time::time_duration RtcmStream::Delta_RTCM_run;
 
 ObsList ObsStream::getObs()
 {
@@ -340,7 +341,7 @@ int RtcmStream::adjgpsweek(int week)
 void RtcmStream::setTime(GTime& time, double tow)
 {
     GTime now;
-    if ( rtcm_file_run )
+    if ( first_rtcm_message )
 	{
 		//std::cout << "rtcm_UTC :" << std::put_time( std::gmtime( &rtcm_UTC.time ), "%F %X" )
 		//						  << " : " << rtcm_UTC.sec << std::endl;
@@ -1272,8 +1273,8 @@ void RtcmStream::createRtcmFile()
     GTime curTime;
     time(&curTime.time);
     long int roundTime = curTime.time;
-    roundTime /= rtcm_rotate_period;
-    roundTime *= rtcm_rotate_period;
+    roundTime /= acsConfig.rtcm_rotate_period;
+    roundTime *= acsConfig.rtcm_rotate_period;
     curTime.time = roundTime;
     
     string logtime = curTime.to_string(0);
@@ -1392,7 +1393,7 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 		}
 		
 		
-		if ( rtcm_record )
+		if ( acsConfig.rtcm_record )
         {
             // Set the filenames based on system time, when replaying recorded streams
             // the tsync time may be different.
@@ -1401,8 +1402,8 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
             GTime curTime;
             time(&curTime.time);
             long int roundTime = curTime.time;
-            roundTime /= rtcm_rotate_period;
-            roundTime *= rtcm_rotate_period;
+            roundTime /= acsConfig.rtcm_rotate_period;
+            roundTime *= acsConfig.rtcm_rotate_period;
             curTime.time = roundTime;
             
             string logtime = curTime.to_string(0);
@@ -1441,13 +1442,13 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
             rtcm_UTC = customTime;
 			
 			
-			if( !rtcm_file_run )
+			if( !first_rtcm_message )
 			{
-				rtcm_file_run = true;	
+				first_rtcm_message = true;	
 				boost::posix_time::ptime time_t_epoch = boost::posix_time::second_clock::universal_time(); 
 				boost::posix_time::ptime curTime = boost::posix_time::microsec_clock::universal_time();
 				boost::posix_time::time_duration diff = curTime - time_t_epoch;
-				if( simulate_real_time )
+				if( acsConfig.simulate_real_time )
 				{
 					Delta_RTCM_run = curTime - boost::posix_time::from_time_t(rtcm_UTC.time) 
 											 - boost::posix_time::milliseconds((long)(rtcm_UTC.sec*1e3));
