@@ -415,7 +415,7 @@ void CustomDecoder::decodeTimeStampRTCM(uint8_t* data, unsigned int message_leng
     
     unsigned int* var = (unsigned int*)&customTime.time;
     var[0] = getbituInc(data,i,32);
-    var[2] = getbituInc(data,i,32);
+    var[1] = getbituInc(data,i,32);
     int milli_sec = getbituInc(data,i,10);
     customTime.sec = (double)milli_sec/1000.0;
     
