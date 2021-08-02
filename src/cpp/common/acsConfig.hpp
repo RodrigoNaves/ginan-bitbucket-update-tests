@@ -65,9 +65,10 @@ struct OutputOptions
 	string	trace_filename				= "<STATION><YYYY><DDD><HH>.trace";
 	double	trace_rotate_period			= 60*60*24;
 
-    bool    rtcm_record                 = false;    
+    bool    record_rtcm                 = false;    
 	string	rtcm_directory	         	= "./";
-    string  rtcm_filename               = "<STATION><YYYY><DDD><HH>.rtcm3";
+    string  obs_rtcm_filename			= "<STATION><YYYY><DDD><HH>-OBS.rtcm3";
+    string  nav_rtcm_filename			= "<STATION><YYYY><DDD><HH>-NAV.rtcm3";
     double	rtcm_rotate_period			= 60*60*24;
     
     bool	output_residuals 			= false;

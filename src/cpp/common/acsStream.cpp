@@ -1305,16 +1305,13 @@ void RtcmStream::createRtcmFile()
     RtcmEncoder::CustomEndcoder encoder;
     encoder.encodeTimeStampRTCM(true);
     encoder.encodeWriteMessages(ofs);
-    ofs.close();    
 }
 
 
 void RtcmStream::parseRTCM(std::istream& inputStream)
 {
-	
 	while (inputStream)
 	{
-		
 		int byteCnt = 0;
 		int pos;
 		while (true)
@@ -1338,13 +1335,14 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 			}
 			byteCnt++;
 		}
-		if ( numPreambleFound == 0 )
+		
+		if (numPreambleFound == 0)
 			byteCnt = 0;
 		
 		numPreambleFound++;
 		numNonMessBytes += byteCnt;
 		
-		if( byteCnt != 0 )
+		if (byteCnt != 0)
 		{
 			std::stringstream message;
 			message << "RTCM Extra Bytes, size : " << byteCnt;
@@ -1379,6 +1377,7 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 			inputStream.seekg(pos);
 			return;
 		}
+		
 		// Read the frame CRC
 		unsigned int crcRead = 0;
 		inputStream.read((char*)&crcRead, 3);		
@@ -1392,7 +1391,8 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 
 		unsigned int crcCalc = crc24q(data, sizeof(data));
 		int nmeass = 0;
-		if(message_length>8) nmeass = getbitu(message, 0,	12);
+		if (message_length > 8) 
+		nmeass = getbitu(message, 0,	12);
 		
 		if	( (((char*)&crcCalc)[0] != ((char*)&crcRead)[2])
 			||(((char*)&crcCalc)[1] != ((char*)&crcRead)[1])
@@ -1410,7 +1410,7 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 		}
 		
 		
-		if ( acsConfig.rtcm_record )
+		if (acsConfig.record_rtcm)
         {
             // Set the filenames based on system time, when replaying recorded streams
             // the tsync time may be different.
@@ -1436,14 +1436,12 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
             encoder.encodeTimeStampRTCM(false);
             encoder.encodeWriteMessages(ofs);            
             
-            ofs.write((char *)data,message_length+3);
-            ofs.write((char *)&crcRead,3);
-            ofs.close();
+            ofs.write((char *)data,		message_length+3);
+            ofs.write((char *)&crcRead,	3);
         }
 		
 		
 		numFramesPassCRC++;
-		
 		
 
 		//tracepdeex(rtcmdeblvl+1,std::cout, "STR_%s : RTCM Message %4d\n", station.name, nmeass);

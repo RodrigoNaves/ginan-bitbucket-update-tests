@@ -1015,9 +1015,10 @@ bool ACSConfig::parse(
 		trySetFromYaml(trace_directory,			output_files, {"trace_directory"	});
 		trySetFromYaml(trace_filename,			output_files, {"trace_filename"		});
 
-		trySetFromYaml(rtcm_record,		     	output_files, {"rtcm_record"		});
+		trySetFromYaml(record_rtcm,		     	output_files, {"record_rtcm"		});
 		trySetFromYaml(rtcm_directory,			output_files, {"rtcm_directory"	    });
-		trySetFromYaml(rtcm_filename,			output_files, {"rtcm_filename"		});        
+		trySetFromYaml(nav_rtcm_filename,		output_files, {"nav_rtcm_filename"	}); 
+		trySetFromYaml(obs_rtcm_filename,		output_files, {"obs_rtcm_filename"	});        
         
 		trySetFromYaml(output_residuals,		output_files, {"output_residuals"	});
 		trySetFromYaml(output_config,			output_files, {"output_config"		});
@@ -1063,16 +1064,15 @@ bool ACSConfig::parse(
 		trySetFromYaml(delete_mongo_history,			output_files, {"delete_mongo_history"		});
 		trySetFromYaml(mongo_uri,						output_files, {"mongo_uri"					});
 
-		trySetScaledFromYaml(trace_rotate_period,		output_files, {"trace_rotate_period"	}, {"trace_rotate_period_units"		}, E_Period::_from_string_nocase);
-
+		trySetScaledFromYaml(trace_rotate_period,		output_files, {"trace_rotate_period"	},	{"trace_rotate_period_units"	},	E_Period::_from_string_nocase);
+		trySetScaledFromYaml(rtcm_rotate_period,		output_files, {"rtcm_rotate_period"		},	{"rtcm_rotate_period_units"		},	E_Period::_from_string_nocase);
 	}
 
 	auto processing_options = stringsToYamlObject(yaml, {"processing_options"});
 	{
-		trySetFromAny(max_epochs,		commandOpts, processing_options, {"max_epochs"		});
-		trySetFromAny(epoch_interval,	commandOpts, processing_options, {"epoch_interval"	});
-		trySetFromAny(simulate_real_time, commandOpts, processing_options, {"simulate_real_time"});
-		
+		trySetFromAny(max_epochs,			commandOpts, processing_options, {"max_epochs"			});
+		trySetFromAny(epoch_interval,		commandOpts, processing_options, {"epoch_interval"		});
+		trySetFromAny(simulate_real_time,	commandOpts, processing_options, {"simulate_real_time"	});
 		
 		string startStr;
 		string stopStr;
@@ -1355,7 +1355,8 @@ bool ACSConfig::parse(
 	tryAddRootToPath(root_output_dir,				ssrOpts.rtcm_directory);
 
 	tryAddRootToPath(trace_directory, 				trace_filename);
-    tryAddRootToPath(rtcm_directory, 				rtcm_filename);
+    tryAddRootToPath(rtcm_directory, 				nav_rtcm_filename);
+    tryAddRootToPath(rtcm_directory, 				obs_rtcm_filename);
 	tryAddRootToPath(summary_directory,				summary_filename);
 	tryAddRootToPath(clocks_directory,				clocks_filename);
 	tryAddRootToPath(ppp_sol_directory,				ppp_sol_filename);
@@ -1383,6 +1384,7 @@ bool ACSConfig::parse(
 	replaceTimes(bsxfiles,				start_epoch);
 	replaceTimes(ionfiles,				start_epoch);
 	replaceTimes(trace_directory,		start_epoch);
+	replaceTimes(rtcm_directory,		start_epoch);
 	replaceTimes(trace_filename,		start_epoch);
 	replaceTimes(ionex_directory,		start_epoch);
 	replaceTimes(ionex_filename,		start_epoch);
@@ -1407,7 +1409,8 @@ bool ACSConfig::parse(
 	replaceTimes(ionFilterOpts.rts_filename,	start_epoch);
     
     // The network stream time is in UTC to avoid problems with local time.
-    replaceTimes(rtcm_filename,	 	boost::posix_time::second_clock::universal_time());
+    replaceTimes(nav_rtcm_filename,	 	boost::posix_time::second_clock::universal_time());
+    replaceTimes(obs_rtcm_filename,	 	boost::posix_time::second_clock::universal_time());
 
 	for (auto& station_file : station_files)
 	{
@@ -1491,19 +1494,19 @@ bool ACSConfig::parse(
 			while (fullUrl.back() == '/')
 				fullUrl.pop_back();				// in case of terminating '/'
 			std::size_t slashPos = fullUrl.find_last_of("/");	// find first 4 characters after last '/'
-			string id = fullUrl.substr(slashPos + 1, 4);		// e.g. http://user:pass@auscors.ga.gov.au:2101/BCEP00BKG0 --> BCEP
+			string id		= fullUrl.substr(slashPos + 1, 4);		// e.g. http://user:pass@auscors.ga.gov.au:2101/BCEP00BKG0 --> BCEP
 			string hostname = fullUrl.substr(0,slashPos + 1);		// e.g. http://user:pass@auscors.ga.gov.au:2101/BCEP00BKG0 --> BCEP
-			string mount = fullUrl.substr(slashPos+1, fullUrl.length()-slashPos+1);
+			string mount	= fullUrl.substr(slashPos+1, fullUrl.length()-slashPos+1);
 			bool foundMount = false;
-			auto host = hostMap.find( hostname );
-			if( host != hostMap.end() )
+			auto host = hostMap.find(hostname);
+			if (host != hostMap.end())
 			{
 				auto mounts = host->second;
-				if( std::find(mounts.begin(), mounts.end(), mount) != mounts.end() )
+				if (std::find(mounts.begin(), mounts.end(), mount) != mounts.end())
 					foundMount = true;
 			}
 			
-			if ( foundMount )
+			if (foundMount)
 			{
 				ntripStreams[id] = fullUrl;
 			}
@@ -1528,18 +1531,22 @@ bool ACSConfig::parse(
 			ntripRtcmMultimap.insert({id, ntripStream_ptr}); // for network (internet) tracing
 	
 			
-			if ( rtcm_record )
+			if (record_rtcm)
 			{
 				NtripRtcmStream& downloadStream = *ntripStream_ptr;
-				downloadStream.rtcm_filename				= rtcm_filename;
-				replaceString(downloadStream.rtcm_filename, "<STATION>", id);	
+				string filename;
+				if (nav)		filename = nav_rtcm_filename;
+				else			filename = obs_rtcm_filename;
+				
+				replaceString(filename, "<STATION>", id);	
+				
+				downloadStream.rtcm_filename = filename;
 				downloadStream.createRtcmFile();
 			}
 			
 			if (nav == false)		{	obsStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}
 			else					{	navStreamMultimap.insert({id, std::move(ntripStream_ptr)});		}			
 			streamDOAMap[streamUrl] = false;
-		
 		}
 	}
 
