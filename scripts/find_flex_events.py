@@ -196,7 +196,7 @@ def find_flex_events(
     plot_dest=False, 
     plot_spread=1500,
     plot_multi=False,
-    file_nameorder=['prn','date','code','event']):
+    file_nameorder=['station','prn','date','code','event']):
     '''
     Return a DataFrame with "flex" events given the DataFrame df_in
     Output a .csv file with DataFrame information
@@ -216,19 +216,22 @@ def find_flex_events(
     for code in codes:
 
         # Filter the df_in for the code input:
-        dfc = df_c[[code]]
+        dfc = df_c[[code]].reset_index().pivot(index='time',columns='sv',values=code)
 
-        for prn in dfc.index.get_level_values('sv').unique():
-        
+        for sat in dfc.columns:
+            dfc.loc[dfc[sat]<end_floor,sat] = _np.NaN
+
+
+        #for prn in dfc.index.get_level_values('sv').unique():
+        for prn in dfc.columns:
             # The values of the code being investigated
-            prn_mask = dfc.index.get_level_values('sv') == prn
-            dfv = dfc[prn_mask].droplevel('sv')
+            dfv = dfc[prn]
             vals = dfv.to_numpy(dtype=float)
             
             # Look for flex events by comparing current value to four increments ago
             for i,v in enumerate(vals[4:]):
                 
-                if (v > vals[i]+jump) & (v > start_floor):
+                if (v > vals[i:i+4].mean()+jump) & (v > start_floor):
                         new_row = {
                             'Station':station,
                             'Time':dfv.index[i+4],
@@ -238,7 +241,7 @@ def find_flex_events(
                         }
                         df_fe = df_fe.append(new_row,ignore_index=True)
                 
-                elif (v < vals[i]-jump) & (v > end_floor):
+                elif (v < vals[i:i+4].mean()-jump) & (v > end_floor):
                         new_row = {
                             'Station':station,
                             'Time':dfv.index[i+4],
@@ -290,12 +293,11 @@ def find_flex_events(
             dfc = df_c[[code]]
             dfp = dfc.reset_index().pivot(index='time',columns='sv',values=code)
             
-            for i in df_out.index:
+            df_code = df_out[df_out['Code']==code]
+
+            for i in df_code.index:
                 fig1,ax1 = _plt.subplots()
-                ax1.tick_params(axis='x', labelsize=14)
-                ax1.tick_params(axis='y', labelsize=14)
-                
-                row = df_out.loc[i]
+                row = df_code.loc[i]
                 date_str = row['Time'].date().strftime('%Y-%m-%d')
                 datetime_str = row['Time'].strftime('%Y%m%d-%H%M')
                 cond1 = dfp.index > row['Time']-_pd.Timedelta(seconds=plot_spread)
@@ -305,16 +307,21 @@ def find_flex_events(
                     for sat in dfp.columns:
                         dfp.loc[dfp[sat]<end_floor,sat] = _np.NaN
                     dfp[cond1 & cond2].dropna(axis=1,how='all').plot(figsize=(12,10),ax=ax1)
+                    _plt.legend(bbox_to_anchor=(1.04,1), loc="upper left")
                 else:
                     dfp[cond1 & cond2][row['PRN']].plot(figsize=(12,10),ax=ax1)
 
                 ax1.set_xlabel('Time',fontsize=16)
                 ax1.set_ylabel(f'$C/N_0$ {row["Code"]} (dB-Hz)',fontsize=16)
-                ax1.set_title(f'Flex Event - {row["Event_type"]} - {row["Code"]} - {row["PRN"]} - {date_str}',fontsize=18)
+                ax1.tick_params(axis='x', labelsize=14)
+                ax1.tick_params(axis='y', labelsize=14)
+                ax1.set_title(f'Flex Event - {row["Station"]} -  {row["Event_type"]} - {row["Code"]} - {row["PRN"]} - {date_str}',fontsize=18)
 
                 plt_names = []
                 for name in file_nameorder:
-                    if name == 'date':
+                    if name == 'station':
+                        plt_names.append(row["Station"])
+                    elif name == 'date':
                         plt_names.append(datetime_str)
                     elif name == 'prn':
                         plt_names.append(row["PRN"])
@@ -327,6 +334,7 @@ def find_flex_events(
                     out_f = plot_dest/f'Flex_{"_".join(plt_names)}_multi.png'
                 else:
                     out_f = plot_dest/f'Flex_{"_".join(plt_names)}.png'
+                
                 fig1.savefig(str(out_f),facecolor='w',bbox_inches="tight")
                 _plt.close(fig=fig1)
 
@@ -463,13 +471,13 @@ if __name__ == "__main__":
         "-p_multi",
         "--plot_multi_sats", 
         action='store_true', default=False,
-        help = 'Option '
+        help = 'Option to plot the other GPS satellites present in flex event figure'
         )
 
     parser.add_argument(
         "-p_name_ord",
         "--plot_naming_order",
-        action='store', default='date,prn,code',
+        action='store', default='station,date,prn,code,event',
         help = '''Plot naming convention - comma separated and must include "date", "prn" and "code"
         Default: date,prn,code '''
         )
