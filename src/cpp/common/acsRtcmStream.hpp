@@ -134,9 +134,8 @@ struct RtcmDecoder
    
 struct CustomDecoder : RtcmDecoder
 {
-	int customType = 0;
-	GTime customTime;
-	E_RTCMSubmessage decodeTimeStampRTCM(uint8_t* data, unsigned int message_length);
+	GTime				decodeCustomTimestamp	(uint8_t* data, unsigned int message_length);
+	E_RTCMSubmessage	decodeCustomId			(uint8_t* data, unsigned int message_length);
 };
 
 struct SSRDecoder : RtcmDecoder
@@ -200,13 +199,13 @@ struct RtcmStream : ObsStream, NavStream,
 	double totalLatency = 0;
 	ulong numMessagesLatency = 0;
  
-	static boost::posix_time::time_duration Delta_RTCM_run;
+	static GTime rtcmDeltaTime;
+	
     GTime rtcm_UTC;
     int adjgpsweek(int week) override;
     void setTime(GTime& time, double tow) override;
     GTime getGpst() override;
     
-	bool	first_rtcm_message = false;
 	std::string  rtcm_filename;
     
     void createRtcmFile();

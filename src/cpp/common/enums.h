@@ -365,8 +365,7 @@ BETTER_ENUM(RtcmMessageType, uint16_t,
 )
 
 BETTER_ENUM(E_RTCMSubmessage,	short int,
-			INITIAL = 1,
-			TIMESTAMP = 2
+		TIMESTAMP = 1
 )
 
 

@@ -136,11 +136,11 @@ void tryAddRootToPath(
 
 /** Create a station object from a file
 */
-void ACSConfig::addStationFile(
+void ACSConfig::addDataFile(
 	string fileName,			///< Filename to create station from
-	string type)				///< Type of data in file
+	string fileType,			///< Type of data in file
+	string dataType)			///< Type of data
 {
-	
 	if (streamDOAMap.find(fileName) != streamDOAMap.end())
 	{
 		//this stream was already added, dont re-add
@@ -149,7 +149,7 @@ void ACSConfig::addStationFile(
 	
 	boost::filesystem::path filePath(fileName);
 
-	if (checkValidFile(fileName, "station") == false)
+	if (checkValidFile(fileName, dataType) == false)
 	{
 		return;
 	}
@@ -162,89 +162,37 @@ void ACSConfig::addStationFile(
 	auto filename = filePath.filename();
 	string extension = filename.extension().string();
 
-	if (type == "RINEX")
-	{
-		// Assuming this is a RINEX file named as ssssdddf.yyO or ssssdddhmm.yyO where ssss is the station
+	string stationId = filename.string().substr(0,4);
+	boost::algorithm::to_upper(stationId);
 
-		string stationId = filename.string().substr(0,4);
-		boost::algorithm::to_upper(stationId);
+	auto recOpts = getRecOpts(stationId);
 
-		auto recOpts = getRecOpts(stationId);
-
-		if (recOpts.exclude == false)
-		{
-			auto rinexStream_ptr = std::make_shared<FileRinexStream>(filePath.string());
-
-			obsStreamMultimap.insert({stationId, std::move(rinexStream_ptr)});
-			rinexFiles.push_back(filename.string());
-			
-			streamDOAMap[fileName] = false;
-		}
-	}
-
-	if (type == "RTCM")
-	{
-		string stationId = filename.string().substr(0,4);
-		boost::algorithm::to_upper(stationId);
-
-		auto recOpts = getRecOpts(stationId);
-
-		if (recOpts.exclude == false)
-		{
-			auto rtcmStream_ptr = std::make_shared<FileRtcmStream>(filePath.string());
-			FileRtcmStream& rtcmStream = *rtcmStream_ptr;
-
-			navStreamMultimap.insert({stationId, std::move(rtcmStream_ptr)});
-
-			
-			streamDOAMap[fileName] = false;
-		}
-	}
-}
-
-void ACSConfig::addNavigationFile(
-	string fileName,			///< Filename to create navigation from
-	string type)				///< Type of data in file
-{
-	if (streamDOAMap.find(fileName) != streamDOAMap.end())
-	{
-		//this stream was already added, dont re-add
-		return;
-	}
-	
-	boost::filesystem::path filePath(fileName);
-
-	if (checkValidFile(fileName, "navigation") == false)
-	{
-		return;
-	}
-
-	if (!boost::filesystem::is_regular_file(filePath))
+	if (recOpts.exclude == false)
 	{
 		return;
 	}
 	
-	auto filename = filePath.filename();
-	string extension = filename.extension().string();
-	
-	if (type == "RTCM")
+	if (fileType == "RINEX")
 	{
-		string stationId = filename.string().substr(0,4);
-		boost::algorithm::to_upper(stationId);
+		auto rinexStream_ptr = std::make_shared<FileRinexStream>(filePath.string());
 
-		auto recOpts = getRecOpts(stationId);
+		if		(dataType == "NAV")		navStreamMultimap.insert({stationId, std::move(rinexStream_ptr)});
+		else if	(dataType == "OBS")		obsStreamMultimap.insert({stationId, std::move(rinexStream_ptr)});
+		
+		streamDOAMap[fileName] = false;
 
-		if (recOpts.exclude == false)
-		{
-			auto rtcmStream_ptr = std::make_shared<FileRtcmStream>(filePath.string());
-			FileRtcmStream& rtcmStream = *rtcmStream_ptr;
+		rinexFiles.push_back(filename.string());
+	}
 
-			obsStreamMultimap.insert({stationId, std::move(rtcmStream_ptr)});
+	if (fileType == "RTCM")
+	{
+		auto rtcmStream_ptr = std::make_shared<FileRtcmStream>(filePath.string());
 
-			
-			streamDOAMap[fileName] = false;
-		}
-	}	
+		if		(dataType == "NAV")		navStreamMultimap.insert({stationId, std::move(rtcmStream_ptr)});
+		else if	(dataType == "OBS")		obsStreamMultimap.insert({stationId, std::move(rtcmStream_ptr)});
+		
+		streamDOAMap[fileName] = false;
+	}
 }
 
 /** Prepare the configuration of the program
@@ -353,7 +301,7 @@ bool configure(
 
 	if (vm.count("rnx"))
 	{
-		acsConfig.addStationFile(vm["rnx"].as<string>(), "RINEX");
+		acsConfig.addDataFile(vm["rnx"].as<string>(), "RINEX", "OBS");
 	}
 
 	// Dump the configuration information
@@ -1608,17 +1556,17 @@ bool ACSConfig::parse(
 	{
 		for (auto& rnxfile : rnxfiles)
 		{
-			addStationFile(rnxfile, "RINEX");
+			addDataFile(rnxfile, "RINEX", "OBS");
 		}
 
 		for (auto& rtcmfile : obs_rtcmfiles)
 		{
-			addStationFile(rtcmfile, "RTCM");
+			addDataFile(rtcmfile, "RTCM", "OBS");
 		}
 		
 		for (auto& rtcmfile : nav_rtcmfiles)
 		{
-			addNavigationFile(rtcmfile, "RTCM");
+			addDataFile(rtcmfile, "RTCM", "NAV");
 		}		
 
 		if (obsStreamMultimap.empty())

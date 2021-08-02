@@ -10,7 +10,8 @@
 #include "acsRtcmStream.hpp"
 
 static int rtcmdeblvl = 3;
-boost::posix_time::time_duration RtcmStream::Delta_RTCM_run;
+
+GTime RtcmStream::rtcmDeltaTime = {};
 
 ObsList ObsStream::getObs()
 {
@@ -342,18 +343,20 @@ int RtcmStream::adjgpsweek(int week)
 void RtcmStream::setTime(GTime& time, double tow)
 {
     GTime now;
-    if ( first_rtcm_message )
+    if (rtcm_UTC != GTime::noTime())
 	{
 		//std::cout << "rtcm_UTC :" << std::put_time( std::gmtime( &rtcm_UTC.time ), "%F %X" )
 		//						  << " : " << rtcm_UTC.sec << std::endl;
 		now = utc2gpst(rtcm_UTC);
 	}
     else
+    {
         now = utc2gpst(timeget());
+    }
 
 	int week;
 	double tow_p = time2gpst(now, &week);		//todo aaron, cant use now all the time
-	if(acsConfig.ssrOpts.settime_week_override >= 0) // manually set GPS week when post-processing
+	if (acsConfig.ssrOpts.settime_week_override >= 0) // manually set GPS week when post-processing
 		week = acsConfig.ssrOpts.settime_week_override;
 
 	int sPerWeek = 60*60*24*7;
@@ -407,23 +410,34 @@ GTime RtcmDecoder::getGpst()
     return utc2gpst(timeget());
 }
 
-E_RTCMSubmessage CustomDecoder::decodeTimeStampRTCM(uint8_t* data, unsigned int message_length)
+E_RTCMSubmessage CustomDecoder::decodeCustomId(uint8_t* data, unsigned int message_length)
 {
-    customType = 0;
-    //customTime;
     int i = 0;
     int message_number		= getbituInc(data, i, 12);
 	
     E_RTCMSubmessage customType = E_RTCMSubmessage::_from_integral(getbituInc(data, i, 8));
 	
-    unsigned int* var = (unsigned int*)&customTime.time;
-    var[0] = getbituInc(data,i,32);
-    var[1] = getbituInc(data,i,32);
-    int milli_sec = getbituInc(data,i,10);
-    customTime.sec = (double)milli_sec/1000.0;
-    
-    //std::cout << "decodeTimeStampRTCM, (UTC) " << std::put_time( std::gmtime( &customTime.time ), "%F %X" )  << " : " << customTime.sec << std::endl;
 	return customType;
+}
+
+GTime CustomDecoder::decodeCustomTimestamp(uint8_t* data, unsigned int message_length)
+{
+    int i = 0;
+    int message_number		= getbituInc(data, i, 12);
+	
+    E_RTCMSubmessage customType = E_RTCMSubmessage::_from_integral(getbituInc(data, i, 8));
+	
+	GTime time;
+    unsigned int* var = (unsigned int*)	&time.time;
+    
+    var[0]			= getbituInc(data,i,32);
+    var[1]			= getbituInc(data,i,32);
+    
+    int milli_sec	= getbituInc(data,i,10);
+    
+    time.sec = (double)milli_sec/1000.0;
+    
+	return time;
 }
 
 
@@ -1438,45 +1452,59 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 		auto message_type = RtcmDecoder::message_type((unsigned char*) message);
         
         
-        if ( message_type == +RtcmMessageType::CUSTOM )
+        if (message_type == +RtcmMessageType::CUSTOM)
         {
             numFramesDecoded++;
-            decodeTimeStampRTCM((uint8_t*) message,message_length);
-            rtcm_UTC = customTime;
-			
-			
-			if( !first_rtcm_message )
+            
+            E_RTCMSubmessage submessage = decodeCustomId((uint8_t*) message, message_length);
+            
+			switch (submessage)
 			{
-				first_rtcm_message = true;	
-				boost::posix_time::ptime time_t_epoch = boost::posix_time::second_clock::universal_time(); 
-				boost::posix_time::ptime curTime = boost::posix_time::microsec_clock::universal_time();
-				boost::posix_time::time_duration diff = curTime - time_t_epoch;
-				if( acsConfig.simulate_real_time )
+				case (E_RTCMSubmessage::TIMESTAMP):
 				{
-					Delta_RTCM_run = curTime - boost::posix_time::from_time_t(rtcm_UTC.time) 
-											 - boost::posix_time::milliseconds((long)(rtcm_UTC.sec*1e3));
-				}
-				else
-				{
-					Delta_RTCM_run = boost::posix_time::milliseconds(0);
-				}
-			}
-			else
-			{
-				// Sync the parsing of messages with the original time spacing from the caster.
-				
-				boost::posix_time::ptime curTime = boost::posix_time::microsec_clock::universal_time();
-				boost::posix_time::time_duration newDelta = curTime - boost::posix_time::from_time_t(rtcm_UTC.time) 
-														- boost::posix_time::milliseconds((long)(rtcm_UTC.sec*1e3));	
-
-				if( newDelta < Delta_RTCM_run )
-				{
-					inputStream.seekg(pos);
-					return;
+		            GTime timestamp = decodeCustomTimestamp((uint8_t*) message, message_length);
+		            
+		            rtcm_UTC = timestamp;
+		   
+					if (acsConfig.simulate_real_time)
+					{
+						//get the current time and compare it with the timestamp in the message
+						
+						boost::posix_time::ptime now_ptime = boost::posix_time::microsec_clock::universal_time();
+					    
+					    // Number of seconds since 1/1/1970, long is 64 bits and all may be used.
+    					long int seconds = (now_ptime - boost::posix_time::from_time_t(0)).total_seconds();
+					    
+					    //Number of fractional seconds, The largest this can be is 1000 which is 10 bits unsigned. 
+					    boost::posix_time::ptime now_mod_seconds	= boost::posix_time::from_time_t(seconds);
+					    auto subseconds	= now_ptime - now_mod_seconds;
+					    int milli_sec = subseconds.total_milliseconds();
+					    
+					    GTime now_gtime;
+					    now_gtime.time	= seconds;
+					    now_gtime.sec	= milli_sec / 1000.0;
+					    
+					    //find the delay between creation of the timestamp, and now
+					    auto thisDeltaTime = now_gtime - timestamp;
+					    
+					    //initialise the global rtcm delay if needed
+					    if (rtcmDeltaTime == GTime::noTime())
+					    {
+					    	rtcmDeltaTime = thisDeltaTime;
+					    }
+					    
+					    //if the delay is shorter than the global, go back and wait until it is longer
+					    if (thisDeltaTime < rtcmDeltaTime)
+					    {
+							inputStream.seekg(pos);
+							return;
+					    }
+					}
+		            
+					break;
 				}
 			}
         }
-        
         
         
 		if 		( message_type == +RtcmMessageType::GPS_EPHEMERIS
@@ -1484,7 +1512,7 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 				/*||message_type == +RtcmMessageType::GAL_INAV_EPHEMERIS*/)
 		{
 			numFramesDecoded++;
-			decodeEphemeris((uint8_t*) message,message_length);
+			decodeEphemeris((uint8_t*) message, message_length);
 		}
 		else if ( message_type == +RtcmMessageType::GPS_SSR_COMB_CORR
 				||message_type == +RtcmMessageType::GPS_SSR_ORB_CORR
@@ -1499,7 +1527,7 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 				||message_type == +RtcmMessageType::GAL_SSR_PHASE_BIAS)
 		{
 			numFramesDecoded++;
-			decodeSSR((uint8_t*) message,message_length);
+			decodeSSR((uint8_t*) message, message_length);
 		}
 		else if ( message_type == +RtcmMessageType::MSM4_GPS
 				||message_type == +RtcmMessageType::MSM4_GLONASS
@@ -1531,30 +1559,34 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
 			
 			//tracepdeex(rtcmdeblvl,std::cout, "\n%s %4d %s %2d %1d", station.name, message_type._to_integral(), obsList.front().time.to_string(0), obsList.size(), multimessage);
 			
-			if(multimessage==0)
+			if (multimessage == 0)
 			{
 				SuperList.insert(SuperList.end(),obsList.begin(),obsList.end());
 				obsListList.push_back(SuperList);
 				SuperList.clear();
 				// Line added for parsing RTCM files, value indicates that it is the last MSM message
-				// for a given time and reference station ID. Currently superseded with timestamps see above.
+				// for a given time and reference station ID.
 				return;
 			}
-			else if	( SuperList.size()>0
-					&&obsList.size()>0	
-					&&fabs(timediff(SuperList.front().time,obsList.front().time))>0.5)
+			else if	(  SuperList.size()	> 0
+					&& obsList.size()	> 0	
+					&& fabs(timediff(SuperList.front().time, obsList.front().time)) > 0.5)
 			{
 				obsListList.push_back(SuperList);
 				SuperList.clear();
-				SuperList.insert(SuperList.end(),obsList.begin(),obsList.end());
+				SuperList.insert(SuperList.end(), obsList.begin(), obsList.end());
 			}
 			else
-				SuperList.insert(SuperList.end(),obsList.begin(),obsList.end());
+			{
+				SuperList.insert(SuperList.end(), obsList.begin(), obsList.end());
+			}
 				
-			if(SuperList.size()>1000) SuperList.clear();
+			if (SuperList.size() > 1000) 
+			{
+				SuperList.clear();
+			}
 		}
 	} 
-
 }
 
 /** Initialises SSROut struct. To be called at the start of every epoch
