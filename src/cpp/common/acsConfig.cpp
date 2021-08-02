@@ -167,7 +167,7 @@ void ACSConfig::addDataFile(
 
 	auto recOpts = getRecOpts(stationId);
 
-	if (recOpts.exclude == false)
+	if (recOpts.exclude)
 	{
 		return;
 	}
