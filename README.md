@@ -17,7 +17,7 @@ We currently support the processing of:
 * the Chinese Navigation Satellite System (**BeiDou**);
 * the Japanese QZSS develop system (**QZSS**).
 
-We are actively developing the ACS to have the following capabilities and features:
+We are actively developing Ginan to have the following capabilities and features:
 
 * Precise Orbit & Clock determination of GNSS satellites (GNSS POD);
 * Precise Point Positioning (PPP) of GNSS stations in network and individual mode;
@@ -225,7 +225,7 @@ Now you can start it as a service by:
     $ sudo service mongod start -->
 
 ### netcdf4 (OTL package)
-    $ apt -y install libnetcdf-dev libnetcdf-c++4-dev
+    $ sudo apt -y install libnetcdf-dev libnetcdf-c++4-dev
 ***
 ## Build
 Prepare a directory to build in, its better practise to keep this seperated from the source code.

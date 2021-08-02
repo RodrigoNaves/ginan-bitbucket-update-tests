@@ -1062,11 +1062,6 @@ bool ACSConfig::parse(
 		trySetFromYaml(mongo_uri,						output_files, {"mongo_uri"					});
 
 		trySetScaledFromYaml(trace_rotate_period,		output_files, {"trace_rotate_period"	}, {"trace_rotate_period_units"		}, E_Period::_from_string_nocase);
-		trySetScaledFromYaml(summary_rotate_period,		output_files, {"summary_rotate_period"	}, {"summary_rotate_period_units"	}, E_Period::_from_string_nocase);
-		trySetScaledFromYaml(config_rotate_period,		output_files, {"config_rotate_period"	}, {"config_rotate_period_units"	}, E_Period::_from_string_nocase);
-		trySetScaledFromYaml(ionex_rotate_period,		output_files, {"ionex_rotate_period"	}, {"ionex_rotate_period_units"		}, E_Period::_from_string_nocase);
-		trySetScaledFromYaml(ionstec_rotate_period,		output_files, {"ionstec_rotate_period"	}, {"ionstec_rotate_period_units"	}, E_Period::_from_string_nocase);
-		trySetScaledFromYaml(biasSINEX_rotate_period,	output_files, {"biasSINEX_rotate_period"}, {"biasSINEX_rotate_period_units"	}, E_Period::_from_string_nocase);
 	}
 
 	auto processing_options = stringsToYamlObject(yaml, {"processing_options"});
