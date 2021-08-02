@@ -172,7 +172,7 @@ struct GlobalOptions
 	bool	use_recorded_rtcm			= false;
 	bool	simulate_real_time			= false;
 	
-	bool	process_user				= true;
+	bool	process_user				= false;
 	bool	process_network 			= false;
 	bool	process_minimum_constraints	= false;
 	bool	process_ionosphere			= false;
