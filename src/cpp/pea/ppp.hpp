@@ -188,4 +188,8 @@ bool resetPhaseSignalError(
 	KFMeas&		kfMeas,
 	int			index);
 
+bool resetPhaseSignalOutage(
+	KFMeas&		kfMeas,
+	int			index);
+
 #endif

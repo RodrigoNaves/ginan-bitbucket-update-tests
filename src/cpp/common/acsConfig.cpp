@@ -1064,13 +1064,7 @@ bool ACSConfig::parse(
 		trySetFromYaml(mongo_uri,						output_files, {"mongo_uri"					});
 
 		trySetScaledFromYaml(trace_rotate_period,		output_files, {"trace_rotate_period"	}, {"trace_rotate_period_units"		}, E_Period::_from_string_nocase);
-		trySetScaledFromYaml(rtcm_rotate_period,		output_files, {"rtcm_rotate_period"	    }, {"rtcm_rotate_period_units"		}, E_Period::_from_string_nocase);
-        trySetScaledFromYaml(summary_rotate_period,		output_files, {"summary_rotate_period"	}, {"summary_rotate_period_units"	}, E_Period::_from_string_nocase);
-		trySetScaledFromYaml(config_rotate_period,		output_files, {"config_rotate_period"	}, {"config_rotate_period_units"	}, E_Period::_from_string_nocase);
-		trySetScaledFromYaml(ionex_rotate_period,		output_files, {"ionex_rotate_period"	}, {"ionex_rotate_period_units"		}, E_Period::_from_string_nocase);
-		trySetScaledFromYaml(ionstec_rotate_period,		output_files, {"ionstec_rotate_period"	}, {"ionstec_rotate_period_units"	}, E_Period::_from_string_nocase);
-		trySetScaledFromYaml(biasSINEX_rotate_period,	output_files, {"biasSINEX_rotate_period"}, {"biasSINEX_rotate_period_units"	}, E_Period::_from_string_nocase);
-		
+
 	}
 
 	auto processing_options = stringsToYamlObject(yaml, {"processing_options"});
@@ -1118,6 +1112,7 @@ bool ACSConfig::parse(
 		trySetFromYaml(thres_slip,			processing_options, {"cycle_slip",		"thres_slip"	});
 		trySetFromYaml(max_inno,			processing_options, {"max_inno"			});
 		trySetFromYaml(deweight_factor,		processing_options, {"deweight_factor"	});
+		trySetFromYaml(ratio_limit,			processing_options, {"ratio_limit"		});
 		trySetFromYaml(max_gdop,			processing_options, {"max_gdop"			});
 		trySetFromYaml(antexacs,			processing_options, {"antexacs"			});
 		trySetFromYaml(sat_pcv,				processing_options, {"sat_pcv"			});
@@ -1162,9 +1157,8 @@ bool ACSConfig::parse(
 		trySetFromYaml(pppOpts.rts_lag,					user_filter,	{"rts_lag"					});
 		trySetFromYaml(pppOpts.rts_directory,			user_filter,	{"rts_directory"			});
 		trySetFromYaml(pppOpts.rts_filename,			user_filter,	{"rts_filename"				});
-		trySetFromYaml(pppOpts.ballistics,				user_filter,	{"ballistics"				});
-		trySetFromYaml(pppOpts.outage_reset_count,		user_filter,	{"outage_reset_count"		});
-		trySetFromYaml(pppOpts.phase_reject_count,		user_filter,	{"phase_reject_count"		});
+		trySetFromYaml(pppOpts.outage_reset_limit,		user_filter,	{"outage_reset_limit"		});
+		trySetFromYaml(pppOpts.phase_reject_limit,		user_filter,	{"phase_reject_limit"		});
 	}
 
 	auto network_filter = stringsToYamlObject(yaml, {"network_filter_parameters"});
@@ -1176,7 +1170,8 @@ bool ACSConfig::parse(
 		trySetFromYaml(netwOpts.rts_lag,			network_filter,	{"rts_lag"					});
 		trySetFromYaml(netwOpts.rts_directory,		network_filter,	{"rts_directory"			});
 		trySetFromYaml(netwOpts.rts_filename,		network_filter,	{"rts_filename"				});
-		trySetFromYaml(netwOpts.phase_reject_count,	network_filter,	{"phase_reject_count"		});
+		trySetFromYaml(netwOpts.outage_reset_limit,	network_filter,	{"outage_reset_limit"		});
+		trySetFromYaml(netwOpts.phase_reject_limit,	network_filter,	{"phase_reject_limit"		});
 	}
 
 	auto troposphere = stringsToYamlObject(processing_options, {"troposphere"});
@@ -1340,7 +1335,7 @@ bool ACSConfig::parse(
 		trySetFromYaml(ssrOpts.sync_epoch_offset,		ssr, {"sync_epoch_offset"		});
 		trySetFromYaml(ssrOpts.settime_week_override,	ssr, {"settime_week_override"	});
 		trySetFromYaml(ssrOpts.rtcm_directory,			ssr, {"rtcm_directory"			});
-		trySetFromYaml(ssrOpts.read_from_files,	ssr, {"read_from_files"	});
+		trySetFromYaml(ssrOpts.read_from_files,			ssr, {"read_from_files"			});
 	}
 
 	tryAddRootToPath(root_output_dir, 				trace_directory);
@@ -1404,7 +1399,8 @@ bool ACSConfig::parse(
 	replaceTimes(root_stations_dir,		start_epoch);
 	replaceTimes(sinex_directory,		start_epoch);
 	replaceTimes(sinex_filename,		start_epoch);
-	replaceTimes(persistance_directory,         start_epoch);
+	replaceTimes(ssrOpts.rtcm_directory,		start_epoch);
+	replaceTimes(persistance_directory,			start_epoch);
 	replaceTimes(persistance_filename,			start_epoch);
 	replaceTimes(pppOpts.rts_filename,			start_epoch);
 	replaceTimes(netwOpts.rts_filename,			start_epoch);

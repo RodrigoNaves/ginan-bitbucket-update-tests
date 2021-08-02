@@ -77,12 +77,10 @@ struct OutputOptions
 	bool	output_summary 				= false;
 	string	summary_directory			= "./";
 	string	summary_filename			= "pea<YYYY><DDD><HH>.summary";
-	double	summary_rotate_period		= 0;
 
 	bool	output_clocks 				= false;
 	string	clocks_directory			= "./";
 	string	clocks_filename				= "pea<YYYY><DDD><HH>.clk";
-	double	clocks_rotate_period		= 0;
 	bool	output_AR_clocks			= false;
 
 	bool	output_ppp_sol 				= false;
@@ -92,20 +90,14 @@ struct OutputOptions
 	bool	output_ionex 				= false;
 	string	ionex_directory				= "./";
 	string	ionex_filename				= "pea<YYYY><DDD><HH>.ionex";
-	double	ionex_rotate_period			= 0;
 
 	bool	output_ionstec				= false;
 	string	ionstec_directory			= "./";
 	string	ionstec_filename			= "pea<YYYY><DDD><HH>.STEC";
-	double	ionstec_rotate_period		= 0;
 
 	bool	output_biasSINEX			= false;
 	string	biasSINEX_directory			= "./";
 	string	biasSINEX_filename			= "AUS0ACSRAP_<YYYY><DDD><HH>00_01D_30S_ABS.BIA";
-	double	biasSINEX_rotate_period		= 0;
-
-	double	config_rotate_period		= 0;
-
 
 	bool	output_sinex				= false;
 	string 	sinex_directory				= "./";
@@ -169,7 +161,6 @@ struct GlobalOptions
 	bool    caster_test                 = false;
 	string  caster_stream_root          = "";
 	
-	bool	use_recorded_rtcm			= false;
 	bool	simulate_real_time			= false;
 	
 	bool	process_user				= false;
@@ -200,6 +191,7 @@ struct GlobalOptions
 	double	max_inno     	= 30;
 	double	max_gdop     	= 30;
 	double	deweight_factor	= 100;
+	double	ratio_limit		= 4000;
 
 	double	wait_next_epoch		= 60;
 	double	wait_all_stations	= 0;
@@ -268,7 +260,8 @@ struct KalmanModel
 */
 struct NetworkOptions
 {
-	int			phase_reject_count	= 10;	
+	int			phase_reject_limit	= 10;	
+	int			outage_reset_limit	= 10;	
 
 	int			filter_mode		= E_FilterMode::KALMAN;
 	int			inverter		= E_Inverter::INV;
@@ -429,8 +422,8 @@ struct MinimumConstraintOptions
 */
 struct PPPOptions
 {
-	int			outage_reset_count	= 50;		/* obs outage count to reset bias */
-	int			phase_reject_count	= 10;		/* obs outage count to reset bias */
+	int			phase_reject_limit	= 10;	
+	int			outage_reset_limit	= 10;	
 
 	int			max_filter_iter 	= 2;
 	int			max_prefit_remv 	= 2;
@@ -440,8 +433,6 @@ struct PPPOptions
 	int			rts_lag				= 0;
 	string		rts_directory		= "./";
 	string		rts_filename		= "PPP-<Station>-<YYYY><DDD><HH>.rts";
-
-	bool		ballistics			= false;
 };
 
 /** Options associated with cycle slip detection and repair within the network filter
