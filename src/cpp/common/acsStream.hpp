@@ -154,17 +154,17 @@ struct networkData
 	
 	GTime startTime;
 	GTime endTime;
-    ulong numPreambleFound = 0;
-    ulong numFramesFailedCRC = 0;
-    ulong numFramesPassCRC = 0;
-    ulong numFramesDecoded = 0;
-    ulong numNonMessBytes = 0;
-	double totalLatency = 0;
-	ulong numMessagesLatency = 0;	
+    long int	numPreambleFound	= 0;
+    long int	numFramesFailedCRC	= 0;
+    long int	numFramesPassCRC	= 0;
+    long int	numFramesDecoded	= 0;
+    long int	numNonMessBytes		= 0;
+	long int	numMessagesLatency	= 0;	
+	double		totalLatency		= 0;
 
     int disconnectionCount = 0;
-    boost::posix_time::time_duration connectedDuration = boost::posix_time::hours(0);
-    boost::posix_time::time_duration disconnectedDuration = boost::posix_time::hours(0);
+    boost::posix_time::time_duration connectedDuration		= boost::posix_time::hours(0);
+    boost::posix_time::time_duration disconnectedDuration	= boost::posix_time::hours(0);
 	
     int numberErroredChunks = 0; 
 	int numberChunks = 0;

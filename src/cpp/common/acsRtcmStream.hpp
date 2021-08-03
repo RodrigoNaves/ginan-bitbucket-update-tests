@@ -191,14 +191,14 @@ struct RtcmStream : ObsStream, NavStream,
 	ObsList SuperList;
 	map<SatSys,map<E_ObsCode,int>> MSM7_lock_time;
 
-    ulong numPreambleFound = 0;
-    ulong numFramesFailedCRC = 0;
-    ulong numFramesPassCRC = 0;
-    ulong numFramesDecoded = 0;
-    ulong numNonMessBytes = 0;
-	double totalLatency = 0;
-	ulong numMessagesLatency = 0;
- 
+    long int	numPreambleFound	= 0;
+    long int	numFramesFailedCRC	= 0;
+    long int	numFramesPassCRC	= 0;
+    long int	numFramesDecoded	= 0;
+    long int	numNonMessBytes		= 0;
+	long int	numMessagesLatency	= 0;
+	double		totalLatency		= 0;
+	
 	static GTime rtcmDeltaTime;
 	
     GTime rtcm_UTC;
