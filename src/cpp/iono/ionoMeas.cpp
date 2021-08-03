@@ -10,7 +10,7 @@
 #include "common.hpp"
 #include "enums.h"
 
-#define PHASE_BIAS_STD 0.3
+#define PHASE_BIAS_STD 0.03
 
 extern int Ipp_in_range(GTime time, double *Ion_pp)
 {

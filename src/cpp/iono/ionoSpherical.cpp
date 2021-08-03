@@ -351,7 +351,7 @@ double ion_vtec_sphhar(
 		}
 
 		iono += 	coef * staval;
-		vari += SQR(coef * stastd);
+		vari += SQR(coef)* stastd;
 	}
 
 	return iono;
