@@ -200,7 +200,7 @@ int write_bias_SINEX(
 		if (bias.biasType == +E_BiasType::OSB	&& opt.OSB_biases == false)		continue;	//dont output this because we dont want OSB biases
 		if (bias.biasType == +E_BiasType::DSB	&& opt.DSB_biases == false)		continue;	//dont output this because we dont want DSB biases
 			
-		nwrt += write_bSINEX_line(bias, trace);
+		nwrt += write_bSINEX_line(bias, outputStream);
 	} 
 		
 	tracepdeex(0, outputStream, "-BIAS/SOLUTION\n%%=ENDBIA");
