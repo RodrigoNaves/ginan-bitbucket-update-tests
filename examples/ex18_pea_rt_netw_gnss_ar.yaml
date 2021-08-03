@@ -130,7 +130,7 @@ station_data:
 #    
 #    stream_label:
 #        - GGA1        
-#    ISG1:
+#    GGA1:
 #        streams: "SSRA00GGA1"
 #        messages:
 #            - "1060"  # RTCM messages to be broadcast

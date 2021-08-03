@@ -35,10 +35,10 @@
 void pppoutstat(
 	Trace&		trace,
 	KFState&	kfState,
-	bool		rts)
+	bool		rts,
+	int 		solStat,
+	int			numSat)
 {
-	int solStat = 0;
-
 	int week;
 	double tow = time2gpst(kfState.time, &week);
 //
@@ -57,16 +57,16 @@ void pppoutstat(
 			{
 				kfState.getKFValue(key, x[key.num], &v[key.num]);
 			}
-			tracepdeex(1, trace, "\n$POS,%d,%.3f,%d,%.4f,%.4f,%.4f,%.14f,%.14f,%.14f\n",
+			tracepdeex(1, trace, "\n$POS,%d,%.3f,%d,%.4f,%.4f,%.4f,%.7f,%.7f,%.7f\n",
 						week,
 						tow,
 						solStat,
 						x[0],
 						x[1],
 						x[2],
-						v[0],
-						v[1],
-						v[2]);
+						sqrt(v[0]),
+						sqrt(v[1]),
+						sqrt(v[2]));
 		}
 
 		if (key.type == KF::PHASE_BIAS)
@@ -74,14 +74,14 @@ void pppoutstat(
 			double phase_bias		= 0;
 			double phase_biasVar	= 0;
 			kfState.getKFValue(key, phase_bias, &phase_biasVar);
-			tracepdeex(1, trace, "$AMB,%d,%.3f,%d,%s,%d,%.4f,%f\n",
+			tracepdeex(1, trace, "$AMB,%d,%.3f,%d,%s,%d,%.4f,%.7f\n",
 						week,
 						tow,
 						solStat,
 						key.Sat.id().c_str(),
 						key.num,
 						phase_bias,
-						phase_biasVar);
+						sqrt(phase_biasVar));
 		}
 
 		if (key.type == KF::TROP)
@@ -92,36 +92,49 @@ void pppoutstat(
 			if (key.num == 1)	grad = "_N";
 			if (key.num == 2)	grad = "_E";
 			kfState.getKFValue(key, trop, &tropVar);
-			tracepdeex(1, trace, "$TROP%s,%d,%.3f,%d,%d,%f,%.14f\n",
+			tracepdeex(1, trace, "$TROP%s,%d,%.3f,%d,%d,%f,%.7f\n",
 					grad.c_str(),
 					week,
 					tow,
 					solStat,
-					1,
+					numSat,
 					trop,
-					tropVar);
+					sqrt(tropVar));
 		}
 
 		if	( key.type	== KF::REC_SYS_BIAS
 			&&key.num	== SatSys(E_Sys::GPS).biasGroup())
 		{
-			double rClk		= 0;
-			double rClkG	= 0;
-			double rClkVar	= 0;
-			double rClkGVar	= 0;
-			kfState.getKFValue(key, rClk,	&rClkVar);
+			double rClkGPS	= 0;
+			double rClkGLO	= 0;
+			double rClkGAL	= 0;
+			double rClkBDS	= 0;
+			double GPSclkVar= 0;
+			double GLOclkVar= 0;
+			double GALclkVar= 0;
+			double BDSclkVar= 0;
+			
+			kfState.getKFValue(key, rClkGPS, &GPSclkVar);
 			key.num = SatSys(E_Sys::GLO).biasGroup();
-			kfState.getKFValue(key, rClkG,	&rClkGVar);
-
-			tracepdeex(1, trace, "$CLK,%d,%.3f,%d,%d,%.4f,%.4f,%.4f,%.4f\n",
+			kfState.getKFValue(key, rClkGLO, &GLOclkVar);
+			key.num = SatSys(E_Sys::GAL).biasGroup();
+			kfState.getKFValue(key, rClkGAL, &GALclkVar);
+			key.num = SatSys(E_Sys::CMP).biasGroup();
+			kfState.getKFValue(key, rClkBDS, &BDSclkVar);
+			
+			tracepdeex(1, trace, "$CLK,%d,%.3f,%d,%d,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f\n",
 					week,
 					tow,
 					solStat,
-					1,
-					rClk		* 1E9 / CLIGHT,
-					rClkG		* 1E9 / CLIGHT,
-					rClkVar		* 1E9 / CLIGHT,
-					rClkGVar	* 1E9 / CLIGHT);
+					numSat,
+					rClkGPS			* 1E9 / CLIGHT,
+					rClkGLO			* 1E9 / CLIGHT,
+					rClkGAL			* 1E9 / CLIGHT,
+					rClkBDS			* 1E9 / CLIGHT,
+					sqrt(GPSclkVar)	* 1E9 / CLIGHT,
+					sqrt(GLOclkVar)	* 1E9 / CLIGHT,
+					sqrt(GALclkVar)	* 1E9 / CLIGHT,
+					sqrt(BDSclkVar)	* 1E9 / CLIGHT);
 		}
 	}
 //
@@ -1048,7 +1061,7 @@ void pppos(
 
 		if (rtk.sol.stat)
 		{
-			pppoutstat(trace, rtk.pppState);
+			pppoutstat(trace, rtk.pppState,false, rtk.sol.stat,rtk.sol.numSats);
 			rtk.pppState.outputStates(trace);
 		}
 	}

@@ -262,7 +262,7 @@ void outp_bias(
 		if (rel_strt[0] == 0)
 		{
 			sinex_time(time, rel_strt);
-			tracepdeex(2,trace,"\nInitializing relative biases %04d:%03d:%05d", abs_strt[0], abs_strt[1], abs_strt[2]);
+			tracepdeex(2,trace,"\nInitializing relative biases %04d:%03d:%05d", rel_strt[0], rel_strt[1], rel_strt[2]);
 		} 
 		
 		key.type=KF::DCB;
@@ -283,8 +283,6 @@ void outp_bias(
 	 	key.Sat.prn=0;
 	}
 	
-	
-	
 	SinexBias entry;
 	int week;
 	double tow = time2gpst(time, &week);
@@ -296,16 +294,16 @@ void outp_bias(
 	entry.cod1		= code1;
 	entry.cod2		= code2;
 	
+	entry.measType	= measType;
 	entry.tini		= gpst2time(week, tow);
 	entry.tfin		= gpst2time(week, tow + updateInterval);
-	entry.measType	= measType;
 	
 	entry.bias	= bias;
 	entry.var	= variance;
 	entry.slop	= 0;
 	entry.slpv	= 0;
 	
-	tracepdeex(4,trace,"\nLoading bias for %s %s %s %d %d %s ", Sat.id().c_str(), Sat.svn().c_str(), receiver.c_str(), code1, code2, entry.tini.to_string(0));
+	tracepdeex(2,trace,"\nLoading bias for %s %s %s %d %d %s ", Sat.id().c_str(), Sat.svn().c_str(), receiver.c_str(), code1, code2, entry.tini.to_string(0));
 	
 	auto& BiasMap=SINEXBiases_out[key];
 	int found=-1;

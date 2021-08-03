@@ -35,7 +35,7 @@ extern int config_ionosph_model()
 	iono_KFState.max_prefit_remv	= acsConfig.ionFilterOpts.max_prefit_remv;
 	iono_KFState.inverter			= acsConfig.ionFilterOpts.inverter;
 		
-	//fp_iondebug = fopen("iono_debug_trace.txt", "w");
+	// fp_iondebug = fopen("iono_debug_trace.txt", "w");
 	switch (acsConfig.ionFilterOpts.model)
 	{
 		case E_IonoModel::MEAS_OUT:				return 1;
@@ -183,7 +183,7 @@ void update_ionosph_model(
 				meas.addDsgnEntry(recDCBKey, 1, recDCBInit);
 			}
 			
-			/************ receiver DCB ************/        /* We may need to change this for multi-code solutions */
+			/************ satellite DCB ************/        /* We may need to change this for multi-code solutions */
 			KFKey satDCBKey;
 			satDCBKey.type	= KF::DCB;
 			satDCBKey.Sat	= obs.Sat;
@@ -210,7 +210,7 @@ void update_ionosph_model(
 				
 				meas.addDsgnEntry(ionModelKey, coef, ionModelInit);
 				
-				tracepde(4, trace,"#IONO_MOD %s %4d %9.5f %10.5f %8.5f %8.5f %12.5e %9.5f %12.5e\n",
+				tracepde(5, trace,"#IONO_MOD %s %4d %9.5f %10.5f %8.5f %8.5f %12.5e %9.5f %12.5e\n",
 					((string)meas.obsKey).c_str(), i, obs.latIPP[0]*R2D, obs.lonIPP[0]*R2D, obs.angIPP[0], 
 					obs.STECtoDELAY, coef, obs.STECsmth, obs.STECsmvr);
 			}
@@ -242,6 +242,8 @@ void update_ionosph_model(
 // 		trace << std::endl << " ------- AFTER IONO KALMAN FILTER --------" << std::endl;
 	}
 
+	iono_KFState.outputStates(trace);
+	trace << std::endl << " -------------------------------------------------------------------------" << std::endl;
 	
 	MatrixXd atran = combinedMeas.A.transpose();
 	TestStack::testMat("v", combinedMeas.V);
@@ -254,6 +256,8 @@ void update_ionosph_model(
 	{
 		ionex_file_write(trace, iontime);
 	}
+	
+	
 	
 	if (acsConfig.output_biasSINEX) for (auto& [dcbKey, index] : iono_KFState.kfIndexMap)
 	{

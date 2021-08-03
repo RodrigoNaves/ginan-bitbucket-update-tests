@@ -531,7 +531,7 @@ void mainOncePerEpochPerStation(
 			if (nfixed>0)
 			{
 				trace << std::endl << "-------------- AR PPP solution ----------------------" << std::endl;
-				pppoutstat(trace, kfARcopy);
+				pppoutstat(trace, kfARcopy,false,SOLQ_FIX,rec.rtk.sol.numSats);
 				trace << std::endl << "------------ AR PPP solution end --------------------" << std::endl;
 			}
 		}
@@ -1382,9 +1382,10 @@ int main(int argc, char **argv)
 		createTracefiles(stationMap, net);
 		
 		//try to get svns of all used satellites
-		for (auto& [satUID, satNav] : nav.satNavMap)
+		for (auto& [satId, satNav] : nav.satNavMap)
 		{
-			SatSys Sat(satUID);
+			SatSys Sat;
+			Sat.fromHash(satId);
 			pcvacs_t* pcvsat = findAntenna(Sat.id(), ep, nav);
 			if (pcvsat)
 			{

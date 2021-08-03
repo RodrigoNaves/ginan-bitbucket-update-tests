@@ -121,7 +121,7 @@ default_filter_parameters:
         pos:
             estimated:          true
             sigma:              [0.1]
-            proc_noise:         [0.00057] #0.57 mm/sqrt(s), Gipsy default value from slow-moving
+            proc_noise:         [0] #0.57 mm/sqrt(s), Gipsy default value from slow-moving
             proc_noise_dt:      second
             #apriori:                                   # taken from other source, rinex file etc.
             #frame:              xyz #ned

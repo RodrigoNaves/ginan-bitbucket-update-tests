@@ -5,12 +5,8 @@
 #include "biasSINEX.hpp"
 #include "enums.h"
 
-
-
 #define SSR_CBIA_VALID 3600.0
 #define SSR_PBIA_VALID 300.0
-
-
 
 
 map<E_Sys, E_ObsCode> defaultCodesL1 =
