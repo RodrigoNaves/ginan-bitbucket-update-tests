@@ -15,8 +15,8 @@ using std::map;
 */
 struct SatSys
 {
-	E_Sys		sys;		///< Satellite system
-	short int	prn;		///< PRN for this satellite
+	E_Sys		sys = E_Sys::NONE;		///< Satellite system
+	short int	prn = 0;				///< PRN for this satellite
 
 	/** Constructor using satellite system and prn
 	*/
