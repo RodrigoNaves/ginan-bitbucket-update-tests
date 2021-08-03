@@ -2112,15 +2112,15 @@ std::vector<std::string> NtripRtcmStream::getJsonNetworkStatistics(GTime now)
 	std::vector<std::string> dataJSON;
 	
 	// Copy statistics into total run based statics.
-	if( runData.startTime.time == 0 )
+	if (runData.startTime.time == 0)
 	{
 		GTime start;
 		start.time = boost::posix_time::to_time_t(startTime);
-		start.sec = (startTime.time_of_day().total_milliseconds()
-					-startTime.time_of_day().total_seconds()*1000)/1000.0;
-		runData.startTime = start;
-		hourlyData.startTime = start;
-		epochData.startTime = start;
+		start.sec	= (	  startTime.time_of_day().total_milliseconds()
+						- startTime.time_of_day().total_seconds()*1000) / 1000.0;
+		runData		.startTime = start;
+		hourlyData	.startTime = start;
+		epochData	.startTime = start;
 		
 		runData.endTime.time = 0;
 		runData.endTime.sec = 0;
@@ -2141,23 +2141,14 @@ std::vector<std::string> NtripRtcmStream::getJsonNetworkStatistics(GTime now)
 	}
 	
 	epochData.endTime = now;
-    epochData.numPreambleFound = numPreambleFound;
-	numPreambleFound = 0;
-    epochData.numFramesFailedCRC = numFramesFailedCRC;
-	numFramesFailedCRC = 0;
-    epochData.numFramesPassCRC = numFramesPassCRC;
-	numFramesPassCRC = 0;
-    epochData.numFramesDecoded = numFramesDecoded;
-	numFramesDecoded = 0;
-    epochData.numNonMessBytes = numNonMessBytes;
-	numNonMessBytes = 0;
-	epochData.totalLatency = totalLatency;
-	totalLatency = 0;
-	epochData.numMessagesLatency = numMessagesLatency;
-	numMessagesLatency = 0;
-	
-    epochData.disconnectionCount = disconnectionCount;
-	disconnectionCount = 0;
+    epochData.numPreambleFound		= numPreambleFound;		numPreambleFound	= 0;	//todo aaron, change these to another struct
+    epochData.numFramesFailedCRC	= numFramesFailedCRC;	numFramesFailedCRC	= 0;
+    epochData.numFramesPassCRC		= numFramesPassCRC;		numFramesPassCRC	= 0;
+    epochData.numFramesDecoded		= numFramesDecoded;		numFramesDecoded	= 0;
+    epochData.numNonMessBytes		= numNonMessBytes;		numNonMessBytes		= 0;
+	epochData.totalLatency			= totalLatency;			totalLatency		= 0;
+	epochData.numMessagesLatency	= numMessagesLatency;	numMessagesLatency	= 0;
+    epochData.disconnectionCount	= disconnectionCount;	disconnectionCount	= 0;
 	
 	// When the connection has cycled within outside an epoch.
 	epochData.connectedDuration = connectedDuration - epochConnectedDuration;
@@ -2167,51 +2158,51 @@ std::vector<std::string> NtripRtcmStream::getJsonNetworkStatistics(GTime now)
 	epochDisconnectedDuration = disconnectedDuration;
 	
 	// When the connection cycle is within the epoch transition.
-	if( isConnected )
+	if (isConnected)
 	{
-		boost::posix_time::ptime pNow = boost::posix_time::from_time_t(now.time)
-								+ boost::posix_time::milliseconds((int)now.sec*1000);	
+		boost::posix_time::ptime pNow	= boost::posix_time::from_time_t(now.time)
+										+ boost::posix_time::milliseconds((int)now.sec*1000);	
 								
-		boost::posix_time::ptime pLast = boost::posix_time::from_time_t(epochData.startTime.time)
-								+ boost::posix_time::milliseconds((int)epochData.startTime.sec*1000);
+		boost::posix_time::ptime pLast	= boost::posix_time::from_time_t(epochData.startTime.time)
+										+ boost::posix_time::milliseconds((int)epochData.startTime.sec*1000);
 								
-		boost::posix_time::time_duration epochDur = pNow - pLast;
-		boost::posix_time::time_duration conDur = pNow - connectedTime;
+		boost::posix_time::time_duration epochDur	= pNow - pLast;
+		boost::posix_time::time_duration conDur		= pNow - connectedTime;
 		
-		if( conDur < epochDur )
+		if (conDur < epochDur)
 		{
-			epochData.connectedDuration += conDur;
-			epochData.disconnectedDuration += epochDur - conDur;
-			epochConnectedDuration += conDur;
-			epochDisconnectedDuration += epochDur - conDur;
+			epochData.connectedDuration		+= conDur;
+			epochData.disconnectedDuration	+= epochDur - conDur;
+			epochConnectedDuration			+= conDur;
+			epochDisconnectedDuration		+= epochDur - conDur;
 		}			
 	}
 	else
 	{
-		boost::posix_time::ptime pNow = boost::posix_time::from_time_t(now.time)
-								+ boost::posix_time::milliseconds((int)now.sec*1000);
+		boost::posix_time::ptime pNow	= boost::posix_time::from_time_t(now.time)
+										+ boost::posix_time::milliseconds((int)now.sec*1000);
 								
-		boost::posix_time::ptime pLast = boost::posix_time::from_time_t(epochData.startTime.time)
-								+ boost::posix_time::milliseconds((int)epochData.startTime.sec*1000);								
+		boost::posix_time::ptime pLast	= boost::posix_time::from_time_t(epochData.startTime.time)
+										+ boost::posix_time::milliseconds((int)epochData.startTime.sec*1000);								
 								
-		boost::posix_time::time_duration epochDur = pNow - pLast;
-		boost::posix_time::time_duration disConDur = pNow - disconnectedTime;
+		boost::posix_time::time_duration epochDur	= pNow - pLast;
+		boost::posix_time::time_duration disConDur	= pNow - disconnectedTime;
 		
-		if( disConDur < epochDur )
+		if (disConDur < epochDur)
 		{
-			epochData.disconnectedDuration += disConDur;
-			epochData.connectedDuration += epochDur - disConDur;
-			epochDisconnectedDuration += disConDur;
-			epochConnectedDuration += epochDur - disConDur;
+			epochData.disconnectedDuration	+= disConDur;
+			epochData.connectedDuration		+= epochDur - disConDur;
+			epochDisconnectedDuration		+= disConDur;
+			epochConnectedDuration			+= epochDur - disConDur;
 		}
 	}
 		
-	epochData.numberChunks = numberValidChunks+numberErroredChunks;
-	numberValidChunks = 0;
-    epochData.numberErroredChunks = numberErroredChunks;
-	numberErroredChunks = 0;
+	epochData.numberChunks			= numberValidChunks + numberErroredChunks;
+	numberValidChunks				= 0;
+    epochData.numberErroredChunks	= numberErroredChunks;
+	numberErroredChunks				= 0;
 
-	if ( hourlyData.endTime < now )
+	if (hourlyData.endTime < now)
 	{
 		hourlyData.getJsonNetworkStatistics(now);
 		GTime tEnd = now;
@@ -2219,16 +2210,13 @@ std::vector<std::string> NtripRtcmStream::getJsonNetworkStatistics(GTime now)
 		hourlyData.clearStatistics(now,tEnd);
 	}
 	
-	hourlyData.accumulateStatisticsFrom(epochData);
-	runData.accumulateStatisticsFrom(epochData);
+	hourlyData	.accumulateStatisticsFrom(epochData);
+	runData		.accumulateStatisticsFrom(epochData);
 	
 	std::string strJson;
-	strJson = epochData.getJsonNetworkStatistics(now);
-	dataJSON.push_back(strJson);
-	strJson = hourlyData.previousJSON;
-	dataJSON.push_back(strJson);	
-	strJson = runData.getJsonNetworkStatistics(now);
-	dataJSON.push_back(strJson);
+	strJson = epochData.getJsonNetworkStatistics(now);		dataJSON.push_back(strJson);
+	strJson = hourlyData.previousJSON;						dataJSON.push_back(strJson);	
+	strJson = runData.getJsonNetworkStatistics(now);		dataJSON.push_back(strJson);
 	
 	std::stringstream networkJson;
 	networkJson << "{";
@@ -2245,40 +2233,40 @@ std::vector<std::string> NtripRtcmStream::getJsonNetworkStatistics(GTime now)
 
 void networkData::accumulateStatisticsFrom(networkData dataToAdd)
 {
-    numPreambleFound += dataToAdd.numPreambleFound;
-    numFramesFailedCRC += dataToAdd.numFramesFailedCRC;
-    numFramesPassCRC += dataToAdd.numFramesPassCRC;
-    numFramesDecoded += dataToAdd.numFramesDecoded;
-    numNonMessBytes += dataToAdd.numNonMessBytes;
-	totalLatency += dataToAdd.totalLatency;
-	numMessagesLatency += dataToAdd.numMessagesLatency;	
+    numPreambleFound		+= dataToAdd.numPreambleFound;
+    numFramesFailedCRC		+= dataToAdd.numFramesFailedCRC;
+    numFramesPassCRC		+= dataToAdd.numFramesPassCRC;
+    numFramesDecoded		+= dataToAdd.numFramesDecoded;
+    numNonMessBytes			+= dataToAdd.numNonMessBytes;
+	totalLatency			+= dataToAdd.totalLatency;
+	numMessagesLatency		+= dataToAdd.numMessagesLatency;	
 
-    disconnectionCount += dataToAdd.disconnectionCount;
-    connectedDuration += dataToAdd.connectedDuration;
-    disconnectedDuration += dataToAdd.disconnectedDuration;
+    disconnectionCount		+= dataToAdd.disconnectionCount;
+    connectedDuration		+= dataToAdd.connectedDuration;
+    disconnectedDuration	+= dataToAdd.disconnectedDuration;
 	
-    numberErroredChunks += dataToAdd.numberErroredChunks; 
-	numberChunks += dataToAdd.numberChunks;	
+    numberErroredChunks		+= dataToAdd.numberErroredChunks; 
+	numberChunks			+= dataToAdd.numberChunks;	
 }
 
 void networkData::clearStatistics(GTime tStart, GTime tEnd)
 {
-	startTime = tStart;
-	endTime = tEnd;
-    numPreambleFound = 0;
-    numFramesFailedCRC = 0;
-    numFramesPassCRC = 0;
-    numFramesDecoded = 0;
-    numNonMessBytes = 0;
-	totalLatency = 0;
-	numMessagesLatency = 0;	
-
-    disconnectionCount = 0;
-    connectedDuration = boost::posix_time::hours(0);
-    disconnectedDuration = boost::posix_time::hours(0);
+	startTime	= tStart;
+	endTime		= tEnd;
+    numPreambleFound	= 0;
+    numFramesFailedCRC	= 0;
+    numFramesPassCRC	= 0;
+    numFramesDecoded	= 0;
+    numNonMessBytes		= 0;
+	totalLatency		= 0;
+	numMessagesLatency	= 0;	
+    disconnectionCount	= 0;
+    
+    connectedDuration		= boost::posix_time::hours(0);
+    disconnectedDuration	= boost::posix_time::hours(0);
 	
-    numberErroredChunks = 0; 
-	numberChunks = 0;		
+    numberErroredChunks	= 0; 
+	numberChunks		= 0;		
 }
 
 std::string networkData::getJsonNetworkStatistics(GTime now)
@@ -2301,19 +2289,22 @@ std::string networkData::getJsonNetworkStatistics(GTime now)
  
 	
 	double connRatio;
-	if (disconnectionCount == 0 && numberChunks > 0) 
+	if (disconnectionCount == 0 
+		&& numberChunks > 0) 
+	{
 		connRatio = 1;
+	}
 	else
 	{
-		if( totalTime.total_milliseconds() == 0)
+		if (totalTime.total_milliseconds() == 0)
 			connRatio = 0;
 		else
-			connRatio = (double)connectedDuration.total_milliseconds() /(double)totalTime.total_milliseconds();
+			connRatio = (double)connectedDuration.total_milliseconds() / (double) totalTime.total_milliseconds();
 	}
  	
 	
     double meanReconn = 0;
-    if ( disconnectionCount != 0 )
+    if (disconnectionCount != 0)
         meanReconn = (double)disconnectedDuration.total_milliseconds()/(60.0*1000.0*disconnectionCount);
 
     networkJson << "\"Disconnects\": " << disconnectionCount << ",";
@@ -2322,25 +2313,25 @@ std::string networkData::getJsonNetworkStatistics(GTime now)
 
     double chunkRatio = 0;
     
-    if ( numberChunks != 0 )
+    if (numberChunks != 0)
         chunkRatio = (double)numberErroredChunks/(double)(numberChunks);
 
-    networkJson << "\"Chunks\": " << numberChunks << ",";
-    networkJson << "\"ChunkErrors\": " <<  numberErroredChunks << ",";
-    networkJson << "\"ChunkErrorRatio\": " << chunkRatio << ",";
+    networkJson << "\"Chunks\": "			<< numberChunks			<< ",";
+    networkJson << "\"ChunkErrors\": "		<< numberErroredChunks	<< ",";
+    networkJson << "\"ChunkErrorRatio\": "	<< chunkRatio			<< ",";
 
-    networkJson << "\"RtcmExtraBytes\": " << numNonMessBytes << ",";
-    networkJson << "\"RtcmFailCrc\": " << numFramesFailedCRC << ",";
-    networkJson << "\"RtcmPassedCrc\": " << numFramesPassCRC << ",";
-    networkJson << "\"RtcmDecoded\": " << numFramesDecoded << ",";
-    networkJson << "\"RtcmPreamble\": " << numPreambleFound << ",";
+    networkJson << "\"RtcmExtraBytes\": "	<< numNonMessBytes		<< ",";
+    networkJson << "\"RtcmFailCrc\": "		<< numFramesFailedCRC	<< ",";
+    networkJson << "\"RtcmPassedCrc\": "	<< numFramesPassCRC		<< ",";
+    networkJson << "\"RtcmDecoded\": "		<< numFramesDecoded		<< ",";
+    networkJson << "\"RtcmPreamble\": "		<< numPreambleFound		<< ",";
     
     double FailedToPreambleRatio = 0;
     if ( numPreambleFound != 0 )
-        FailedToPreambleRatio = (double)numFramesFailedCRC/(double)numPreambleFound;
+        FailedToPreambleRatio = (double) numFramesFailedCRC / (double) numPreambleFound;
     networkJson << "\"RtcmFailedCrcToPreambleRatio\": " << FailedToPreambleRatio << ",";
 	
-	if ( numMessagesLatency != 0 )
+	if (numMessagesLatency != 0)
 	{
 		double meanLatency = totalLatency / numMessagesLatency;
 		networkJson << "\"meanLatency\": " << meanLatency;
