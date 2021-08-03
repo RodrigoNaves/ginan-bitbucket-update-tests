@@ -34,7 +34,7 @@ case $TEST_NUM in
     ;;
   6)
     # TODO absent:
-    # ex16
+    pea --config ex16_pea_pp_ionosphere.yaml
     ;;
   7)
     pea --config ex17_pea_pp_netw_gnss_ar.yaml

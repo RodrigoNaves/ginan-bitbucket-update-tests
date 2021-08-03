@@ -61,7 +61,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
-            name: PEA test 6 (absent)
+            name: PEA test 6 (ionosphere)
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
