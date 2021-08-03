@@ -45,7 +45,7 @@ void RtcmEncoder::Encoder::encodeWriteMessageToBuffer(
 	data.insert(data.end(), &nbuf[0], &nbuf[messLength+6]);
 }
 
-void RtcmEncoder::CustomEndcoder::encodeTimeStampRTCM(bool isFileStart)
+void RtcmEncoder::CustomEndcoder::encodeTimeStampRTCM()
 {
     // Custom message code, for crcsi maximum length 4096 bits or 512 bytes.
     unsigned int messCode = +RtcmMessageType::CUSTOM;

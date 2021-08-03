@@ -1301,10 +1301,6 @@ void RtcmStream::createRtcmFile()
     replaceString(path_rtcm, "<LOGTIME>", logtime);
     
     std::ofstream ofs( path_rtcm,std::ofstream::out | std::ofstream::ate);
-    // TODO:Alex append first 4082 message
-    RtcmEncoder::CustomEndcoder encoder;
-    encoder.encodeTimeStampRTCM(true);
-    encoder.encodeWriteMessages(ofs);
 }
 
 
@@ -1429,13 +1425,14 @@ void RtcmStream::parseRTCM(std::istream& inputStream)
  			string path_rtcm = rtcm_filename;
 			replaceString(path_rtcm, "<LOGTIME>", logtime);
            
-            std::ofstream ofs( path_rtcm, std::ofstream::out | std::ofstream::app);
+            std::ofstream ofs(path_rtcm, std::ofstream::app);
             
-            // Write the custom time stamp message.
+            //Write the custom time stamp message.
             RtcmEncoder::CustomEndcoder encoder;
-            encoder.encodeTimeStampRTCM(false);
+            encoder.encodeTimeStampRTCM();
             encoder.encodeWriteMessages(ofs);            
             
+            //copy the message to the output file too
             ofs.write((char *)data,		message_length+3);
             ofs.write((char *)&crcRead,	3);
         }

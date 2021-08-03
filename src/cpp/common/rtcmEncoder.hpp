@@ -21,7 +21,7 @@ struct RtcmEncoder
  
     struct CustomEndcoder : Encoder
     {
-        void encodeTimeStampRTCM(bool isFileStart);
+        void encodeTimeStampRTCM();
     };
     
 	struct SSREncoder : Encoder
