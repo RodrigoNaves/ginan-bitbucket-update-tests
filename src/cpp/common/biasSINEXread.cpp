@@ -55,7 +55,7 @@ E_ObsCode str2code(
 	}
 	catch (...)
 	{
-
+		code = E_ObsCode::NONE;
 	}
 
 	lam = lambdas[code];
