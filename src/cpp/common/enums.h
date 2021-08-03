@@ -322,6 +322,7 @@ BETTER_ENUM(E_AmbTyp,	short int,
 
 BETTER_ENUM(RtcmMessageType, uint16_t,
 		NONE 				= 0,
+		CUSTOM			= 4082,
 		MSM4_GPS 			= 1074,
 		MSM4_GLONASS 		= 1084,
 		MSM4_GALILEO 		= 1094,
@@ -363,6 +364,9 @@ BETTER_ENUM(RtcmMessageType, uint16_t,
 		//GLONASS_AUX_OPERATION_INFO = 1230
 )
 
+BETTER_ENUM(E_RTCMSubmessage,	short int,
+		TIMESTAMP = 1
+)
 
 
 #endif

@@ -336,29 +336,38 @@ bool getOSBBias(
 	
 	//get the map of OSB biases for this ID and obsCode
 	//OSB biases will only have one obsCode
-	auto& biasMap = SINEXBiases[measType][id][obsCode][E_ObsCode::NONE];
-	
-	//find the last bias in that map that comes before the desired time
-	auto biasIt = biasMap.lower_bound(time);
-	if (biasIt == biasMap.end())
+
+// 	auto& biasMap = SINEXBiases[measType][id][obsCode][E_ObsCode::NONE];	//todo use a try{at().at.at()}
+	try
 	{
-		//not found
+		auto& biasMap = SINEXBiases[measType].at(id).at(obsCode).at(E_ObsCode::NONE);
+		
+		//find the last bias in that map that comes before the desired time
+		auto biasIt = biasMap.lower_bound(time);
+		if (biasIt == biasMap.end())
+		{
+			//not found
+			return false;
+		}
+		
+		auto& [startTime, bias] = *biasIt;
+		
+		if	( bias.tfin.time == 0 
+			||timediff(bias.tfin, time) <= 0) 
+		{
+			//end time is satisfactory
+			output = bias;
+			tracepdeex(lvl, trace, "\nFound bias for %d %S  %s - %s", bias.cod1, measType == PHAS ? "phase" : "code ", bias.tini.to_string(0), bias.tfin.to_string(0));
+			return true;
+		}
+		
+		//end time was not satisfactory
 		return false;
 	}
-	
-	auto& [startTime, bias] = *biasIt;
-	
-	if	( bias.tfin.time == 0 
-		||timediff(bias.tfin, time) <= 0) 
+	catch (...)
 	{
-		//end time is satisfactory
-		output = bias;
-		tracepdeex(lvl, trace, "\nFound bias for %d %S  %s - %s", bias.cod1, measType == PHAS ? "phase" : "code ", bias.tini.to_string(0), bias.tfin.to_string(0));
-		return true;
+		return false;
 	}
-	
-	//end time was not satisfactory
-	return false;
 }
 
 void setRestrictiveStartTime(
@@ -486,16 +495,21 @@ bool getDSBBias(
 			E_ObsCode	obsCode1,
 			E_ObsCode	obsCode2)
 {
-	const int lvl = 4;
-	
 	//get the basic map of DSB biases for this ID and measurmenet type
-	auto& biasMap = SINEXBiases[measType][id];
-	
-	set<E_ObsCode> checkedObscodes;
-	
-	bool pass = dsbRecurser(trace, time, output, obsCode1, obsCode2, biasMap, checkedObscodes);
-	
-	return pass;
+	try
+	{
+		auto& biasMap = SINEXBiases[measType].at(id);
+		
+		set<E_ObsCode> checkedObscodes;
+		
+		bool pass = dsbRecurser(trace, time, output, obsCode1, obsCode2, biasMap, checkedObscodes);
+		
+		return pass;
+	}
+	catch (...)
+	{
+		return false;
+	}
 }
 	
 /** Search for hardware biases in phase and code

@@ -45,6 +45,37 @@ void RtcmEncoder::Encoder::encodeWriteMessageToBuffer(
 	data.insert(data.end(), &nbuf[0], &nbuf[messLength+6]);
 }
 
+void RtcmEncoder::CustomEndcoder::encodeTimeStampRTCM()
+{
+    // Custom message code, for crcsi maximum length 4096 bits or 512 bytes.
+    unsigned int messCode = +RtcmMessageType::CUSTOM;
+    unsigned int messType = +E_RTCMSubmessage::TIMESTAMP;
+    
+    boost::posix_time::ptime now = boost::posix_time::microsec_clock::universal_time();
+    
+    // Number of seconds since 1/1/1970, long is 64 bits and all may be used.
+    long int seconds = (now - boost::posix_time::from_time_t(0)).total_seconds();
+    
+    //Number of fractional seconds, The largest this can be is 1000 which is 10 bits unsigned. 
+    boost::posix_time::ptime now_mod_seconds	= boost::posix_time::from_time_t(seconds);
+    auto subseconds	= now - now_mod_seconds;
+    int milli_sec = subseconds.total_milliseconds();
+    
+    unsigned int* var = (unsigned int*) &seconds;
+    
+    int i = 0;
+    //int byteLen = ceil((12.0+8.0+64.0+10.0)/8.0);
+    int byteLen = 12;
+    unsigned char buf[byteLen];
+    i = setbituInc(buf, i, 12,		messCode);
+    i = setbituInc(buf, i, 8,		messType);
+    i = setbituInc(buf, i, 32,		var[0]);
+    i = setbituInc(buf, i, 32,		var[1]);
+    i = setbituInc(buf, i, 10, (int)milli_sec);
+    
+    encodeWriteMessageToBuffer(buf, byteLen);
+}
+
 void RtcmEncoder::SSREncoder::encodeSsr(bool useSSROut)
 {
 	encodeSsrComb	(E_Sys::GPS, useSSROut);

@@ -65,17 +65,20 @@ static double ion_coef(int ind, Obs& obs, bool slant)
 void update_ionosph_model(
 	Trace&			trace,			///< Trace to output to
 	StationList&	stations,       ///< List of pointers to stations to use
-	GTime 			iontime,		///< Time of this epoch
-	double			tgap)        	///< Time elapsed since last update
+	GTime 			iontime)		///< Time of this epoch
 {
 	TestStack ts(__FUNCTION__);
 	
 	iono_KFState.initFilterEpoch();
-	iono_KFState.time = iontime;
 	
-	if (acsConfig.ionFilterOpts.model== +E_IonoModel::NONE) return;
-	if (acsConfig.output_ionstec) write_receivr_measr(trace, stations, iono_KFState.time);
-	if (acsConfig.ionFilterOpts.model== +E_IonoModel::MEAS_OUT) return; 
+	if (acsConfig.ionFilterOpts.model== +E_IonoModel::NONE) 
+		return;
+	
+	if (acsConfig.output_ionstec)
+		write_receivr_measr(trace, stations, iono_KFState.time);
+	
+	if (acsConfig.ionFilterOpts.model== +E_IonoModel::MEAS_OUT) 
+		return; 
 
 	tracepde(3, trace,"UPDATE IONO MODEL ...\n");
 	//count valid measurements for each station
@@ -220,7 +223,7 @@ void update_ionosph_model(
 	}
 	
 	//add process noise to existing states as per their initialisations.
-	iono_KFState.stateTransition(trace, tgap);
+	iono_KFState.stateTransition(trace, iontime);
 
 	//combine the measurement list into a single design matrix, measurement vector, and measurement noise vector
 	KFMeas combinedMeas = iono_KFState.combineKFMeasList(kfMeasEntryList);

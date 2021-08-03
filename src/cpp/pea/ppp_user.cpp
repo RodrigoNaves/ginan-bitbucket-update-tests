@@ -177,11 +177,11 @@ void udbias_ppp(
 		SatStat& satStat = rtk.satStatMap[key.Sat];
 		SigStat& sigStat = satStat.sigStatMap[(E_FType)key.num];
 
-		if (sigStat.phaseRejectCount >= acsConfig.pppOpts.phase_reject_count)
+		if (sigStat.userPhaseRejectCount >= acsConfig.pppOpts.phase_reject_limit)
 		{
-			sigStat.phaseRejectCount = 0;
+			sigStat.userPhaseRejectCount = 0;
 
-			trace << "Removing " << key << " due to repeated rejections > " << acsConfig.pppOpts.phase_reject_count << std::endl;
+			trace << "Removing " << key << " due to repeated rejections > " << acsConfig.pppOpts.phase_reject_limit << std::endl;
 			rtk.pppState.removeState(key);
 		}
 
@@ -190,12 +190,12 @@ void udbias_ppp(
 			rtk.pppState.removeState(key);
 		}
 
-		sigStat.phaseOutageCount++;
-		if (sigStat.phaseOutageCount == acsConfig.pppOpts.outage_reset_count)
+		sigStat.userPhaseOutageCount++;
+		if (sigStat.userPhaseOutageCount == acsConfig.pppOpts.outage_reset_limit)
 		{
-			sigStat.phaseOutageCount = 0;
+			sigStat.userPhaseOutageCount = 0;
 
-			trace << "Removing " << key << " due to extended outage > " << acsConfig.pppOpts.outage_reset_count << std::endl;
+			trace << "Removing " << key << " due to extended outage > " << acsConfig.pppOpts.outage_reset_limit << std::endl;
 			rtk.pppState.removeState(key);
 		}
 	}
@@ -350,8 +350,9 @@ int ppp_filter(
 
 	int lv = 3;
 
+	GTime obsTime = obsList.front().time;
 	double ep[6];
-	time2epoch(obsList.front().time, ep);
+	time2epoch(obsTime, ep);
 	double jd	= ymdhms2jd(ep);
 	double mjd	= jd - JD2MJD;
 
@@ -463,7 +464,8 @@ int ppp_filter(
 		double ionInitVari		= -1;
 		
 		
-		switch (acsConfig.ionoOpts.corr_mode){
+		switch (acsConfig.ionoOpts.corr_mode)
+		{
 			case E_IonoMode::IONO_FREE_LINEAR_COMBO:
 			case E_IonoMode::OFF:					 
 				dIono   = 0; 
@@ -886,28 +888,10 @@ int ppp_filter(
 		}
 	}
 
-	if	( recOpts.pos_rate.estimate
-		&&acsConfig.pppOpts.ballistics)
-	{
-		Vector3d gravity		= rRec.normalized() * -1 * EARTH_G_CONST / rRec.dot(rRec);
-		Vector3d refOmega		= {0, 0, OMGE};
-		Vector3d centrifugal	= - rRec.cross(refOmega).cross(refOmega);
-		Vector3d acceleration	= gravity + centrifugal;
-
-		for (int i = 0; i < 3; i++)
-		{
-			KFKey posRateKey;
-			posRateKey.type	= KF::REC_POS_RATE;
-			posRateKey.num	= i;
-			posRateKey.str	= obsList.front().mount;
-			kfState.setKFTransRate(posRateKey,	{KF::ONE},		acceleration[i]);
-		}
-	}
-
 	removeUnmeasuredAmbiguities(trace, rtk.pppState, measuredStates);
 
 	//add process noise to existing states as per their initialisations.
-	kfState.stateTransition(std::cout, rtk.tt);
+	kfState.stateTransition(std::cout, obsTime);
 
 	//combine the measurement list into a single matrix
 	KFMeas combinedMeas = kfState.combineKFMeasList(kfMeasEntryList);
@@ -972,9 +956,9 @@ void update_stat(
 			SatStat& satStat = *obs.satStat_ptr;
 			SigStat& sigStat = satStat.sigStatMap[key];
 
-			sigStat.phaseOutageCount = 0;
-			if (Sig.phaseError)		sigStat.phaseRejectCount++;
-			else 					sigStat.phaseRejectCount = 0;
+			sigStat.userPhaseOutageCount = 0;
+			if (Sig.phaseError)		sigStat.userPhaseRejectCount++;
+			else 					sigStat.userPhaseRejectCount = 0;
 
 		}
 

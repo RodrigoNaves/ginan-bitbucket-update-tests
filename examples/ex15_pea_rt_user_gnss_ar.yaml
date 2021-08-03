@@ -13,8 +13,7 @@ input_files:
 
 station_data:
 
-    # stream_root: "http://user:pass@auscors.ga.gov.au:2101/"
-    stream_root: "http://KenHarima:I5uZhsxDoc@auscors.ga.gov.au:2101/"
+    stream_root: "http://user:pass@auscors.ga.gov.au:2101/"
         
     nav_streams:
         - SSRA00CNE0 #orbits, clocks and bias
@@ -27,7 +26,7 @@ station_data:
 
 output_files:
 
-    root_output_directory:          /data/acs/pea/output/exs/<CONFIG>/
+    root_output_directory:          output/<CONFIG>/
 
     output_trace:                   true
     trace_level:                    3
