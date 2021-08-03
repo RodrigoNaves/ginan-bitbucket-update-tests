@@ -1676,6 +1676,10 @@ void	rtcmDecodeFromFile(int epochNum)
 }
 
 /** Creates a file containing the current epoch number
+ * Keeps network mode & end-user modes in sync if running network mode
+ * & end-user mode in parallel on the same machine and exporting/reading
+ * from RTCM files instead of an NTRIP Caster.
+ * Used in conjunction with waitForSyncFile()
 */
 void	exportSyncFile(int epochNum)
 {
@@ -1690,30 +1694,38 @@ void	exportSyncFile(int epochNum)
 	fout << epochNum << std::endl;
 }
 
-/** Creates a file containing the current epoch number
+/** Waits for a specified file to contain the current epoch number.
+ * Used in conjunction with exportSyncFile()
 */
 void	waitForSyncFile(int epochNum)
 {
 	string filename = acsConfig.ssrOpts.rtcm_directory + "sync.tmp";
 	using namespace std::literals::chrono_literals;
 	bool wait = true;
+	int printCounter = 0;
 	while (wait)
 	{
 		std::ifstream fin(filename);
-		while (!fin.is_open())
+		if (fin.is_open())
+		{
+			int numIn = 0;
+			fin >> numIn;
+			if (numIn >= epochNum)
+			{
+				wait = false;
+			}
+		}
+
+		if (wait)
 		{
 			std::this_thread::sleep_for(0.1s);
-			fin.open(filename);
-		}
-		int numIn = 0;
-		fin >> numIn;
-		if (numIn >= epochNum)
-		{
-			wait = false;
-		}
-		else
-		{
-			std::this_thread::sleep_for(0.1s);
+			if (printCounter > 100)
+			{
+				BOOST_LOG_TRIVIAL(warning)
+				<< "Waiting for rtcm sync file: " << filename;
+				printCounter = 0;
+			}
+			++printCounter;
 		}
 	}
 }
