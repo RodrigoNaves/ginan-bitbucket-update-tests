@@ -1,46 +1,6 @@
 
 \chapter{Python}
-\section{Python Installation for Plotting, Processing,
-etc.}\label{python-installation-for-plotting-processing-etc.}
-
-Lastly, to run many of the included scripts for fast parsing of
-.trace/.snx files, plotting of results, automatic running of the PEA
-based on input date/times and stations, etc. then a number of python
-dependencies are needed.
-
-The file \texttt{python/ginan\_py37.yaml} has a list of the necessary
-python dependencies.\\
-The best way to take advantage of this is to install the
-\emph{\emph{Miniconda}} virtual environment manager.\\
-This will allow you to pass the \texttt{.yaml} file into the
-\texttt{conda} command and automatically set up a new python
-environment.
-
-\paragraph{To install miniconda,}enter the following commands:
-
-\begin{lstlisting}[language=bash,caption=Installing conda]
-$ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-$ bash Miniconda3-latest-Linux-x86_64.sh
-\end{lstlisting}
-
-And follow the installation instructions on screen (choosing all
-defaults is fine).
-
-\textit{Create virtual environment}, after installation you can create the \emph{ginan37} python environment. First open a new terminal session and enter:
-
-\begin{lstlisting}[language=bash,caption=Example showing how to create a conda environment]
-$ conda env create -f <dir_to_pea>/python/ginan_py37.yaml
-\end{lstlisting}
-
-You have now created the virtual python environment \emph{ginan37}
-with all necessary dependencies. Anytime you wish you run python
-scripts, ensure you are in the virtual environment by activating:
-
-\begin{lstlisting}[language=bash,caption=Activating a conda environment]
-$ conda activate gin37
-\end{lstlisting}
-
-And then run your desired script.
+The recommended way of installing python and the necessary dependencies is described in section \ref{python-installation-for-plotting-processing-etc.}.
 
 \section{Examples to run the PEA from a python script}\label{examples-to-run-the-pea-from-a-python-script}
 
@@ -57,7 +17,9 @@ Doing this for station \emph{HOB200AUS} and processing 2 days of data,
 starting 20 Dec 2020 00:00 and ending 21 Dec 2020 23:59:30, we can run
 the following code (assuming the \texttt{pwd} is your pea directory):
 
-\texttt{python3\ python/source/run\_pea\_PPP.py\ HOB200AUS\ 2020-12-20\_00:00:00\ 2020-12-21\_23:59:30\ \textless{}directory\_to\_download\_files\_to\textgreater{}\ \textless{}results\_output\_directory\textgreater{}\ -md\ -del\_yaml}
+% \begin{lstlisting}[language=bash]
+%         python3\ python/source/run\_pea\_PPP.py\ HOB200AUS\ 2020-12-20\_00:00:00\ 2020-12-21\_23:59:30\ \textless{}directory\_to\_download\_files\_to\textgreater{}\ \textless{}results\_output\_directory\textgreater{}\ -md\ -del\_yaml
+% \end{lstlisting}
 
 This will produce a .TRACE file that contains XYZ position information
 for that station and estaimes for the Zenith Total Delay (ZTD). The
