@@ -3,17 +3,13 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage{url}
 \usepackage{listings}
-\usepackage[colorlinks=true,citecolor=blue]{hyperref}
+\usepackage{hyperref}
 \usepackage{amsmath}
+\usepackage{imakeidx}
 \usepackage[margin=1in]{geometry}
 \usepackage{titlesec}
 \usepackage{booktabs} %python only so may be removed on update
-\usepackage{lmodern} %to remove `OT1/cmss/m/n' in size <36> not available” warning
-% \usepackage[T1]{fontenc}
-\usepackage{natbib}
-\bibliographystyle{unsrtnat}
-\usepackage{pmboxdraw}
-
+\usepackage{graphicx}
 
 % see https://www.overleaf.com/learn/latex/Glossaries
 % make glossaries must be written before the first glossary entry
@@ -21,7 +17,7 @@
 \usepackage[acronym, toc]{glossaries}
 
 \newcommand{\publisher}[0]{Geoscience Australia and Frontier-SI}
-\newcommand{\authors}[0]{Sebastien Allgeyer, Rupert Brown, John Donovan,
+\newcommand{\authors}[0]{Sebastien Allegyer, Rupert Brown, John Donovan,
 Ken Harima, Aaron Hammond, Lavanya Kumarappan, Tao Li, Ronald Maj,
 Bogdan Matviichuk, Simon McClusky, Michael Moore, Thomas Papanikolaou,
 Tzupang Tseng, Umma Zannat}
@@ -102,23 +98,23 @@ Tzupang Tseng, Umma Zannat}
 \lst@AddToHook{EveryLine}{\ifx\lst@language\language@yaml\YAMLkeystyle\fi}
 \makeatother
 
-\usepackage{makeidx}
-\makeindex
-\usepackage[totoc]{idxlayout}
 
+
+% \makeindex
+\makeindex[intoc]
 
 \loadglsentries{glossary}
 \makeglossaries
 
 \begin{document}
 
-	\newgeometry{left=3cm,bottom=2cm}
+	\newgeometry{left=3cm}
 	\begingroup%
 	\setlength{\parindent}{0pt}
 	{\fontsize{10}{20}\selectfont\textit{}\par}
-	\vspace{2.75in}{\fontsize{60}{64}\selectfont Ginan\par}
-	\vspace{.1in}\hspace{2.5cm}{\fontsize{14}{14}\selectfont\texttt{v1.0-alpha}\par}
-	\vfill{\fontsize{14}{14}\selectfont\publisher\par}
+	\vspace{2.75in}{\fontsize{36}{54}\selectfont Ginan\par}
+	\vspace{0.1in}{\fontsize{14}{14}\selectfont\textsf{version 1.0-alpha}\par}
+	\vfill{\fontsize{14}{14}\selectfont\textit{\publisher}\par}
 	\thispagestyle{empty}
 	\endgroup
 
@@ -129,7 +125,6 @@ Tzupang Tseng, Umma Zannat}
 	\end{nohyphens}
 	\vspace{0.5cm}
 	\noindent\textsc{Published by \publisher}
-	\thispagestyle{empty}
 	\restoregeometry
 	\clearpage
 
@@ -137,35 +132,35 @@ Tzupang Tseng, Umma Zannat}
 	\listoffigures
 	\listoftables
 
-	% \include{welcome}
+	\include{welcome}
 	%
 	\part{Overview}
 	%
 	\include{introduction}
 	\include{installation}
-	%\include{implementation overview of software}
+	% %\include{implementation overview of software}
 	% % block diagram from aaron
-	\include{pea_examples}
-	\include{pod_examples}
+	% \include{pea_examples}
+	% \include{pod_examples}
 	% %
 	\part{Background Theory}
 	\include{GNSSOverview}
 	\include{observation_modelling}
 	\include{kalman_filter}
-	\include{rts_smoothing}
 	% %
 	\include{orbit_modelling}
 	\include{ionosphere}
 	\include{ambiguity_resolution}
+	% \include{rts_smoothing}
 	\include{minimum_constraints}
 	% %
 	\include{conventions}
 	\include{flexpower}
 	% %%
 	\part{Using the software}
-	\include{Processing_in_User_mode}
-	\include{Processing_in_Network_mode}
 	\include{Using_the_POD_module}
+	\include{Processing_in_Network_mode}
+	\include{Processing_in_User_mode}
 	% %
 	\part{Using the Source Code}
 	\include{coding_standards}
@@ -176,6 +171,7 @@ Tzupang Tseng, Umma Zannat}
 	\include{docker}
 	% %
 	\part{YAML Configuration File Reference}
+	\include{Examples in Detail}
 	\include{PEA_YAML_Configuration}
 	\include{POD_YAML_Configuration}
 
@@ -185,17 +181,17 @@ Tzupang Tseng, Umma Zannat}
 
 	\printglossary[type=\acronymtype]
 
-	\printglossaries
+	% \printglossaries
 	\glsaddallunused
 
 	
+
+
 	\include{manual}
 	\include{acknowledgements}
 	\include{lost_pages}
-
-
-    \bibliography{references}
-
+	\bibliography{sample-handout}
+%	\bibliographystyle{plainnat}
 	\printindex
 	\lstlistoflistings
 \end{document}
