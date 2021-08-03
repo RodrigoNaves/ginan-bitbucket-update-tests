@@ -12,14 +12,12 @@ Ginan is a processing package being developed to processes GNSS observations for
 We currently support the processing of:
 
 * the United States' Global Positioning System (**GPS**);
-* the Russian GLONASS system (**GLONASS**)*;
+* the Russian GLONASS system (**GLONASS**);
 * the European Union's Galileo system (**Galileo**);
-* the Chinese Navigation Satellite System (**BeiDou**)*;
-* the Japanese QZSS develop system (**QZSS**)*.
+* the Chinese Navigation Satellite System (**BeiDou**);
+* the Japanese QZSS develop system (**QZSS**).
 
-*\*precise orbit determination only with full support coming soon*
-
-We are actively developing the ACS to have the following capabilities and features:
+We are actively developing Ginan to have the following capabilities and features:
 
 * Precise Orbit & Clock determination of GNSS satellites (GNSS POD);
 * Precise Point Positioning (PPP) of GNSS stations in network and individual mode;
@@ -97,13 +95,17 @@ Then download all of the example data using the python script provided:
 ***
 ## Dependencies
 
-Ginan has several software dependencies:
+If you wish to use Ubuntu Linux, you can quickly create your environment by downloading the docker image:
+
+    $ docker pull gnssanalysis/ginan:v1.0-alpha
+
+Otherwise Ginan has several software dependencies:
 
 * C/C++ and Fortran compiler. We use and recommend [gcc-g++ and gfortran](https://gcc.gnu.org)
 * BLAS and LAPACK linear algebra libraries. We use and recommend [OpenBlas](https://www.openblas.net/) as this contains both libraries required
 * CMAKE  > 3.0 
 * YAML   > 0.6
-* Boost  > 1.70
+* Boost  > 1.70 (tested on 1.73)
 * Eigen3
 * netCDF4
 * Python3 (tested on Python 3.7)
@@ -223,7 +225,7 @@ Now you can start it as a service by:
     $ sudo service mongod start -->
 
 ### netcdf4 (OTL package)
-    $ apt -y install libnetcdf-dev libnetcdf-c++4-dev
+    $ sudo apt -y install libnetcdf-dev libnetcdf-c++4-dev
 ***
 ## Build
 Prepare a directory to build in, its better practise to keep this seperated from the source code.
