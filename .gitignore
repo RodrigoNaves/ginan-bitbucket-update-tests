@@ -47,6 +47,9 @@ docs/manual/main.ind
 docs/manual/main.lol
 docs/manual/*.fls
 docs/manual/*.fdb*
+docs/manual/*.fdb*
+docs/manual/*.bbl
+docs/manual/*.blg
 
 docs/html/
 docs/DoxygenLayout.xml
