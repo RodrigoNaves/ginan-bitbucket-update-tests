@@ -5,54 +5,68 @@ The recommended way of installing python and the necessary dependencies is descr
 \section{Examples to run the PEA from a python script}\label{examples-to-run-the-pea-from-a-python-script}
 
 The following examples will show how to use the python scripts in the
-\texttt{source} directory to automatically gather files and run the pea
-to produce results (as .TRACE files and plots).
+\texttt{scripts} directory to automatically gather files and run the pea
+to produce results (such as .TRACE files and plots).
 
 \section{Run the PEA}\label{run-the-pea}
 
-The easiest way to run the is to choose a reference station, a start
+The easiest way to run a customised example is to choose a reference station, a start
 time, end time and directories to store the gathered files and resultant
 outputs.\\
-Doing this for station \emph{HOB200AUS} and processing 2 days of data,
-starting 20 Dec 2020 00:00 and ending 21 Dec 2020 23:59:30, we can run
-the following code (assuming the \texttt{pwd} is your pea directory):
+Doing this for station \emph{HOB200AUS} and processing the most recent 2 days of data from CDDIS, we have an example run
+below (assuming the \texttt{pwd} contains the \texttt{ginan} directory):
 
-% \begin{lstlisting}[language=bash]
-%         python3\ python/source/run\_pea\_PPP.py\ HOB200AUS\ 2020-12-20\_00:00:00\ 2020-12-21\_23:59:30\ \textless{}directory\_to\_download\_files\_to\textgreater{}\ \textless{}results\_output\_directory\textgreater{}\ -md\ -del\_yaml
-% \end{lstlisting}
+\begin{lstlisting}[language=bash]
+        python3 ginan/scripts/run_PEA_custom.py ginan ginan/examples/ex11_pea_pp_user_gps.yaml test/out test/data HOB200AUS test/products -ac igr -m_r 2 -o_yml test/test_yaml.yaml
+\end{lstlisting}
 
 This will produce a .TRACE file that contains XYZ position information
-for that station and estaimes for the Zenith Total Delay (ZTD). The
-flags are as follows:\\
-- \texttt{-md} is used to allow dates to be input in \emph{YYYY-MM-DD}
-format as above. If the flag is not selected, the format must be
-\emph{YYYY-DOY} (where \emph{DOY} is day-of-year).\\
-- \texttt{-del\_yaml} is used to delete the \texttt{.yaml} config file
-after the pea run. Without this flag, the \texttt{.yaml} file will be
-kept (in \texttt{pwd})
+for that station and estimates for the Zenith Total Delay (ZTD). 
+The ordering of the arguments are as follows:
+\begin{itemize}
+\item \texttt{ginan/scripts/run\_PEA\_custom.py}: The script used to run a customised version of a given example \\
+\item \texttt{ginan}: Path to the ginan directory. The script will assume the PEA is at \texttt{<ginan\_dir>/bin/pea} \\
+\item \texttt{ginan/examples/ex11\_pea\_pp\_user\_gps.yaml}: Path to the example YAML file that will be customised with the user's data \\
+\item \texttt{test/out}: Path to place outputs of the PEA run \\
+\item \texttt{test/data}: Path to download the RINEX station files necessary to run the PEA \\
+\item \texttt{HOB200AUS}: The chosen station with which to run the PEA \\
+\item \texttt{test/products}: Path to download product (sp3, snx, erp, etc.) files \\
+\item \texttt{-ac igr}: Flag to choose preference of analysis centre products to download. In this case the IGS's rapid products \\
+\item \texttt{-m\_r 2}: Flag to tell the script to download the most recent 2 days worth of data. Any integer value can be passed \\
+\item \texttt{-o\_yml test/test\_yaml.yaml}: Flag to keep the custom YAML file that is generated and path to save the file\\
+\end{itemize}
 
-\section{Near-Real-Time (NRT) Daily
-Run}\label{near-real-time-nrt-daily-run}
+Additionally, these flags are also useful:\\
+- \texttt{-st}: is used to provide a start date and time for the PEA run in \texttt{YYYY-DOY\_hh:mm:ss} format \\
+- \texttt{-en}: is used in conjuction with \texttt{-en}, provides an end date and time for the PEA run in \texttt{YYYY-DOY\_hh:mm:ss} format\\
+- \texttt{-md}: flag to allow date format to be \texttt{YYYY-MM-DD} instead of \texttt{YYYY-DOY}\\
+- \texttt{-ac\_s}: option to choose analysis centre product for the SINEX proudct (independent to the required argument above) Default: \texttt{igs}\\
+- \texttt{-ac\_b}: option to choose the analysis centre from which to download the Broadcast file. Default: \texttt{igs}\\
+- \texttt{-c\_typ}: option to change the clock file type downloaded. Default: \texttt{clk}\\
 
-In this example, we will see how to run the pea to produce ZTD and
-station coordinate results for reference station \emph{HOB200AUS}, using
-the most rececnt data available on GA and CDDIS servers.\\
-Assuming the pwd is your \texttt{pea} directory, then the following code
-should run to produce a .TRACE file and plots of ZTD and XYZ station
-coordinates for the most recent day:
 
-\texttt{python3\ python/source/run\_pea\_PPP.py\ HOB200AUS\ \_\ \_\ \textless{}directory\_to\_download\_files\_to\textgreater{}\ \textless{}results\_output\_directory\textgreater{}\ -rapid\ -m\_r\ -plt\_m\_r}
+% \section{Near-Real-Time (NRT) Daily
+% Run}\label{near-real-time-nrt-daily-run}
 
-This differs to the code above in that the flags \texttt{-rapid},
-\texttt{-m\_r} and \texttt{plt\_m\_r} have been selected.\\
-- \texttt{-rapid} will find the rapid versions of files - these are less
-accurate than final versions but are available sooner at CDDIS\\
-- \texttt{-m\_r} will get the code to search the CDDIS database and find
-the most recent rapid files available for \texttt{clk} and \texttt{sp3}
-files. The date and time is then selected based on this, allowing us to
-\_ \_ for the start and end times\\
-- \texttt{-plt\_m\_r} will plot the ZTD and XYZ results as \texttt{.png}
-files and place in a \texttt{plots} directory
+% In this example, we will see how to run the pea to produce ZTD and
+% station coordinate results for reference station \emph{HOB200AUS}, using
+% the most rececnt data available on GA and CDDIS servers.\\
+% Assuming the pwd is your \texttt{pea} directory, then the following code
+% should run to produce a .TRACE file and plots of ZTD and XYZ station
+% coordinates for the most recent day:
+
+% \texttt{python3\ python/source/run\_pea\_PPP.py\ HOB200AUS\ \_\ \_\ \textless{}directory\_to\_download\_files\_to\textgreater{}\ \textless{}results\_output\_directory\textgreater{}\ -rapid\ -m\_r\ -plt\_m\_r}
+
+% This differs to the code above in that the flags \texttt{-rapid},
+% \texttt{-m\_r} and \texttt{plt\_m\_r} have been selected.\\
+% - \texttt{-rapid} will find the rapid versions of files - these are less
+% accurate than final versions but are available sooner at CDDIS\\
+% - \texttt{-m\_r} will get the code to search the CDDIS database and find
+% the most recent rapid files available for \texttt{clk} and \texttt{sp3}
+% files. The date and time is then selected based on this, allowing us to
+% \_ \_ for the start and end times\\
+% - \texttt{-plt\_m\_r} will plot the ZTD and XYZ results as \texttt{.png}
+% files and place in a \texttt{plots} directory
 
 
 \section{Site metadata utility}\label{log2snx}

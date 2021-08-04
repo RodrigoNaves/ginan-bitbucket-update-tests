@@ -1,4 +1,4 @@
-\chapter{RTS Smoothing}
+\chapter{RTS Smoothing} \label{ch:RTS}
 
 While the Kalman filter is an optimal solution to computing state estimates from all previous data, better estimates could be obtained if all future data were also incorporated.
 
@@ -19,6 +19,20 @@ Using an RTS Smoother effectively combines both forward and backward filtering. 
 In order to accurately calculate the expected position and variance at t=50 however, knowledge of the measurement at t=100 was required (50 seconds later). RTS smoothed estimates necessarily lag behind the primary Kalman filter to allow some time for future data to be obtained. The length of this lag determines the effectiveness of the smoothing.
 
 \section{Usage}
+
+\begin{lstlisting}[language=yaml,caption=RTS Configuration]
+user_filter_parameters:
+
+    max_filter_iterations:      5 #5
+    max_filter_removals:        3 #5
+
+    rts_lag:                    -1      #-ve for full reverse, +ve for limited epochs
+    rts_directory:              ./
+    rts_filename:               PPP-<CONFIG>-<STATION>.rts
+
+    inverter:                   LLT         #LLT LDLT INV
+
+\end{lstlisting}
 
 All kalman filters in the toolkit are capable of having RTS Smoothing applied. If configured appropriately with an RTS\_lag and output files, intermediate filter results will be stored to file for reverse smoothing.
 

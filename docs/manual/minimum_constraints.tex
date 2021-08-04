@@ -16,3 +16,40 @@ To compute a minimally constrained system, the deviations of all receivers from 
 The filter estimates a rigid transformation comprising of 3d rotation and translation components, which when applied produces a least-squares solution of the errors of all desired receivers.
 
 The estimated transformation is then applied to the network solution, transforming both the estimated position states, as well as the covariances associated with them.
+
+\section{Usage} \label{MinConConfig}
+
+
+\begin{lstlisting}[language=yaml,caption=Minimum Constraints Configuration]
+minimum_constraints:
+
+    estimate:
+        translation:    true
+        rotation:       true
+        #scale:          false   #not yet implemented
+
+    station_default_noise: -1        #constrain none by default (negative numbers are not constrained)
+    #station_default_noise: +1       #constrain all by default
+
+    #station_noise:
+    #    ALIC: 0.001     #constrain strongly
+    #    AGGO: 1
+    #    BOAV: 100       #constrain weakly
+\end{lstlisting}
+
+If minumum constraints is enabled, the transformation will be applied after the completion of all forward processing, and configured according to the yaml file.
+
+\subsection*{estimate:}
+
+Booleans to enable the modelling of the transformation operations.
+
+\subsection*{station\_noise, station\_default\_noise:}
+
+These parameters allow the different stations in the solution to be weighted according to their priority.
+
+The station default noise is applied to all stations unless they are specifically overridden using a station\_noise entry.
+
+High noise values indicate that the station should only be weakly constrained to its a-priori position, while low values indicate they should be weighted more strongly. Only the relative weighting between stations is important.
+
+Stations may have zero weighting applied by assiging a negative value to the station\_noise override for that station.
+

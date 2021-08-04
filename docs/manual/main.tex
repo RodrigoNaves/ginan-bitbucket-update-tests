@@ -4,8 +4,8 @@
 \usepackage{url}
 \usepackage{listings}
 \usepackage[colorlinks=true,citecolor=blue]{hyperref}
-\usepackage{amsmath}
-\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage[margin=2cm]{geometry}
 \usepackage{titlesec}
 \usepackage{booktabs} %python only so may be removed on update
 \usepackage{graphicx}
@@ -14,7 +14,6 @@
 \usepackage{natbib}
 \bibliographystyle{unsrtnat}
 \usepackage{pmboxdraw}
-
 
 % see https://www.overleaf.com/learn/latex/Glossaries
 % make glossaries must be written before the first glossary entry
@@ -99,6 +98,8 @@ Tzupang Tseng, Umma Zannat}
 	basicstyle=\ttfamily\footnotesize
 }
 
+\usepackage{parskip}
+
 % switch to key style at EOL
 \lst@AddToHook{EveryLine}{\ifx\lst@language\language@yaml\YAMLkeystyle\fi}
 \makeatother
@@ -135,8 +136,6 @@ Tzupang Tseng, Umma Zannat}
 	\clearpage
 
 	\tableofcontents
-	\listoffigures
-	\listoftables
 
 	% \include{welcome}
 	%
@@ -151,6 +150,7 @@ Tzupang Tseng, Umma Zannat}
 	% %
 	\part{Background Theory}
 	\include{GNSSOverview}
+	\include{conventions}
 	\include{observation_modelling}
 	\include{kalman_filter}
 	\include{rts_smoothing}
@@ -160,13 +160,12 @@ Tzupang Tseng, Umma Zannat}
 	\include{ambiguity_resolution}
 	\include{minimum_constraints}
 	% %
-	\include{conventions}
 	\include{flexpower}
 	% %%
 	\part{Using the software}
-	\include{Processing_in_User_mode}
-	\include{Processing_in_Network_mode}
 	\include{Using_the_POD_module}
+	\include{Processing_in_Network_mode}
+	\include{Processing_in_User_mode}
 	% %
 	\part{Using the Source Code}
 	\include{coding_standards}
@@ -184,6 +183,8 @@ Tzupang Tseng, Umma Zannat}
 	\part{Backmatter}
 	\printglossary[title=Terms Used, toctitle=List of Terms]
 
+	\listoffigures
+	\listoftables
 	\printglossary[type=\acronymtype]
 
 	\printglossaries
