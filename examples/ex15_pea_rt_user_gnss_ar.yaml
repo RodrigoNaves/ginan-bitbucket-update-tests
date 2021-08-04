@@ -131,7 +131,7 @@ processing_options:
 user_filter_parameters:
 
     max_filter_iterations:      2
-    max_filter_removals:        2
+    max_prefit_removals:        2
 
     rts_lag:                    20      #-ve for full reverse, +ve for limited epochs
     rts_directory:              ./

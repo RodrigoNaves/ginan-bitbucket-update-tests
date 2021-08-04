@@ -147,7 +147,7 @@ network_filter_parameters:
     inverter:                   llt         #LLT LDLT INV
 
     max_filter_iterations:      1
-    max_filter_removals:        3
+    max_prefit_removals:        3
 
     rts_lag:                    10      #-ve for full reverse, +ve for limited epochs 1 epoch?
     rts_directory:              ./

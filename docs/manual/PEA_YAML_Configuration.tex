@@ -33,6 +33,49 @@ You will see all of these used in the example configuration files, but the files
 
 Many processing options have default values associated with them. To prevent repetition, and to ensure that the values are reported correctly, these values may be viewed in the acsConfig.hpp file within the source code directories.
 
+
+\section{Globbing}
+Files may be specified individually, as lists, or by searching available files using a globbed filename using the star character (*)
+
+\section{Wildcard Tags}
+Output filenames can include wildcards wrapped in \lstinline{< >} brackets to allow more generic names to be used. While processing, these tags are replaced with details gathered from processing, and allows for automatic generation of, for example, hourly output files.
+
+\subsection*{\textless CONFIG\textgreater}
+This is replaced with the 'config\_description' value entered in the yaml file.
+\subsection*{\textless STATION\textgreater}
+This is replaced with the 4 character station id of each station that generates a trace file.
+\subsection*{\textless LOGTIME\textgreater}
+This is replaced with the (rounded) time of the epochs within the trace file.
+
+If trace file rotation is configured for 1 hour, the \lstinline{<LOGTIME>} wildcard will be rounded down to the closest hour, and subsequently change value once per hour and generate a separate output file for each hour of processing.
+
+\subsection*
+{\textless DDD\textgreater,
+\textless D\textgreater, 
+\textless WWWW\textgreater, 
+\textless YYYY\textgreater, 
+\textless YY\textgreater, 
+\textless MM\textgreater, 
+\textless DD\textgreater, 
+\textless HH\textgreater}
+These are replaced with the components of time of the start epoch.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \section{input\_files:}
 
 This section of the yaml file specifies the lists of files to be used for general metadata inputs, and inputs of external product data.
@@ -55,9 +98,6 @@ input_files:
 	bsxfiles:   []
 	ionfiles:   [] 
 \end{lstlisting}
-
-\subsection{Globbing}
-Files may be specified individually, as lists, or by searching available files using a globbed filename using the star character (*)
 
 \subsection*{root\_input\_directory:}
 This specifies a root directory to be prepended to all other file paths specified in this section. For file paths that are absolute, (ie. starting with a /), this parameter is not applied.
@@ -226,30 +266,6 @@ output_clocks:                  true
 clocks_directory:               ./
 clocks_filename:                <CONFIG>.clk
 \end{lstlisting}
-
-\subsection{Wildcard Tags}
-Output filenames can include wildcards wrapped in \lstinline{< >} brackets to allow more generic names to be used. While processing, these tags are replaced with details gathered from processing, and allows for automatic generation of, for example, hourly output files.
-
-\subsection*{\textless CONFIG\textgreater}
-This is replaced with the 'config\_description' value entered in the yaml file.
-\subsection*{\textless STATION\textgreater}
-This is replaced with the 4 character station id of each station that generates a trace file.
-\subsection*{\textless LOGTIME\textgreater}
-This is replaced with the (rounded) time of the epochs within the trace file.
-
-If trace file rotation is configured for 1 hour, the \lstinline{<LOGTIME>} wildcard will be rounded down to the closest hour, and subsequently change value once per hour and generate a separate output file for each hour of processing.
-
-\subsection*
-{\textless DDD\textgreater,
-\textless D\textgreater, 
-\textless WWWW\textgreater, 
-\textless YYYY\textgreater, 
-\textless YY\textgreater, 
-\textless MM\textgreater, 
-\textless DD\textgreater, 
-\textless HH\textgreater}
-These are replaced with the components of time of the start epoch.
-
 
 \subsection*{root\_output\_dir:}
 This specifies a root directory to be prepended to all other file paths specified in this section. For file paths that are absolute, (ie. starting with a /), this parameter is not applied.
@@ -443,35 +459,49 @@ Option to specify source of satellite ephemeris used in PPP processing. Sources 
 
 \subsection*{tide\_solid:}
 Boolean to apply solid tide model to station positions.
+
 \subsection*{tide\_otl:}
 Boolean to apply ocean tide loading model to station positions.
+
 \subsection*{tide\_pole:}
 Boolean to apply pole tide model to station positions.
+
 \subsection*{phase\_windup}
 Boolean to apply phase windup model to satellite phase measurements.
+
 \subsection*{reject\_eclipse}
 Boolean to exclude eclipsed satellites from processing.
+
 \subsection*{raim}
 Boolean to perform 'Receiver autonomous integrity monitoring' to detect and exclude observations that result in SPP failures.
-\subsection*{cycle\_slip:}
-\subsubsection*{thres\_slip:}
+
+\subsection*{cycle\_slip: thres\_slip:}
 Threshold to apply to geometry free phase values to determine if an observation should be rejected due to a slip.
+
 \subsection*{max\_inno:}
 Maximum innovation in PPP measurement before both phase and code measurements are excluded.
+
 \subsection*{deweight\_factor:}
 Factor by which measurement variances are increased upon detection of a bad measurement.
+
 \subsection*{max\_gdop:}
 Maximum 'geometric dilution of precision' allowed for an SPP result to be valid.
+
 \subsection*{antexacs:}
 Internal processing option. Bad things will likely happen if this is set to false.
+
 \subsection*{sat\_pcv:}
 Boolean to model satellite phase center variations.
+
 \subsection*{pivot\_station:}
 Station specified as origin for receiver clocks. Clocks for this station will be constrained to zero. May be set to \textless AUTO \textgreater or undefined to use first available station.
+
 \subsection*{pivot\_satellite}:
 Unused.
+
 \subsection*{wait\_next\_epoch:}
 Expected time interval between successive epochs data arriving. For real-time this should be set equal to epoch\_interval.
+
 \subsection*{wait\_all\_stations:}
 Window of delay to allow observation data to be received for processing.
 Processing will begin at the earliest of:
@@ -496,66 +526,24 @@ Boolean to apply additional calculations in filter to ensure numerical stability
 
 
 
-
-\section{user\_filter\_parameters, network\_filter\_parameters, ionosphere\_filter\_parameters:}
-
-\subsection{inverter:}
-Method of inversion used to calculate kalman gain. The available options include:
-\begin{itemize}
-\item llt
-\item ldlt
-\item inv
-\end{itemize}
-
-\subsection{max\_prefit\_remvovals:}
-Prior to kalman filtering the prefit residuals of measurements are checked for consistency, and may be removed or deweighted if not statistically reasonable. This parameter defines how many such measurements may be removed or deweighted at a given epoch.
-
-These removals have low overhead associated with them as they occur before filter inversion takes place.
-
-\subsection{max\_filter\_iterations:}
-After kalman filtering, the postfit residuals of meaurements are checked for consistency, and measurements may be removed or deweighted if not statistically reasonable. This parameter specifies the number of times the filter may be iterated by deweighting and recomputing the resultant values.
-
-These iterations have large overhead with them as the complete filter stage is computed multiple times. Large iteration values may exceed double the processing time.
-
-
-\subsection{rts\_lag:}
-Number of future epochs to use in RTS smoothing. A larger lag will give more optimal smoothing results, at the expense of a longer lag before they are calculated, and requiring more processing time per epoch.
-
-A negative value indicates that the entire solution should be smoothed at the conclusion of processing. This will obtain optimal results, with lowest processing time, but is not suitable for real-time applications.
-
-\subsection{rts\_directory:}
-Directory to output RTS files.
-
-\subsection{rts\_filename:}
-Filename for RTS files. Multiple intermediate files are generated by RTS smoothing, as well as an additional output files for kalman filter states and clocks.
-
-\subsection{outage\_reset\_limit:}
-Maximum number of epochs with missed phase measurements before the ambiguity associated with the measurement is reset.
-
-\subsection{phase\_reject\_limit:}
-Maximum number of phase measurements to reject before the ambiguity associated with the measurement is reset.
-
-
-
-
 \section{troposphere:}
 
-\subsection{model:}
+\subsection*{model:}
 
-\subsection{vmf3dir:}
+\subsection*{vmf3dir:}
 
-\subsection{orography:}
+\subsection*{orography:}
 
-\subsection{gpt2grid:}
+\subsection*{gpt2grid:}
 
 
 
 
 \section{ionosphere:}
 
-\subsection{corr\_mode:}
+\subsection*{corr\_mode:}
 
-\subsection{iflc\_freqs:}
+\subsection*{iflc\_freqs:}
 
 
 
@@ -563,20 +551,30 @@ Maximum number of phase measurements to reject before the ambiguity associated w
 
 \section{unit\_test\_options:}
 
-\subsection{output\_pass:}
+\subsection*{output\_pass:}
 
-\subsection{stop\_on\_fail:}
+Boolean to print pass messages in output file when tests pass. This may produce very long test files for not much benefit if we are just looking for failures.
 
-\subsection{stop\_on\_done:}
+\subsection*{stop\_on\_fail:}
 
-\subsection{output\_errors:}
+Boolean to halt processing as soon as an error is located. This may allow testing and reporting to complete far sooner if there is a failure.
 
-\subsection{absorb\_errors:}
+\subsection*{stop\_on\_done:}
 
-\subsection{directory:}
+Boolean to halt further processing if all required tests have been completed.
 
-\subsection{filename:}
+\subsection*{output\_errors:}
 
+Boolean to print debug information about the error to the output file.
+
+\subsection*{absorb\_errors:}
+
+Boolean to replace incorrect values found in processing with the correct test values and continue processing as if the test had passed.
+This may be useful for preventing a single bad test from causing cascading test failures as the values diverge from the original result.
+
+\subsection*{directory, filename:}
+
+File and directory to store and open test files.
 
 
 
@@ -584,21 +582,44 @@ Maximum number of phase measurements to reject before the ambiguity associated w
 
 \section{ionosphere\_filter\_parameters:}
 
-\subsection{model:}
+\subsection*{model:}
 
-\subsection{lat\_center, lon\_center:}
+Model to use in ionosphere routines. May be one of:
+\begin{itemize}
+\item meas\_out
+\item bspline
+\item spherical\_caps
+\item spherical\_harmonics
+\end{itemize}
 
-\subsection{lat\_width, lon\_width:}
+\subsection*{model\_noise:}
 
-\subsection{lat\_res, lon\_res:}
+Process noise to be applied to ionosphere kalman filter. (deprecated)
 
-\subsection{time\_res:}
+\subsection*{lat\_center, lon\_center:}
 
-\subsection{func\_order:}
+Longitude and latitude of center of ionosphere map in degrees.
 
-\subsection{layer\_heights:}
+\subsection*{lat\_width, lon\_width:}
 
-\subsection{model\_noise:}
+Width of ionosphere maps in degrees.
+
+\subsection*{lat\_res, lon\_res:}
+
+Resolution of ionosphere maps in degrees.
+
+\subsection*{time\_res:}
+
+Resolution of ionosphere maps in time.
+
+\subsection*{func\_order:}
+
+Order of Legendre function used in spherical caps ionosphere.
+
+\subsection*{layer\_heights:}
+
+List of heights of modelled ionosphere layers.
+
 
 
 
@@ -606,55 +627,41 @@ Maximum number of phase measurements to reject before the ambiguity associated w
 
 \section{ambiguity\_resolution\_options:}
 
-\subsection{Min\_elev\_for\_AR:}
+\subsection*{Min\_elev\_for\_AR:}
 
-\subsection{Set\_size\_for\_lambda:}
+Minimum elevation to perform ambiguity resolution (degrees)
 
-\subsection{Max\_round\_iterat:}
+\subsection*{Set\_size\_for\_lambda:}
 
-\subsection{GPS\_amb\_resol:}
+\subsection*{Max\_round\_iterat:}
 
-\subsection{WL\_mode:}
+\subsection*{GPS\_amb\_resol:}
 
-\subsection{WL\_succ\_rate\_thres:}
+\subsection*{WL\_mode:}
 
-ff
-\subsection{WL\_sol\_ratio\_thres:}
+\subsection*{WL\_succ\_rate\_thres:}
 
-\subsection{WL\_procs\_noise\_sat:}
+\subsection*{WL\_sol\_ratio\_thres:}
 
-\subsection{WL\_procs\_noise\_sta:}
+\subsection*{WL\_procs\_noise\_sat:}
 
-\subsection{NL\_mode:}
+\subsection*{WL\_procs\_noise\_sta:}
 
-\subsection{NL\_succ\_rate\_thres:}
+\subsection*{NL\_mode:}
 
-\subsection{NL\_proc\_start:}
+\subsection*{NL\_succ\_rate\_thres:}
 
-\subsection{read\_OSB:}
+\subsection*{NL\_proc\_start:}
 
-ff
-\subsection{read\_DSB:}
+\subsection*{read\_OSB, read\_DSB, read\_SSR, read\_satellite\_bias, read\_station\_bias, read\_GLONASS\_IFB:}
 
-\subsection{read\_SSR:}
+Booleans to enable reading of bias types from file.
 
-\subsection{read\_satellite\_bias:}
+\subsection*{write\_OSB, write\_DSB, write\_SSR\_bias, write\_satellite\_bias, write\_station\_bias:}
 
-\subsection{read\_station\_bias:}
+Booleans to enable writing of bias types to file.
 
-\subsection{read\_GLONASS\_IFB:}
-
-\subsection{write\_OSB:}
-
-\subsection{write\_DSB:}
-
-\subsection{write\_SSR\_bias:}
-
-\subsection{write\_satellite\_bias:}
-
-\subsection{write\_station\_bias:}
-ff
-\subsection{bias\_output\_rate:}
+\subsection*{bias\_output\_rate:}
 
 
 
@@ -663,52 +670,105 @@ ff
 
 
 
-\section*{output\_options:}
+
+
+\section{output\_options:}
+
+This section specifies values to be used in the generation of output files.
+
+\begin{lstlisting}[language=yaml,caption=output\_options:]
+output_options:
+
+    config_description:             ex11
+    analysis_agency:                GAA
+    analysis_center:                Geoscience Australia
+    analysis_program:               AUSACS
+    rinex_comment:                  AUSNETWORK1
+\end{lstlisting}
 
 \subsection*{config\_description:}
 
-\subsection*{analysis\_agency:}
+The value entered here is used to complete the \verb|<CONFIG>| wildcard.
+This may enable a single change in the yaml file to make changes to many options, including output folders and filenames.
 
-\subsection*{analysis\_center:}
+\subsection*{analysis\_agency, analysis\_center, analysis\_program, rinex\_comment:}
 
-\subsection*{analysis\_program:}
+String to be written within files during various output files' generation.
 
-\subsection*{rinex\_comment:}
+
+
+
+
+
+
+
+\section{user\_filter\_parameters, network\_filter\_parameters, ionosphere\_filter\_parameters:}
+
+
+\begin{lstlisting}[language=yaml,caption=Kalman Filter Configuration]
+user_filter_parameters:
+
+    max_filter_iterations:      5
+    max_prefit_removals:        3
+
+    rts_lag:                    -1      #-ve for full reverse, +ve for limited epochs
+    rts_directory:              ./
+    rts_filename:               PPP-<CONFIG>-<STATION>.rts
+
+    inverter:                   LLT         #LLT LDLT INV
+
+\end{lstlisting}
+
+For details on the configuration of kalman filters refer to \ref{KFConfig}, and \ref{ch:RTS}
+
+
+
+
+
+
+
+
 
 
 \section{default\_filter\_parameters:}
+
+
+
+\begin{lstlisting}[language=yaml,caption=Default\_filter\_parameters]
+default_filter_parameters:
+
+    stations:
+
+        error_model:        elevation_dependent         #uniform elevation_dependent
+        code_sigmas:        [0.15]
+        phase_sigmas:       [0.0015]
+
+        pos:
+            estimated:          true
+            sigma:              [0.1]
+            proc_noise:         [0.00057] #0.57 mm/sqrt(s), Gipsy default value from slow-moving
+            proc_noise_dt:      second
+\end{lstlisting}
+
+
+\subsection*{error\_model:}
+
+The GNSS observations can be weighted in three different ways in the PEA:
+\begin{itemize}
+    \item unigorm - all observations are assigned the same variance
+    \item elevation\_dependent - an elevation dependent function is used to scale the observations, those at higher elevation are given more weight (a smaller standard deviation) than those observed at lower elevation
+    \item SNR observations (coming soon) - the Carrier to Noise observations supplied by the receiver are used to determine the observation weight. Generally speaking this is very similar to elevation weighting, but is useful when use observations obtained from a non-geodetic grade receiver/antenna.
+\end{itemize}
+
+\subsection*{code\_sigmas, phase\_sigmas:}
+
+Lists of the default sigma values for GNSS measurements, measured in meters.
+Separate values may be entered for L1, L2 frequencies if desired, or the last value will be used for any undefined values in the list.
+
+\subsection*{pos, clk, amb, trop...:}
 
 For details on the configuration of estimated elements refer to \ref{KFConfig}
 
 \section{minimum\_constraints:}
 
 For details on the configuration of minimum constraints refer to \ref{MinConConfig}
-
-Receiver options - heirarchy
-
-
-
-
-\subsection{Observation Weighting Configu}
-%
-The GNSS observations can be weighted in three different ways in the PEA:
-\begin{itemize}
-    \item Unity - all observations are assigned the same variance
-    \item Elevation Dependent - an elevation dependent function is used to scale the observations, those at higher elevation are given more weight (a smaller standard deviation) than those observed at lower elevation
-    \item SNR observations - the Carrier to Noise observations supplied by the receiver are used to determine the observation weight. Generally speaking this is very similar to elevation weighting, but is useful when use observations obtained from a non-geodetic grade receiver/antenna.
-\end{itemize}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

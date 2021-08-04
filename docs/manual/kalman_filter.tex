@@ -237,7 +237,7 @@ The internal operation of the kalman filter is specified in this section. It has
 user_filter_parameters:
 
     max_filter_iterations:      5 #5
-    max_filter_removals:        3 #5
+    max_prefit_removals:        3 #5
 
     rts_lag:                    -1      #-ve for full reverse, +ve for limited epochs
     rts_directory:              ./
@@ -248,7 +248,7 @@ user_filter_parameters:
 \end{lstlisting}
 
 
-\subsection*{max\_filter\_removals:}
+\subsection*{max\_prefit\_removals:}
 
 Maximum number of pre-fit residuals to reject from the filter.
 
@@ -277,9 +277,23 @@ The inverter may be selected from:
 \item inv
 \end {itemize}
 
+
+
+\subsection{outage\_reset\_limit:}
+Maximum number of epochs with missed phase measurements before the ambiguity associated with the measurement is reset.
+
+\subsection{phase\_reject\_limit:}
+Maximum number of phase measurements to reject before the ambiguity associated with the measurement is reset.
+
+
 \subsection*{rts\_X}
 
 For details about rts configuration, see section \ref{ch:RTS}
+
+
+
+
+
 
 
 \subsection{Process Noise Guidelines}
