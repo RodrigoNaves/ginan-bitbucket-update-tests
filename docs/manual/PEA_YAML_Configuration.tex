@@ -528,13 +528,29 @@ Boolean to apply additional calculations in filter to ensure numerical stability
 
 \section{troposphere:}
 
+
+\begin{lstlisting}[language=yaml,caption=troposphere:]
+    troposphere:
+        model:      vmf3    #gpt2
+        vmf3dir:    grid5/
+        orography:  orography_ell_5x5
+        # gpt2grid: EX03/general/gpt_25.grd
+\end{lstlisting}
 \subsection*{model:}
+
+Unused
 
 \subsection*{vmf3dir:}
 
+Location of vmf3 files.
+
 \subsection*{orography:}
 
+Orography filename for vmf3 troposphere.
+
 \subsection*{gpt2grid:}
+
+Name of gpt2 grid file. Will be used as fallback in case of errors with vmf3.
 
 
 
@@ -543,9 +559,29 @@ Boolean to apply additional calculations in filter to ensure numerical stability
 
 \subsection*{corr\_mode:}
 
+Ionosphere correction/model mode. May be one of:
+
+\begin{itemize}
+\item broadcast - broadcast model
+\item sbas - SBAS model
+\item iono\_free\_linear\_combo - L1/L2 or L1/L5 iono-free LC
+\item estimate -  estimation
+\item total\_electron\_content - IONEX TEC model
+\item qzs - QZSS broadcast model
+\item lex - QZSS LEX ionospehre
+\item stec - SLANT TEC model
+\end{itemize}
+
 \subsection*{iflc\_freqs:}
 
+Frequency pairs to be used in ionosphere-free linear combinations. May be one of:
 
+
+\begin{itemize}
+\item any
+\item l1l2\_only
+\item l1l5\_only
+\end{itemize}
 
 
 
@@ -620,48 +656,6 @@ Order of Legendre function used in spherical caps ionosphere.
 
 List of heights of modelled ionosphere layers.
 
-
-
-
-
-
-\section{ambiguity\_resolution\_options:}
-
-\subsection*{Min\_elev\_for\_AR:}
-
-Minimum elevation to perform ambiguity resolution (degrees)
-
-\subsection*{Set\_size\_for\_lambda:}
-
-\subsection*{Max\_round\_iterat:}
-
-\subsection*{GPS\_amb\_resol:}
-
-\subsection*{WL\_mode:}
-
-\subsection*{WL\_succ\_rate\_thres:}
-
-\subsection*{WL\_sol\_ratio\_thres:}
-
-\subsection*{WL\_procs\_noise\_sat:}
-
-\subsection*{WL\_procs\_noise\_sta:}
-
-\subsection*{NL\_mode:}
-
-\subsection*{NL\_succ\_rate\_thres:}
-
-\subsection*{NL\_proc\_start:}
-
-\subsection*{read\_OSB, read\_DSB, read\_SSR, read\_satellite\_bias, read\_station\_bias, read\_GLONASS\_IFB:}
-
-Booleans to enable reading of bias types from file.
-
-\subsection*{write\_OSB, write\_DSB, write\_SSR\_bias, write\_satellite\_bias, write\_station\_bias:}
-
-Booleans to enable writing of bias types to file.
-
-\subsection*{bias\_output\_rate:}
 
 
 
@@ -755,7 +749,7 @@ default_filter_parameters:
 
 The GNSS observations can be weighted in three different ways in the PEA:
 \begin{itemize}
-    \item unigorm - all observations are assigned the same variance
+    \item uniform - all observations are assigned the same variance
     \item elevation\_dependent - an elevation dependent function is used to scale the observations, those at higher elevation are given more weight (a smaller standard deviation) than those observed at lower elevation
     \item SNR observations (coming soon) - the Carrier to Noise observations supplied by the receiver are used to determine the observation weight. Generally speaking this is very similar to elevation weighting, but is useful when use observations obtained from a non-geodetic grade receiver/antenna.
 \end{itemize}
@@ -772,3 +766,82 @@ For details on the configuration of estimated elements refer to \ref{KFConfig}
 \section{minimum\_constraints:}
 
 For details on the configuration of minimum constraints refer to \ref{MinConConfig}
+
+
+
+
+
+
+
+
+
+\section{ambiguity\_resolution\_options:}
+
+\subsection*{Min\_elev\_for\_AR:}
+
+Minimum elevation to perform ambiguity resolution (degrees)
+
+
+\subsection*{Set\_size\_for\_lambda:}
+
+Candidate set size for lambda.
+
+
+\subsection*{Max\_round\_iterat:}
+
+Maximum number of iterations when performing integer rounding.
+
+
+\subsection*{GPS\_amb\_resol, GLO\_amb\_resol, GAL\_amb\_resol, BDS\_amb\_resol, QZS\_amb\_resol:}
+
+Booleans to enable the resolution of ambiguities for system X.
+
+
+\subsection*{WL\_mode, NL\_mode:}
+
+Mode of ambiguity resolution for widelanes and narrowlanes.
+
+May be one of the following:
+\begin{itemize}
+\item off
+\item round
+\item iter\_rnd
+\item bootst
+\item lambda
+\item lambda\_alt
+\item lambda\_alt2
+\item lambda\_bie
+\end{itemize}
+
+
+\subsection*{WL\_succ\_rate\_thres, NL\_succ\_rate\_thres:}
+
+Threshold for success rate test in LAMBDA. Values between 0 and 1 are valid.
+
+
+\subsection*{WL\_sol\_ratio\_thres, NL\_sol\_ratio\_thres:}
+
+Thresholds for ambiguity validation: Ratio is performance of best solution compared to next best performance set. (greater than 1)
+
+
+\subsection*{WL\_procs\_noise\_sat, WL\_procs\_noise\_sta:}
+
+Process noise applied for stations or satellites in the ambiguity resolution computations.
+
+
+\subsection*{NL\_proc\_start:}
+
+Time before starting to calculate (and output) NL ambiguities/biases (in seconds)
+
+
+\subsection*{read\_OSB, read\_DSB, read\_SSR, read\_satellite\_bias, read\_station\_bias, read\_GLONASS\_IFB:}
+
+Booleans to enable reading of bias types from file.
+
+
+\subsection*{write\_OSB, write\_DSB, write\_SSR\_bias, write\_satellite\_bias, write\_station\_bias:}
+
+Booleans to enable writing of bias types to file.
+
+
+
