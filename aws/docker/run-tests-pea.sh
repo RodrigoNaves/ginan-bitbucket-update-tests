@@ -29,11 +29,10 @@ case $TEST_NUM in
     pea --config ex14_pea_pp_user_gnss_ar.yaml
     ;;
   5)
-    # TODO not working:
+    # realtime: needs auscors user/pass in config: skipped
     ## pea --config ex15_pea_rt_user_gnss_ar.yaml
     ;;
   6)
-    # TODO absent:
     pea --config ex16_pea_pp_ionosphere.yaml
     ;;
   7)

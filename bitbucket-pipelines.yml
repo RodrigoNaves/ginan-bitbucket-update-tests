@@ -52,7 +52,7 @@ pipelines:
                 - docker
             size: 2x
         - step:
-            name: PEA test 5 (not working - skipped)
+            name: PEA test 5 (realtime - needs auscors user/pass - skipped)
             script:
               - export TAG=$(git describe --tags --always)
               - export IMAGE="$DOCKER_HUB_USERNAME/ginan-cache:$TAG"
