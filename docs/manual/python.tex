@@ -137,14 +137,14 @@ optional arguments:
 
 % To run currently do something like\ldots{}
 
-% \begin{verbatim}
+% \begin{lstlisting}
 % nohup python source/main/python/npi/latency.py 2>&1 & 
-% \end{verbatim}
+% \end{lstlisting}
 
 % A simple configuration file \texttt{config/config.yaml} looks
 % like\ldots{}
 
-% \begin{verbatim}
+% \begin{lstlisting}
 % streams:
 % - type: NTRIP
 %   protocol: http
@@ -156,11 +156,11 @@ optional arguments:
 %   stations:
 %   - {format: RTCM3, id: COCO7}
  
-% \end{verbatim}
+% \end{lstlisting}
 
 % and again with more streams looks something like\ldots{}
 
-% \begin{verbatim}
+% \begin{lstlisting}
 % streams:
 % - type: NTRIP
 %   protocol: http
@@ -175,7 +175,7 @@ optional arguments:
 %   - {id: 01NA7}
 %   - {id: ABMF7}
 
-% \end{verbatim}
+% \end{lstlisting}
 
 
 % \section{Messages}\label{messages}
@@ -356,9 +356,9 @@ optional arguments:
 
 % d3 74 63
 
-% \begin{verbatim}
+% \begin{lstlisting}
 %                09   8765 4321
-% \end{verbatim}
+% \end{lstlisting}
 
 % 1101 0011 \textbar{} 0111 0100 \textbar{} 0110 0011 \textbar{}
 
@@ -375,14 +375,14 @@ optional arguments:
 
 % bytes 1 \& 2 = reserved (6-bits) + message length (10-bits)
 
-% \begin{verbatim}
+% \begin{lstlisting}
 % byte1 & 0x03 << 8 | byte2
 
 % byte1 = 00011000
 % byte2 = 00011000
 
 % 00011000 & 0x03 = 00000000
-% \end{verbatim}
+% \end{lstlisting}
 
 % bytes 3\ldots{}n-1 = variable length message
 

@@ -4,7 +4,7 @@ This section is to address how to use the POD modules in Ginan software. The Gin
 
 \section{Time system conversion}
 The Ginan provides conversion among different time systems, including Modified Julian Day (MJD), Day of Year (DOY), calendar year and GPS week. The module of the time system conversion is implemented by command lines, as follows:
-\begin{verbatim}
+\begin{lstlisting}
 To run main program : ./timesystem
 
 Command line: ./timesystem -j -i -y -m -d -w -k -h
@@ -34,11 +34,11 @@ Examples:
 ./timesystem -d 8 -m 2 -y 2020
   OR
 ./timesystem -w 2091 -k 6
-\end{verbatim}
+\end{lstlisting}
 
 \section{Conversion from Broadcast orbit to ECEF orbit}
 The Ginan provides a function that users can convert the RINEX version 2 or 3 of the broadcast ephemeris to the ECEF orbit. The module of the broadcast conversion is implemented by command lines, as follows:
-\begin{verbatim}
+\begin{lstlisting}
 Conversion from broadcast dynamic elements to ECEF coordinates
 The program can work for multi-GNSS constellations.
 
@@ -105,5 +105,5 @@ The Ginan also provides the precise orbit determination using pseudo observation
 
  For orbit updates using Parameter Estimation Algorithm (PEA):
     ./pod -m 4 -q 2 -k 1 -w 0 -s igs16403.sp3 -o igs16403.sp3 -y ex3.yaml
-\end{verbatim}
+\end{lstlisting}
 

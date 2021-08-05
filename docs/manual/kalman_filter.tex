@@ -199,11 +199,11 @@ The parameters that are available for estimation include:
 \end{itemize}
 
 
-\subsection*{estimated}
+\subsection*{estimated:}
 
 Boolean to add the state(s) to the kalman filter for estimation.
 
-\subsection*{sigma}
+\subsection*{sigma:}
 
 List of a-priori sigma values for each of the components of the state.
 
@@ -213,12 +213,12 @@ In this case, the user must ensure that the solution is likely rank-sufficient, 
 For states with multiple elements (eg, X,Y,Z positions), multiple sigma values may be added to the list. However, if insufficient values are added to the list, the intialiser will use the last value in the list for any extra elements.
 ie. Setting \lstinline{sigma: [10]} is sufficient to set all x,y,z components of the apriori standard deviation to 10.
 
-\subsection*{proc\_noise}
+\subsection*{proc\_noise:}
 
 List of process noises to be added to the state during state transitions. These are typically in m/sqrt(s), but different times may be assigned separately.
 As for the sigma list, the last value will be used for any elements exceeding the list length.
 
-\subsection*{proc\_noise\_dt}
+\subsection*{proc\_noise\_dt:}
 
 Unit of measure for process noise. 
 May be left undefined for seconds, or using sqrt\_second, sqrt\_seconds, sqrt\_minutes, sqrt\_hours, sqrt\_days, sqrt\_weeks, sqrt\_years.
@@ -266,7 +266,7 @@ This is similar to the max\_filter\_rejections parameter, but the 4-sigma check 
 Rejections that occur in this stage require the entire filter inversion to be repeated, and has an associated performance hit when used excessively.
 
 
-\subsection*{inverter}
+\subsection*{inverter:}
 
 There are multiple inverters that may be used within the kalman filter update stage, which may provide different performance outcomes in terms of processing time and accuracty and stability.
 
@@ -286,7 +286,7 @@ Maximum number of epochs with missed phase measurements before the ambiguity ass
 Maximum number of phase measurements to reject before the ambiguity associated with the measurement is reset.
 
 
-\subsection*{rts\_X}
+\subsection*{rts\_X:}
 
 For details about rts configuration, see section \ref{ch:RTS}
 
@@ -300,28 +300,19 @@ For details about rts configuration, see section \ref{ch:RTS}
 
 Currently in the PEA we have random walk process noise models implemented.
 
-The units are typically in meters, and they are given as $\sigma$ = sqrt(variance)
+The units are typically in meters, and they are given as $\sigma$ = $\sqrt{variance}$
 
-For a random walk process noise, the process noise is incremented at each epoch as $\sqrt{process\_noise}*dt$ where dt is the time step between filter updates.
+For a random walk process noise, the process noise is incremented at each epoch as $\sigma^2\times dt$ where dt is the time step between filter updates.
 
-If you want to allow kinematic processing, then you can increase the process noise e.g.
-proc\_noise [0.003]
-proc\_noise\_dt: second 
+If you want to allow kinematic processing, then you can increase the process noise e.g.\\
+proc\_noise [0.003]\\
+proc\_noise\_dt: second\\ 
 
-equates to $\frac{0.003}/\sqrt{s}$
+equates to $0.003\frac{1}{\sqrt{s}}$
 \\ 
-Or if you wanted highway sppeds 100km/hr = 28 m/s
-proc\_noise [28]
+Or if you wanted highway sppeds 100km/hr = 28 m/s\\
+proc\_noise [28]\\
 proc\_noise\_dt: second
-proc\_noise\_model:   Gaussian
-or
-         proc\_noise\_model:   RandomWalk
-or
-         proc\_noise\_model:   FOGM 1.0
-Where the number after FOGM gives the correlation time B
-That way we could keep the same:
-            proc\_noise:         [0.01]
-            proc\_noise\_dt:      hour
 
 A nice value for using VMF as an apriori value is 0.1mm /sqrt(s)
 %

@@ -14,13 +14,13 @@ Trace file outputs can be activated by setting the \textit{ output\_files : outp
 The most commonly used outputs from the PEA used in end-user mode are expected to be: the receiver position, receiver velocity, receiver clocks and tropospheric delays.
 
 \textbf{Receiver position}  results are preceded by the "\$POS" label and thus, in Linux, can be extracted using the command:
- \begin{verbatim}
+ \begin{lstlisting}
 $ grep "$POS" <path_to_trace_file>
-\end{verbatim}
+\end{lstlisting}
 the output line for the for receiver position will have 10 comma separated fields with the following format:
-\begin{verbatim}
+\begin{lstlisting}
 $POS,2166,278015.000,6,-4052053.0060,4212836.8682,-2545105.0796,0.0245227,0.0231919,0.0163678
-\end{verbatim}
+\end{lstlisting}
 the fields represent, from left to right:
 \begin{enumerate}
 	\item  "\$POS" label
@@ -36,13 +36,13 @@ the fields represent, from left to right:
 \end{enumerate}
 
 \textbf{Receiver clock} offset results are preceded by the "\$CLK" label and thus, in Linux, can be extracted using the command:
- \begin{verbatim}
+ \begin{lstlisting}
 $ grep "$CLK" <path_to_trace_file>
-\end{verbatim}
+\end{lstlisting}
 the output line for the for receiver position will have 13 comma separated fields with the following format:
-\begin{verbatim}
+\begin{lstlisting}
 $CLK,2166,278015.000,6,14,3.1902,0.0000,1.1924,0.0000,0.0860,0.0000,0.0953,0.0000
-\end{verbatim}
+\end{lstlisting}
 the fields represent, from left to right:
 \begin{enumerate}
 	\item  "\$CLK" label
@@ -62,15 +62,15 @@ the fields represent, from left to right:
 If clock offsets for a particular constellation are not available both the offset and its variance will be set to 0.
 
 \textbf{Tropospheric delays} at the receiver position are preceded by the "\$TROP" label and thus, in Linux, can be extracted using the command:
- \begin{verbatim}
+ \begin{lstlisting}
 $ grep "$TROP" <path_to_trace_file>
-\end{verbatim}
+\end{lstlisting}
 the tropospheric delay solutions will be represented to either a single line, with the "\$TROP" or three lines, as follows:
-\begin{verbatim}
+\begin{lstlisting}
 $TROP,2166,278015.000,6,14,2.294950,0.0030977
 $TROP_N,2166,278015.000,6,14,-0.174797,0.0181385
 $TROP_E,2166,278015.000,6,14,-0.223868,0.0250276
-\end{verbatim}
+\end{lstlisting}
 each of the troposphere output line will contain 7 comma separated field, of which the first five are:
 \begin{enumerate}
 	\item  Label, "\$TROP", "\$TROP\_N" or "\$TROP\_E"

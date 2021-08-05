@@ -17,9 +17,9 @@ The Parameter Estimation Algorithm (PEA) is designed estimate the GNSS error par
 In order to estimate the full range of parameters, the PEA will need to ingest GNSS observation data form a Global network of proper density. Receiver position and clock, Tropospheric delays can also be estimated from a single receiver and thus will be addressed on chapter \ref{ch:pea_user_mode}.\\
 
 As is the case for the POD, the PEA use YAML formatted configuration files to set the processing options, and is run using the command:
-\begin{verbatim}
+\begin{lstlisting}
 $ ./pea --config <path_to_config_file>
-\end{verbatim}
+\end{lstlisting}
 Details on the configuration parameters included in YAML files can be found in chapter \ref{ch:pea_yaml_configuration}.
 With one exception (Ionosphere delay modelling using smoothed pseudorange), processing of network data is activated by setting the \textit{ processing\_options : process\_modes : network} to \textit{true}.
 Configuration files corresponding to the examples in this section can be found in the \textit{ginan/examples} directory. A few of these examples are exaplained bellow.\\
@@ -94,9 +94,9 @@ Ionospheric delay estimate are availabe for GPS signals only.\\
 
 The Ionosphere slant delay measurements delay measurments can be outputted into STEC files if \textit{output\_files : output\_ionstec} parameter is set to \textit{true} (the output file name can be set using \textit{ionstec\_filename}).
 The format of STEC files have one of two forms. If the vector in \textit{ionosphere\_filter\_parameters : layer\_heights} is not empty, each line on the STEC file will contain the slant delay measurements and the piercing points at each layer height:
- \begin{verbatim}
+ \begin{lstlisting}
 #IONO_MEA, 2102,171000.000, AGGO, G05, -1.6030, 1.9699e-04, 2, 1, 350, -33.662, -61.955, 1.443
-\end{verbatim}
+\end{lstlisting}
 the fields representing, from left to right:
 \begin{enumerate}
 	\item  "IONO\_MEA" label
@@ -105,7 +105,7 @@ the fields representing, from left to right:
 	\item  Receiver/station name
 	\item  Satellite ID
 	\item  Slant delay in meters
-	\item  Slant delay variance in meters\^2
+	\item  Slant delay variance in meters$^2$
 	\item  Number of Ionosphere layers N
 	\item  N fields containing: 
 	\begin{enumerate}

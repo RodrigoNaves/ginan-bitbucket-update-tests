@@ -149,7 +149,7 @@ You can specify individual files to process, set it up so that it will search a 
 The data should be uncompressed rinex (gunzipped, and not in hatanaka format), or RTCM3 formatted binary data.
 
 
-It may consist of RINEX files, or RTCM streams, which are specified as follows:
+It may consist of RINEX files, or RTCM streams or files, which are specified as follows:
 \subsubsection{Post processing:}
 
 \begin{lstlisting}[language=yaml,caption=station\_data:]
@@ -191,7 +191,7 @@ To process data in real-time you will need to set up the location, username annd
 The pea supports obtaining streams from casters that use NTRIP 2.0 over http and https.
 
 
-\begin{lstlisting}[language=yaml,caption=station\_data:]
+\begin{lstlisting}[language=yaml,caption=station\_data:, label={lst:realtimeConfig}]
 # realtime streaming example
 station_data:
 	
@@ -203,9 +203,9 @@ station_data:
 		
 	obs_streams:
 		- STR100AUS0
-\end{lstlisting} \label{lst:realtimeConfig}
+\end{lstlisting}
 
-As shown in listing:\ref{lst:realtimeConfig}, the caster url, username and password are specified within double quotes with the \emph{stream\_root} tag. In this example the streams are being obtained from the auscors caster run by Geoscience Australia. 
+As shown in listing: \ref{lst:realtimeConfig}, the caster url, username and password are specified within double quotes with the \emph{stream\_root} tag. In this example the streams are being obtained from the auscors caster run by Geoscience Australia. 
 The broadcast information is being obtained from the stream \emph{BCEP00BKG0} being supplied by BKG, and corrections to the utlra-rapid predicted orbit are being obtained from the stream \emph{SSRA00CNE0}. 
 The real-time data being processed is for the continuous GNSS station located at Mount Stromlo obtained from the stream \emph{STR100AUS0}.
 

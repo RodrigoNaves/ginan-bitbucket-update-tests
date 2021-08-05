@@ -6,9 +6,9 @@ In this example the pod will perform a dynamic orbit determination for PRN04 ove
 The full gravitational force models are applied, with a cannonball model SRP model.
 
 To run the POD ...
-\begin{verbatim}
+\begin{lstlisting}
 $ bin/pod
-\end{verbatim}
+\end{lstlisting}
 
 This should output the following to stdout...
 \begin{lstlisting}
@@ -28,7 +28,7 @@ The results above show that our orbits arcs, over 6 hours, are currently within 
 \end{lstlisting}
 
 The processing also produces the following output files...
-/begin{verbatim}
+\begin{verbatim}
 %├── DE.430            planetary ephemris intermediate file
 %├── Amatrix.out       design matrix
 %├── Wmatrix.out       reduced observation matrix
@@ -42,7 +42,7 @@ The processing also produces the following output files...
 %├── orb_itrf.out      the final estimated orbit in ITRF
 %├── VEQ_Smatrix.out   State transition matrix from the variational equations solution
 %├── VEQ_Pmatrix.out   Sensitivity matrix from the variational equations solution
-/end{verbatim}
+\end{verbatim}
 
 \section{Processing Example 2 - ECOM2 SRP}
 In this example we will change the SRP model to use the ECOM2 model.

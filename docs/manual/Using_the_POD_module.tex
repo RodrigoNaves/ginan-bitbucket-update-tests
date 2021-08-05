@@ -22,9 +22,9 @@ A description of each components and its use is presented below.\\
 
 \chapter{Using the POD Module}
 GINAN applications use YAML format to define configuration files. After installing the dependencies and compiling building the POD application, the POD processing can be started by typing the command.
-\begin{verbatim}
+\begin{lstlisting}
 $ ./pod -y <path_to_config_file>
-\end{verbatim}
+\end{lstlisting}
 Details on the configuration parameters included in YAML files can be found in chapter \ref{ch:pod_yaml_configuration}. Configuration files corresponding to the examples in this section can be found in the \textit{ginan/examples} directory.\\
 
 The POD module has two main modes of operation, the orbit fitting mode and the orbit integration/prediction mode. In orbit fitting mode, precise orbit parameters are calculated from, potentially inaccurate, satellite position pseudo-observations. In orbit integration mode, precise satellite positions are estimated/predicted from precise orbit parameters.\\

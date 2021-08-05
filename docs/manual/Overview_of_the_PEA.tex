@@ -70,7 +70,9 @@ Ultimate positioning performance largely depends on accurate dynamic models, wit
 \subsubsection{Gravity}
 \subsubsection{Solar Radiation Pressure}
 \subsubsection{Other}
-\subsubsection{Orbit and State Prediction}
+
+
+\subsection{Orbit and State Prediction}
 
 Before the available observations for an epoch are utilised, a prediction is made of the parameters of interest by utilising the previous estimates and applying dynamic models through the Kalman filter’s state transition.
 
@@ -100,20 +102,26 @@ It is well known that the Kalman filter is the optimal technique for estimating 
 In addition, statistical techniques may be used to detect defects in models or the parameters used to characterise the data, providing opportunities to intervene and make corrections to the model according to the nature of the anomaly.
 
 By incorporating these features into a single generic module, the robustness that was previously available only under certain circumstances may now be automatically applied to all systems to which it is applied. These benefits extend automatically to all related modules (such as RTS), and often perform better than modules designed specifically to address isolated issues.
-Initialisation
 
 For further details about the software's robust kalman filter see chapter \ref{ch:kalman_filter}
+
 
 
 \subsection{RTS Smoothing}
 
 The intermediate outputs of a kalman filter are of use for other algorithms such as RTS smoothers. All intermediate values required for such algorithms are to be recorded in a consistent manner, suitable for later processing.
 
+For further details about the software's RTS smoothing algorithm see chapter \ref{ch:RTS}
+
 
 \subsection{Integer Ambiguity Resolution}
 
 GNSS phase measurements allow for very precise measurements of biases but require extra processing steps to disambiguate between cycles. Techniques have been demonstrated that perform acceptably under certain conditions and measurement types, but require substantial bookkeeping and may not easily transfer to different measurement applications.
-Product calculation
+
+For further details about the software's ambiguity resolution algorithms see chapter \ref{ch:Ambiguity Resolution}
+
+
+\subsection{Product calculation}
 
 In order for estimated and predicted values to be of use to end-users, they must be prepared and distributed in an appropriate format.
 
@@ -140,7 +148,7 @@ The minimum constraints algorithm is capable of aligning a network of stations t
 
 A subset of stations positions are selected and weighted to create pseudo-observations to determine the optimal rigid transformation between the coordinates and the reference frame. The transformation takes the same algebraic form as a kalman filter stage and is implemented as such in the software.
 
-For further details about the software's RTS Smoothing algorithm see chapter \ref{ch:MinCon}
+For further details about the software's minimum constraints algorithm see chapter \ref{ch:MinCon}
 
 
 \subsection{Unit Testing}
@@ -149,6 +157,7 @@ The nature of GNSS processing means that well-defined unit tests are difficult t
 
 Intermediate variables are tagged throughout the code, and auxiliary files specify which variables should be tested as they are obtained, and the expected values from previous runs.
 
+For further details about the software's unit testing see chapter \ref{ch:UnitTesting}
 
 \subsection{Logging}
 
@@ -159,7 +168,7 @@ Per-station files are created with intermediate processing values and informatio
 Information produced during processing is output to the console, and may also be redirected to other logging sinks such as a database, or json formatted output.
 
 In addition to processing information, inputs may be recorded to file for replaying later.
- 
+
  
 
  

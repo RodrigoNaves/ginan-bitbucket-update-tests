@@ -27,6 +27,8 @@ Bogdan Matviichuk, Simon McClusky, Michael Moore, Thomas Papanikolaou,
 Tzupang Tseng, Umma Zannat}
 
 
+
+
 % updating section formatting
 \titleformat{\section}
   {\normalfont\fontsize{12}{15}\bfseries}{\thesection}{1em}{}
@@ -113,6 +115,10 @@ Tzupang Tseng, Umma Zannat}
 \makeglossaries
 
 \begin{document}
+
+\numberwithin{equation}{section}
+\numberwithin{lstlisting}{section}
+\numberwithin{table}{section}
 
 	\newgeometry{left=3cm,bottom=2cm}
 	\begingroup%
