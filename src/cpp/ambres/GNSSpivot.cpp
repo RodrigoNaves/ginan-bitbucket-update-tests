@@ -81,7 +81,7 @@ void init_usr_pivot( Trace& trace, E_Sys sys, double arelev, string rover)
 		stadat.stabias.WL23var = sigdat.raw.WL23var;
 		stadat.stabias_fix = stadat.stabias;
 	}
-	else if (elmx2 < MIN_PIV_ELE)
+	else if (elmx2 > MIN_PIV_ELE)
 	{
 		tracepdeex(2, trace, "... %s selected (2)", piv2.id().c_str());
 		pivotsats[rover][sys] = piv2;
