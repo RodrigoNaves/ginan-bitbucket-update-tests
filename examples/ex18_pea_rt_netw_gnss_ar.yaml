@@ -143,7 +143,7 @@ station_data:
         
 output_files:
 
-    root_output_directory:          output/<CONFIG>/
+    root_output_directory:          <CONFIG>/
 
     output_trace:                   true
     trace_level:                    3

@@ -27,7 +27,7 @@ station_data:
 
 output_files:
 
-    root_output_directory:          output/<CONFIG>/
+    root_output_directory:          <CONFIG>/
 
     # TO DO change trace_level to log_level
     output_trace:                   true
