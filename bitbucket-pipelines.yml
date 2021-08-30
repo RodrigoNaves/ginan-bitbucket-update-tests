@@ -19,6 +19,11 @@ pipelines:
         script:
           - git pull origin master
     - step:
+        script:
+          - git add --all
+          - git commit -m "[skip ci] Updating repository with latest from development master."
+          - git push
+    - step:
         name: 'remove development repo'
         script:
           - git remote rm origin
