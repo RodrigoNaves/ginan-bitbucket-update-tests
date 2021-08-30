@@ -17,7 +17,7 @@ pipelines:
     - step:
         name: 'pull'
         script:
-          - git pull dev_ginan
+          - git pull origin master
     - step:
         name: 'remove development repo'
         script:
