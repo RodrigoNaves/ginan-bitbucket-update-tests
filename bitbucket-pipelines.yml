@@ -9,7 +9,7 @@ pipelines:
     - step:
         name: 'Add development repo as remote'
         script:
-          - git remote add dev_ginan https://bitbucket.org/geoscienceaustralia/ginan/src/master/
+          - git remote add dev_ginan https://RodrigoNV@bitbucket.org/geoscienceaustralia/ginan.git
     - step:
         name: 'pull'
         script:
