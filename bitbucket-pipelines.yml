@@ -21,7 +21,7 @@ pipelines:
     - step:
         name: 'remove development repo'
         script:
-          - git remote rm synch_ginan
+          - git remote rm origin
 
     # The following deployment steps will be executed for each pipeline run. To configure your steps and conditionally deploy see https://support.atlassian.com/bitbucket-cloud/docs/configure-bitbucket-pipelinesyml/
     - step:
