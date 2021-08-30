@@ -6,19 +6,18 @@ image: atlassian/default-image:2
 
 pipelines:
   default:
-    - parallel:
-      - step:
-          name: 'Build and Test'
-          script:
-            - echo "Your build and test goes here..."
-      - step:
-          name: 'Lint'
-          script:
-            - echo "Your linting goes here..."
-      - step:
-          name: 'Security scan'
-          script:
-            - echo "Your security scan goes here..."
+    - step:
+        name: 'Add development repo as remote'
+        script:
+          - git remote add dev_ginan https://bitbucket.org/geoscienceaustralia/ginan/src/master/
+    - step:
+        name: 'pull'
+        script:
+          - git pull dev_ginan
+    - step:
+        name: 'remove development repo'
+        script:
+          - git remote rm synch_ginan
 
     # The following deployment steps will be executed for each pipeline run. To configure your steps and conditionally deploy see https://support.atlassian.com/bitbucket-cloud/docs/configure-bitbucket-pipelinesyml/
     - step:
