@@ -9,8 +9,8 @@ pipelines:
     - step:
         name: 'Add development repo as remote'
         script:
-          - git remote add dev_ginan git@bitbucket.org:geoscienceaustralia/ginan.git
-          -git remote -v
+          - git remote add dev_ginan  git@bitbucket.org:geoscienceaustralia/ginan.git
+          - git remote -v
     - step:
         name: 'pull and push'
         script:
