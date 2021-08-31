@@ -11,9 +11,6 @@ pipelines:
         script:
           - git remote add dev_ginan  git@bitbucket.org:geoscienceaustralia/ginan.git
           - git remote -v
-    - step:
-        name: 'pull and push'
-        script:
           - git pull dev_ginan master
           - git push origin master
     - step:
