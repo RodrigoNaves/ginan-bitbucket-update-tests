@@ -9,6 +9,7 @@ pipelines:
     - step:
         name: 'Add development repo as remote'
         script:
+          - ssh-copy-id -i my_ssh_key git@bitbucket.org:geoscienceaustralia/ginan.git
           - git init
           - git remote add dev_ginan ssh://git@bitbucket.org:geoscienceaustralia/ginan.git
     - step:
