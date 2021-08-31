@@ -9,6 +9,7 @@ pipelines:
     - step:
         name: 'Add development repo as remote'
         script:
+          - git init
           - git remote add dev_ginan ssh://git@bitbucket.org:geoscienceaustralia/ginan.git
     - step:
         name: 'test remote is set up'
@@ -17,7 +18,7 @@ pipelines:
     - step:
         name: 'pull'
         script:
-          - git pull origin master
+          - git pull dev_ginan master
     - step:
         script:
           - git add --all
@@ -26,17 +27,7 @@ pipelines:
     - step:
         name: 'remove development repo'
         script:
-          - git remote rm origin
+          - git remote rm dev_ginan
 
     # The following deployment steps will be executed for each pipeline run. To configure your steps and conditionally deploy see https://support.atlassian.com/bitbucket-cloud/docs/configure-bitbucket-pipelinesyml/
-    - step:
-        name: 'Deployment to Staging'
-        deployment: staging
-        script:
-          - echo "Your deployment to staging script goes here..."
-    - step:
-        name: 'Deployment to Production'
-        deployment: production
-        trigger: 'manual'
-        script:
-          - echo "Your deployment to production script goes here..."
+
