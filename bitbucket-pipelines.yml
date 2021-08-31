@@ -9,17 +9,9 @@ pipelines:
     - step:
         name: 'Add development repo as remote'
         script:
-          - ssh-copy-id -i my_ssh_key git@bitbucket.org:geoscienceaustralia/ginan.git
-          - git init
           - git remote add dev_ginan ssh://git@bitbucket.org:geoscienceaustralia/ginan.git
-    - step:
-        name: 'test remote is set up'
-        script:
-          - git remote -v
-    - step:
-        name: 'pull'
-        script:
           - git pull dev_ginan master
+          - git push origin master
     - step:
         script:
           - git add --all
