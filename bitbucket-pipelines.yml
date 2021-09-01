@@ -12,6 +12,7 @@ pipelines:
           
           - git remote add dev_ginan  git@bitbucket.org:geoscienceaustralia/ginan.git
           - git remote -v
+          - git checkout ginan-sourcecode
           - git pull dev_ginan master
           - git push ginan-sourcecode
     - step:
