@@ -9,10 +9,11 @@ pipelines:
     - step:
         name: 'Add development repo as remote'
         script:
+          
           - git remote add dev_ginan  git@bitbucket.org:geoscienceaustralia/ginan.git
           - git remote -v
           - git pull dev_ginan master
-          - git push origin master
+          - git push ginan-sourcecode
     - step:
         script:
           - git add --all
