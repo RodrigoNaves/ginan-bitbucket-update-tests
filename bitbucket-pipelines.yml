@@ -13,6 +13,6 @@ pipelines:
           - git remote -v
           - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
           - git show-ref
-	        - git pull origin release-*
-          - git push --force github_sync release-*
+	        - git pull origin
+          - git push --force github_sync
           - git remote rm github_sync
