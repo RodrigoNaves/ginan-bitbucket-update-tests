@@ -5,38 +5,14 @@
 image: atlassian/default-image:2
 
 pipelines:
-  default:
-    - step:
-        name: 'Add development repo as remote'
+  tags:
+    release-*:
+     - step:
         script:
-<<<<<<< HEAD
-          - git init
-          - git remote add dev_ginan ssh://git@bitbucket.org:geoscienceaustralia/ginan.git
-    - step:
-        name: 'test remote is set up'
-        script:
+          - git remote add github_sync git@github.com:RodrigoNaves/ginan-bitbucket-update-tests.git
           - git remote -v
-    - step:
-        name: 'pull'
-        script:
-          - git pull dev_ginan master
-=======
-          
-          - git remote add dev_ginan  git@bitbucket.org:geoscienceaustralia/ginan.git
-          - git remote -v
-          - git checkout ginan-sourcecode
-          - git pull dev_ginan master
-          - git push ginan-sourcecode
->>>>>>> c56da2eab271049773407ac652d1b42d1ffd7810
-    - step:
-        script:
-          - git add --all
-          - git commit -m "[skip ci] Updating repository with latest from development master."
-          - git push
-    - step:
-        name: 'remove development repo'
-        script:
-          - git remote rm dev_ginan
-
-    # The following deployment steps will be executed for each pipeline run. To configure your steps and conditionally deploy see https://support.atlassian.com/bitbucket-cloud/docs/configure-bitbucket-pipelinesyml/
-
+          - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+          - git show-ref
+	        - git pull origin release-*
+          - git push --force github_sync release-*
+          - git remote rm github_sync
