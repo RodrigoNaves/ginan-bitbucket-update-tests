@@ -15,7 +15,8 @@ pipelines:
          - git show-ref
          - git pull origin $BITBUCKET_TAG
          - rm -rf .git/
-         - git init add .
+         - git init 
+         - git add .
          - git commit -m "ginan initial"
          - git push --force github_sync $BITBUCKET_TAG
          - git remote rm github_sync
