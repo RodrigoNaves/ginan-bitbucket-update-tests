@@ -1,6 +1,6 @@
 import os
 
-with open("..\CMakeLists.txt", "r") as file:
+with open("./CMakeLists.txt", "r") as file:
     filedata = file.read()
 
 # replace the target string
