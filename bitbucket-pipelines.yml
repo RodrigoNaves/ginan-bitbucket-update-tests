@@ -20,5 +20,6 @@ pipelines:
          - git config --global user.email "$BITBUCKET_GIT_SSH_ORIGIN"
          - git config --global user.name "$BITBUCKET_STEP_TRIGGERER_UUID"
          - git commit -m "ginan initial"
+         - git tag  $BITBUCKET_TAG
          - git push --force github_sync $BITBUCKET_TAG
          - git remote rm github_sync
