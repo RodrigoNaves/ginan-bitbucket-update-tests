@@ -14,5 +14,8 @@ pipelines:
          - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
          - git show-ref
          - git pull origin $BITBUCKET_TAG
+         - rm -rf .git/
+         - git init add .
+         - git commit -m "ginan initial"
          - git push --force github_sync $BITBUCKET_TAG
          - git remote rm github_sync
