@@ -12,6 +12,7 @@ pipelines:
 
          - git pull origin $BITBUCKET_TAG
          - rm -rf .git/
+         - rm -rf aws/
          - git init 
          - git add .
          - git config --global user.email "$BITBUCKET_GIT_SSH_ORIGIN"
