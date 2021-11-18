@@ -1,0 +1,27 @@
+# This is an example Starter pipeline configuration
+# Use a skeleton to build, test and deploy using manual and parallel steps
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: atlassian/default-image:2
+
+pipelines:
+  tags:
+    release-*:
+     - step:
+        script:
+
+         - git pull origin $BITBUCKET_TAG
+         - rm -rf .git/
+         - rm -rf aws/
+         - git init 
+         - git add .
+         - git config --global user.email "$BITBUCKET_GIT_SSH_ORIGIN"
+         - git config --global user.name "$BITBUCKET_STEP_TRIGGERER_UUID"
+         - git commit -m "ginan initial"
+         - git tag  $BITBUCKET_TAG
+         - git remote add github_sync git@github.com:RodrigoNaves/ginan-bitbucket-update-tests.git
+         - git remote -v
+         - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+         - git show-ref
+         - git push --force github_sync $BITBUCKET_TAG
+         - git remote rm github_sync
