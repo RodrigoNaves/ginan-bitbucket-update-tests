@@ -9,18 +9,36 @@ pipelines:
     release-*:
      - step:
         script:
-
-         - git pull origin $BITBUCKET_TAG
-         - rm -rf .git/
+         
+         #- git pull origin $BITBUCKET_TAG
+         #- rm -rf .git/
+         #- python aws/msg_cleaner.py #get rid of messages from Fortran inside CMakeLists.txt
+         #- rm -rf aws/
+         #- git init 
+         #- git add .
+         #- git config --global user.email "$BITBUCKET_GIT_SSH_ORIGIN"
+         #- git config --global user.name "$BITBUCKET_STEP_TRIGGERER_UUID"
+         #- git commit -m "ginan initial"
+         #- git tag  $BITBUCKET_TAG
+         #- git remote add github_sync git@github.com:RodrigoNaves/ginan-bitbucket-update-tests.git
+         #- git remote -v
+         #- git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+         #- git show-ref
+         #- git push --force github_sync $BITBUCKET_TAG
+         #- git remote rm github_sync
+         - git pull origin 
+         - git checkout tags/$BITBUCKET_TAG
+         - git switch -c $BITBUCKET_TAG
          - python aws/msg_cleaner.py #get rid of messages from Fortran inside CMakeLists.txt
          - rm -rf aws/
-         - git init 
-         - git add .
-         - git config --global user.email "$BITBUCKET_GIT_SSH_ORIGIN"
-         - git config --global user.name "$BITBUCKET_STEP_TRIGGERER_UUID"
-         - git commit -m "ginan initial"
+         - rm README.md
+         - rm bitbucket-pipelines.yml
+         - git commit -m "$BITBUCKET_TAG"
+         - git checkout master
+         - git merge --squash $BITBUCKET_TAG
          - git tag  $BITBUCKET_TAG
-         - git remote add github_sync git@github.com:RodrigoNaves/ginan-bitbucket-update-tests.git
+         #TODO: add SSH keys to bitbucket pipeline and to ginan github repository
+         - git remote add github_sync git@github.com:RodrigoNaves/ginan.git
          - git remote -v
          - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
          - git show-ref
