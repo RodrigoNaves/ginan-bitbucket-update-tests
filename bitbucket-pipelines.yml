@@ -33,6 +33,7 @@ pipelines:
          - rm -rf aws/
          - rm README.md
          - rm bitbucket-pipelines.yml
+         - git add .
          - git commit -m "$BITBUCKET_TAG"
          - git checkout master
          - git merge --squash $BITBUCKET_TAG
