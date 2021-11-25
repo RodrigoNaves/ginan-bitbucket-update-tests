@@ -38,7 +38,10 @@ pipelines:
          - git commit -m "$BITBUCKET_TAG"
          - git checkout master
          - git merge --squash $BITBUCKET_TAG
-         - git tag  $BITBUCKET_TAG
+         - git branch -d $BITBUCKET_TAG
+         - git tag -d $BITBUCKET_TAG
+         - git tag $BITBUCKET_TAG
+         #- git tag  $BITBUCKET_TAG
          #TODO: add SSH keys to bitbucket pipeline and to ginan github repository
          - git remote add github_sync git@github.com:RodrigoNaves/ginan.git
          - git remote -v
