@@ -28,7 +28,7 @@ pipelines:
          #- git remote rm github_sync
          - git pull origin 
          - git checkout tags/$BITBUCKET_TAG
-         - git switch -c $BITBUCKET_TAG
+         - git checkout -b $BITBUCKET_TAG
          - python aws/msg_cleaner.py #get rid of messages from Fortran inside CMakeLists.txt
          - rm -rf aws/
          - rm README.md
