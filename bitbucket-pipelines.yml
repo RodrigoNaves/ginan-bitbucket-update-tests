@@ -46,5 +46,6 @@ pipelines:
          - git remote -v
          - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
          - git show-ref
+         - git push github_sync branch-$BITBUCKET_TAG:main
          - git push --force github_sync $BITBUCKET_TAG
          - git remote rm github_sync
