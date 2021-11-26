@@ -27,7 +27,7 @@ pipelines:
          #- git push --force github_sync $BITBUCKET_TAG
          #- git remote rm github_sync
          - git branch master
-         - git pull origin $BITBUCKET_TAG
+         - git pull --squash origin  $BITBUCKET_TAG
          - git checkout -b branch-$BITBUCKET_TAG
          - git merge --squash master
          #- git checkout tags/$BITBUCKET_TAG
