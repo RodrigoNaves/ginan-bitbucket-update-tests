@@ -27,8 +27,9 @@ pipelines:
          #- git push --force github_sync $BITBUCKET_TAG
          #- git remote rm github_sync
          - git branch master
-         - git checkout -b $BITBUCKET_TAG
          - git pull origin $BITBUCKET_TAG
+         - git checkout -b branch-$BITBUCKET_TAG
+         - git merge --squash master
          #- git checkout tags/$BITBUCKET_TAG
          - python aws/msg_cleaner.py #get rid of messages from Fortran inside CMakeLists.txt
          - rm -rf aws/
@@ -38,10 +39,9 @@ pipelines:
          - git commit -m "$BITBUCKET_TAG"
          #- git checkout master
          #- git merge --squash $BITBUCKET_TAG
-         #- git branch -D $BITBUCKET_TAG
+         #- git branch -D branch-$BITBUCKET_TAG
          - git tag -d $BITBUCKET_TAG
-         - git tag $BITBUCKET_TAG
-         #- git tag  $BITBUCKET_TAG
+         - git tag  $BITBUCKET_TAG
          - git remote add github_sync git@github.com:RodrigoNaves/ginan-bitbucket-update-tests.git
          - git remote -v
          - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
